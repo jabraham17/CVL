@@ -1,0 +1,4 @@
+target/
+Mason.lock
+.vscode
+a.out

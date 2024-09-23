@@ -158,8 +158,8 @@ module IntrinArm64_128 {
 
   inline proc swapPairs64x2d(x: vec64x2d): vec64x2d {
     pragma "fn synchronization free"
-    extern proc extractVector64x2f0(x: vec64x2d, y: vec64x2d): vec64x2d;
-    return extractVector64x2f0(x, x);
+    extern proc extractVector64x2f1(x: vec64x2d, y: vec64x2d): vec64x2d;
+    return extractVector64x2f1(x, x);
   }
   inline proc swapLowHigh64x2d(x: vec64x2d): vec64x2d do return swapPairs64x2d(x);
   inline proc reverse64x2d(x: vec64x2d): vec64x2d do return swapPairs64x2d(x);

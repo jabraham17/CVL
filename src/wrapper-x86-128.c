@@ -45,6 +45,11 @@ __m128 rotateLeft32x4f(__m128 x) { return _mm_shuffle_ps(x, x, 0b00111001); }
 __m128 rotateRight32x4f(__m128 x) { return _mm_shuffle_ps(x, x, 0b10010011); }
 __m128 blendLowHigh32x4f(__m128 x, __m128 y) { return _mm_blend_ps(x, y, 0b1100); }
 
+__m128 hadd32x4f(__m128 x, __m128 y) {
+  __m128 t0 = _mm_hadd_ps(x, y);
+  return _mm_shuffle_ps(t0, t0, 0b11011000);
+}
+
 
 double extract64x2d0(__m128d x) { return _mm_cvtsd_f64(x); }
 double extract64x2d1(__m128d x) {

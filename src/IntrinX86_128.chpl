@@ -89,7 +89,7 @@ module IntrinX86_128 {
   pragma "fn synchronization free"
   extern "_mm_div_ps" proc div32x4f(x: vec128, y: vec128): vec128;
   pragma "fn synchronization free"
-  extern "_mm_hadd_ps" proc hadd32x4f(x: vec128, y: vec128): vec128;
+  extern proc hadd32x4f(x: vec128, y: vec128): vec128;
 
   pragma "fn synchronization free"
   extern "_mm_sqrt_ps" proc sqrt32x4f(x: vec128): vec128;

@@ -17,6 +17,7 @@ __m256 deinterleaveLower32x8f(__m256 x, __m256 y);
 __m256 deinterleaveUpper32x8f(__m256 x, __m256 y);
 __m256 blendLowHigh32x8f(__m256 x, __m256 y);
 
+__m256 hadd32x8f(__m256 x, __m256 y);
 
 
 __m128d extract128x2d0(__m256d x);

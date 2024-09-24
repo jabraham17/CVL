@@ -105,7 +105,7 @@ module IntrinX86_256 {
   pragma "fn synchronization free"
   extern "_mm256_div_ps" proc div32x8f(x: vec256, y: vec256): vec256;
   pragma "fn synchronization free"
-  extern "_mm256_hadd_ps" proc hadd32x8f(x: vec256, y: vec256): vec256;
+  extern proc hadd32x8f(x: vec256, y: vec256): vec256;
 
   pragma "fn synchronization free"
   extern "_mm256_sqrt_ps" proc sqrt32x8f(x: vec256): vec256;

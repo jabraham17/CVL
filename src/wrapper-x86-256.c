@@ -44,6 +44,10 @@ __m256 deinterleaveUpper32x8f(__m256 x, __m256 y) {
 }
 __m256 blendLowHigh32x8f(__m256 x, __m256 y) { return _mm256_blend_ps(x, y, 0xf0); }
 
+__m256 hadd32x8f(__m256 x, __m256 y) {
+  __m256 t0 = _mm256_hadd_ps(x, y);
+  return _mm256_permute_ps(t0, 0b11011000);
+}
 
 __m128d extract128x2d0(__m256d x) { return _mm256_extractf128_pd(x, 0); }
 __m128d extract128x2d1(__m256d x) { return _mm256_extractf128_pd(x, 1); }

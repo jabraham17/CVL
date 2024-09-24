@@ -11,6 +11,16 @@ module IntrinX86_256 {
   extern "__m256" type vec256;
   extern "__m256d" type vec256d;
 
+  proc vec256.serialize(writer, ref serializer) throws {
+      var s: string;
+      var sep = "";
+      for param i in 0..#8 {
+        writer.write(sep, extract32x8f(this, i));
+        sep = ", ";
+      }
+      return s;
+    }
+
   //
   // 32-bit float
   // 
@@ -64,6 +74,27 @@ module IntrinX86_256 {
   extern "_mm256_loadu_ps" proc loadu32x8f(x: c_ptrConst(real(32))): vec256;
   pragma "fn synchronization free"
   extern "_mm256_storeu_ps" proc storeu32x8f(x: c_ptr(real(32)), y: vec256): void;
+
+  pragma "fn synchronization free"
+  extern proc swapPairs32x8f(x: vec256): vec256;
+  pragma "fn synchronization free"
+  extern proc swapLowHigh32x8f(x: vec256): vec256;
+  pragma "fn synchronization free"
+  extern proc reverse32x8f(x: vec256): vec256;
+  pragma "fn synchronization free"
+  extern proc rotateLeft32x8f(x: vec256): vec256;
+  pragma "fn synchronization free"
+  extern proc rotateRight32x8f(x: vec256): vec256;
+  pragma "fn synchronization free"
+  extern proc interleaveLower32x8f(x: vec256, y: vec256): vec256;
+  pragma "fn synchronization free"
+  extern proc interleaveUpper32x8f(x: vec256, y: vec256): vec256;
+  pragma "fn synchronization free"
+  extern proc deinterleaveLower32x8f(x: vec256, y: vec256): vec256;
+  pragma "fn synchronization free"
+  extern proc deinterleaveUpper32x8f(x: vec256, y: vec256): vec256;
+  pragma "fn synchronization free"
+  extern proc blendLowHigh32x8f(x: vec256, y: vec256): vec256;
 
   pragma "fn synchronization free"
   extern "_mm256_add_ps" proc add32x8f(x: vec256, y: vec256): vec256;
@@ -125,6 +156,27 @@ module IntrinX86_256 {
   extern "_mm256_loadu_pd" proc loadu64x4d(x: c_ptrConst(real(64))): vec256d;
   pragma "fn synchronization free"
   extern "_mm256_storeu_pd" proc storeu64x4d(x: c_ptr(real(64)), y: vec256d): void;
+
+  pragma "fn synchronization free"
+  extern proc swapPairs64x4d(x: vec256d): vec256d;
+  pragma "fn synchronization free"
+  extern proc swapLowHigh64x4d(x: vec256d): vec256d;
+  pragma "fn synchronization free"
+  extern proc reverse64x4d(x: vec256d): vec256d;
+  pragma "fn synchronization free"
+  extern proc rotateLeft64x4d(x: vec256d): vec256d;
+  pragma "fn synchronization free"
+  extern proc rotateRight64x4d(x: vec256d): vec256d;
+  pragma "fn synchronization free"
+  extern proc interleaveLower64x4d(x: vec256d, y: vec256d): vec256d;
+  pragma "fn synchronization free"
+  extern proc interleaveUpper64x4d(x: vec256d, y: vec256d): vec256d;
+  pragma "fn synchronization free"
+  extern proc deinterleaveLower64x4d(x: vec256d, y: vec256d): vec256d;
+  pragma "fn synchronization free"
+  extern proc deinterleaveUpper64x4d(x: vec256d, y: vec256d): vec256d;
+  pragma "fn synchronization free"
+  extern proc blendLowHigh64x4d(x: vec256d, y: vec256d): vec256d;
 
   pragma "fn synchronization free"
   extern "_mm256_add_pd" proc add64x4d(x: vec256d, y: vec256d): vec256d;

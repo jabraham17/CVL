@@ -1,0 +1,56 @@
+shuffleTest for real(32) 4
+  a                :  1.00,  2.00,  3.00,  4.00
+  other            :  5.00,  6.00,  7.00,  8.00
+  -----------------
+  swapPairs        :  2.00,  1.00,  4.00,  3.00
+  swapLowHigh      :  3.00,  4.00,  1.00,  2.00
+  reverse          :  4.00,  3.00,  2.00,  1.00
+  rotateLeft       :  2.00,  3.00,  4.00,  1.00
+  rotateRight      :  4.00,  1.00,  2.00,  3.00
+  interleaveLower  :  1.00,  5.00,  2.00,  6.00
+  interleaveUpper  :  3.00,  7.00,  4.00,  8.00
+  deinterleaveLower:  1.00,  3.00,  5.00,  7.00
+  deinterleaveUpper:  2.00,  4.00,  6.00,  8.00
+  blendLowHigh     :  1.00,  2.00,  7.00,  8.00
+shuffleTest for real(64) 2
+  a                :  1.00,  2.00
+  other            :  3.00,  4.00
+  -----------------
+  swapPairs        :  2.00,  1.00
+  swapLowHigh      :  2.00,  1.00
+  reverse          :  2.00,  1.00
+  rotateLeft       :  2.00,  1.00
+  rotateRight      :  2.00,  1.00
+  interleaveLower  :  1.00,  3.00
+  interleaveUpper  :  2.00,  4.00
+  deinterleaveLower:  1.00,  3.00
+  deinterleaveUpper:  2.00,  4.00
+  blendLowHigh     :  1.00,  4.00
+shuffleTest for real(32) 8
+  a                :  1.00,  2.00,  3.00,  4.00,  5.00,  6.00,  7.00,  8.00
+  other            :  9.00, 10.00, 11.00, 12.00, 13.00, 14.00, 15.00, 16.00
+  -----------------
+  swapPairs        :  2.00,  1.00,  4.00,  3.00,  6.00,  5.00,  8.00,  7.00
+  swapLowHigh      :  5.00,  6.00,  7.00,  8.00,  1.00,  2.00,  3.00,  4.00
+  reverse          :  8.00,  7.00,  6.00,  5.00,  4.00,  3.00,  2.00,  1.00
+  rotateLeft       :  2.00,  3.00,  4.00,  5.00,  6.00,  7.00,  8.00,  1.00
+  rotateRight      :  8.00,  1.00,  2.00,  3.00,  4.00,  5.00,  6.00,  7.00
+  interleaveLower  :  1.00,  9.00,  2.00, 10.00,  3.00, 11.00,  4.00, 12.00
+  interleaveUpper  :  5.00, 13.00,  6.00, 14.00,  7.00, 15.00,  8.00, 16.00
+  deinterleaveLower:  1.00,  3.00,  5.00,  7.00,  9.00, 11.00, 13.00, 15.00
+  deinterleaveUpper:  2.00,  4.00,  6.00,  8.00, 10.00, 12.00, 14.00, 16.00
+  blendLowHigh     :  1.00,  2.00,  3.00,  4.00, 13.00, 14.00, 15.00, 16.00
+shuffleTest for real(64) 4
+  a                :  1.00,  2.00,  3.00,  4.00
+  other            :  5.00,  6.00,  7.00,  8.00
+  -----------------
+  swapPairs        :  2.00,  1.00,  4.00,  3.00
+  swapLowHigh      :  3.00,  4.00,  1.00,  2.00
+  reverse          :  4.00,  3.00,  2.00,  1.00
+  rotateLeft       :  2.00,  3.00,  4.00,  1.00
+  rotateRight      :  4.00,  1.00,  2.00,  3.00
+  interleaveLower  :  1.00,  5.00,  2.00,  6.00
+  interleaveUpper  :  3.00,  7.00,  4.00,  8.00
+  deinterleaveLower:  1.00,  3.00,  5.00,  7.00
+  deinterleaveUpper:  2.00,  4.00,  6.00,  8.00
+  blendLowHigh     :  1.00,  2.00,  7.00,  8.00

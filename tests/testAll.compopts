@@ -1,0 +1,5 @@
+-stestName="'arrTest'" # arrTest.good
+-stestName="'initTest'" # initTest.good
+-stestName="'mathTest'" # mathTest.good
+-stestName="'sqrtTest'" # sqrtTest.good
+-stestName="'shuffleTest'" # shuffleTest.good

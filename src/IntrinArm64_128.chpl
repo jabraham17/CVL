@@ -91,11 +91,15 @@ module IntrinArm64_128 {
   extern "vuzp1q_f32" proc deinterleaveLower32x4f(x: vec32x4f, y: vec32x4f): vec32x4f;
   pragma "fn synchronization free"
   extern "vuzp2q_f32" proc deinterleaveUpper32x4f(x: vec32x4f, y: vec32x4f): vec32x4f;
-
   inline proc blendLowHigh32x4f(x: vec32x4f, y: vec32x4f): vec32x4f {
+    extern "float32x2_t" type vec32x2f;
     pragma "fn synchronization free"
-    extern proc extractVector32x4f2(x: vec32x4f, y: vec32x4f): vec32x4f;
-    return extractVector32x4f2(x, y);
+    extern proc vget_low_f32(x: vec32x4f): vec32x2f;
+    pragma "fn synchronization free"
+    extern proc vget_high_f32(x: vec32x4f): vec32x2f;
+    pragma "fn synchronization free"
+    extern proc vcombine_f32(x: vec32x2f, y: vec32x2f): vec32x4f;
+    return vcombine_f32(vget_low_f32(x), vget_high_f32(y));
   }
 
   pragma "fn synchronization free"
@@ -175,9 +179,14 @@ module IntrinArm64_128 {
   extern "vuzp2q_f64" proc deinterleaveUpper64x2d(x: vec64x2d, y: vec64x2d): vec64x2d;
 
   inline proc blendLowHigh64x2d(x: vec64x2d, y: vec64x2d): vec64x2d {
+    extern "float64x1_t" type vec64x1d;
     pragma "fn synchronization free"
-    extern proc extractVector64x2f1(x: vec64x2d, y: vec64x2d): vec64x2d;
-    return extractVector64x2f1(x, y);
+    extern proc vget_low_f64(x: vec64x2d): vec64x1d;
+    pragma "fn synchronization free"
+    extern proc vget_high_f64(x: vec64x2d): vec64x1d;
+    pragma "fn synchronization free"
+    extern proc vcombine_f64(x: vec64x1d, y: vec64x1d): vec64x2d;
+    return vcombine_f64(vget_low_f64(x), vget_high_f64(y));
   }
 
 

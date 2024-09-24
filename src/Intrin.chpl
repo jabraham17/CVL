@@ -267,7 +267,10 @@ module Intrin {
 
   inline proc swapPairs(type eltType, param numElts, x: vectorType(eltType, numElts)) {
     if use_x8664_128(eltType, numElts) {
-      compilerError("Unsupported vector type");
+      use IntrinX86_128;
+      if eltType == real(32)      then return swapPairs32x4f(x);
+      else if eltType == real(64) then return swapPairs64x2d(x);
+      else compilerError("Unsupported vector type");
 
     } else if use_x8664_256(eltType, numElts) {
       compilerError("Unsupported vector type");
@@ -288,8 +291,10 @@ module Intrin {
   }
   inline proc swapLowHigh(type eltType, param numElts, x: vectorType(eltType, numElts)) {
     if use_x8664_128(eltType, numElts) {
-      compilerError("Unsupported vector type");
-
+      use IntrinX86_128;
+      if eltType == real(32)      then return swapLowHigh32x4f(x);
+      else if eltType == real(64) then return swapLowHigh64x2d(x);
+      else compilerError("Unsupported vector type");
     } else if use_x8664_256(eltType, numElts) {
       compilerError("Unsupported vector type");
 
@@ -309,7 +314,10 @@ module Intrin {
   }
   inline proc reverse(type eltType, param numElts, x: vectorType(eltType, numElts)) {
     if use_x8664_128(eltType, numElts) {
-      compilerError("Unsupported vector type");
+      use IntrinX86_128;
+      if eltType == real(32)      then return reverse32x4f(x);
+      else if eltType == real(64) then return reverse64x2d(x);
+      else compilerError("Unsupported vector type");
 
     } else if use_x8664_256(eltType, numElts) {
       compilerError("Unsupported vector type");
@@ -330,7 +338,10 @@ module Intrin {
   }
   inline proc rotateLeft(type eltType, param numElts, x: vectorType(eltType, numElts)) {
     if use_x8664_128(eltType, numElts) {
-      compilerError("Unsupported vector type");
+      use IntrinX86_128;
+      if eltType == real(32)      then return rotateLeft32x4f(x);
+      else if eltType == real(64) then return rotateLeft64x2d(x);
+      else compilerError("Unsupported vector type");
 
     } else if use_x8664_256(eltType, numElts) {
       compilerError("Unsupported vector type");
@@ -351,7 +362,10 @@ module Intrin {
   }
   inline proc rotateRight(type eltType, param numElts, x: vectorType(eltType, numElts)) {
     if use_x8664_128(eltType, numElts) {
-      compilerError("Unsupported vector type");
+      use IntrinX86_128;
+      if eltType == real(32)      then return rotateRight32x4f(x);
+      else if eltType == real(64) then return rotateRight64x2d(x);
+      else compilerError("Unsupported vector type");
 
     } else if use_x8664_256(eltType, numElts) {
       compilerError("Unsupported vector type");
@@ -372,7 +386,10 @@ module Intrin {
   }
   inline proc interleaveLower(type eltType, param numElts, x: vectorType(eltType, numElts), y: x.type) {
     if use_x8664_128(eltType, numElts) {
-      compilerError("Unsupported vector type");
+      use IntrinX86_128;
+      if eltType == real(32)      then return interleaveLower32x4f(x, y);
+      else if eltType == real(64) then return interleaveLower64x2d(x, y);
+      else compilerError("Unsupported vector type");
 
     } else if use_x8664_256(eltType, numElts) {
       compilerError("Unsupported vector type");
@@ -393,7 +410,10 @@ module Intrin {
   }
   inline proc interleaveUpper(type eltType, param numElts, x: vectorType(eltType, numElts), y: x.type) {
     if use_x8664_128(eltType, numElts) {
-      compilerError("Unsupported vector type");
+      use IntrinX86_128;
+      if eltType == real(32)      then return interleaveUpper32x4f(x, y);
+      else if eltType == real(64) then return interleaveUpper64x2d(x, y);
+      else compilerError("Unsupported vector type");
 
     } else if use_x8664_256(eltType, numElts) {
       compilerError("Unsupported vector type");
@@ -414,7 +434,10 @@ module Intrin {
   }
   inline proc deinterleaveLower(type eltType, param numElts, x: vectorType(eltType, numElts), y: x.type) {
     if use_x8664_128(eltType, numElts) {
-      compilerError("Unsupported vector type");
+      use IntrinX86_128;
+      if eltType == real(32)      then return deinterleaveLower32x4f(x, y);
+      else if eltType == real(64) then return deinterleaveLower64x2d(x, y);
+      else compilerError("Unsupported vector type");
 
     } else if use_x8664_256(eltType, numElts) {
       compilerError("Unsupported vector type");
@@ -435,7 +458,10 @@ module Intrin {
   }
   inline proc deinterleaveUpper(type eltType, param numElts, x: vectorType(eltType, numElts), y: x.type) {
     if use_x8664_128(eltType, numElts) {
-      compilerError("Unsupported vector type");
+      use IntrinX86_128;
+      if eltType == real(32)      then return deinterleaveUpper32x4f(x, y);
+      else if eltType == real(64) then return deinterleaveUpper64x2d(x, y);
+      else compilerError("Unsupported vector type");
 
     } else if use_x8664_256(eltType, numElts) {
       compilerError("Unsupported vector type");
@@ -456,7 +482,10 @@ module Intrin {
   }
   inline proc blendLowHigh(type eltType, param numElts: int, x: vectorType(eltType, numElts), y: x.type): x.type {
     if use_x8664_128(eltType, numElts) {
-      compilerError("Unsupported vector type");
+      use IntrinX86_128;
+      if eltType == real(32)      then return blendLowHigh32x4f(x, y);
+      else if eltType == real(64) then return blendLowHigh64x2d(x, y);
+      else compilerError("Unsupported vector type");
 
     } else if use_x8664_256(eltType, numElts) {
       compilerError("Unsupported vector type");
@@ -585,6 +614,8 @@ module Intrin {
 
     } else compilerError("Unsupported vector type");
   }
+
+  // TODO: revist hadd semantics, x86 is all over the place
   /*
     Add pairs of adjacent elements
 

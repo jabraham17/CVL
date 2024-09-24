@@ -1,5 +1,5 @@
 module IntrinX86_128 {
-  use CTypes only c_ptr, c_ptrConst;
+  use CTypes only c_ptr, c_ptrConst, c_int;
   import ChplConfig;
   if ChplConfig.CHPL_TARGET_ARCH == "x86_64" {
     require "x86intrin.h";
@@ -60,6 +60,27 @@ module IntrinX86_128 {
   extern "_mm_storeu_ps" proc storeu32x4f(x: c_ptr(real(32)), y: vec128): void;
 
   pragma "fn synchronization free"
+  extern proc swapPairs32x4f(x: vec128): vec128;
+  pragma "fn synchronization free"
+  extern proc swapLowHigh32x4f(x: vec128): vec128;
+  pragma "fn synchronization free"
+  extern proc reverse32x4f(x: vec128): vec128;
+  pragma "fn synchronization free"
+  extern proc rotateLeft32x4f(x: vec128): vec128;
+  pragma "fn synchronization free"
+  extern proc rotateRight32x4f(x: vec128): vec128;
+  pragma "fn synchronization free"
+  extern "_mm_unpacklo_ps" proc interleaveLower32x4f(x: vec128, y: vec128): vec128;
+  pragma "fn synchronization free"
+  extern "_mm_unpackhi_ps" proc interleaveUpper32x4f(x: vec128, y: vec128): vec128;
+  inline proc deinterleaveLower32x4f(x: vec128, y: vec128): vec128 do
+    return interleaveLower32x4f(interleaveLower32x4f(x, y), interleaveUpper32x4f(x, y));
+  inline proc deinterleaveUpper32x4f(x: vec128, y: vec128): vec128 do
+    return interleaveUpper32x4f(interleaveLower32x4f(x, y), interleaveUpper32x4f(x, y));
+  pragma "fn synchronization free"
+  extern proc blendLowHigh32x4f(x: vec128, y: vec128): vec128;
+
+  pragma "fn synchronization free"
   extern "_mm_add_ps" proc add32x4f(x: vec128, y: vec128): vec128;
   pragma "fn synchronization free"
   extern "_mm_sub_ps" proc sub32x4f(x: vec128, y: vec128): vec128;
@@ -111,6 +132,23 @@ module IntrinX86_128 {
   extern "_mm_loadu_pd" proc loadu64x2d(x: c_ptrConst(real(64))): vec128d;
   pragma "fn synchronization free"
   extern "_mm_storeu_pd" proc storeu64x2d(x: c_ptr(real(64)), y: vec128d): void;
+
+  pragma "fn synchronization free"
+  extern proc swapPairs64x2d(x: vec128d): vec128d;
+  inline proc swapLowHigh64x2d(x: vec128d): vec128d do return swapPairs64x2d(x);
+  inline proc reverse64x2d(x: vec128d): vec128d do return swapPairs64x2d(x);
+  inline proc rotateLeft64x2d(x: vec128d): vec128d do return swapPairs64x2d(x);
+  inline proc rotateRight64x2d(x: vec128d): vec128d do return swapPairs64x2d(x);
+  pragma "fn synchronization free"
+  extern "_mm_unpacklo_pd" proc interleaveLower64x2d(x: vec128d, y: vec128d): vec128d;
+  pragma "fn synchronization free"
+  extern "_mm_unpackhi_pd" proc interleaveUpper64x2d(x: vec128d, y: vec128d): vec128d;
+  pragma "fn synchronization free"
+  extern "_mm_unpacklo_pd" proc deinterleaveLower64x2d(x: vec128d, y: vec128d): vec128d;
+  pragma "fn synchronization free"
+  extern "_mm_unpackhi_pd" proc deinterleaveUpper64x2d(x: vec128d, y: vec128d): vec128d;
+  pragma "fn synchronization free"
+  extern proc blendLowHigh64x2d(x: vec128d, y: vec128d): vec128d;
 
   pragma "fn synchronization free"
   extern "_mm_add_pd" proc add64x2d(x: vec128d, y: vec128d): vec128d;

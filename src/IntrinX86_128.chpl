@@ -18,13 +18,13 @@ module IntrinX86_128 {
   //
   inline proc type x8664_32x4f.extract(x: vec128, param idx: int): real(32) {
     pragma "fn synchronization free"
-    extern proc type x8664_32x4f.extract0(x: vec128): real(32);
+    extern proc extract32x4f0(x: vec128): real(32);
     pragma "fn synchronization free"
-    extern proc type x8664_32x4f.extract1(x: vec128): real(32);
+    extern proc extract32x4f1(x: vec128): real(32);
     pragma "fn synchronization free"
-    extern proc type x8664_32x4f.extract2(x: vec128): real(32);
+    extern proc extract32x4f2(x: vec128): real(32);
     pragma "fn synchronization free"
-    extern proc type x8664_32x4f.extract3(x: vec128): real(32);
+    extern proc extract32x4f3(x: vec128): real(32);
 
     if idx == 0      then return extract32x4f0(x);
     else if idx == 1 then return extract32x4f1(x);
@@ -34,13 +34,13 @@ module IntrinX86_128 {
   }
   inline proc type x8664_32x4f.insert(x: vec128, y: real(32), param idx: int): vec128 {
     pragma "fn synchronization free"
-    extern proc type x8664_32x4f.insert0(x: vec128, y: real(32)): vec128;
+    extern proc insert32x4f0(x: vec128, y: real(32)): vec128;
     pragma "fn synchronization free"
-    extern proc type x8664_32x4f.insert1(x: vec128, y: real(32)): vec128;
+    extern proc insert32x4f1(x: vec128, y: real(32)): vec128;
     pragma "fn synchronization free"
-    extern proc type x8664_32x4f.insert2(x: vec128, y: real(32)): vec128;
+    extern proc insert32x4f2(x: vec128, y: real(32)): vec128;
     pragma "fn synchronization free"
-    extern proc type x8664_32x4f.insert3(x: vec128, y: real(32)): vec128;
+    extern proc insert32x4f3(x: vec128, y: real(32)): vec128;
 
     if idx == 0      then return insert32x4f0(x, y);
     else if idx == 1 then return insert32x4f1(x, y);
@@ -167,9 +167,9 @@ module IntrinX86_128 {
   // 
   inline proc type x8664_64x2d.extract(x: vec128d, param idx: int): real(64) {
     pragma "fn synchronization free"
-    extern proc type x8664_64x2d.extract0(x: vec128d): real(64);
+    extern proc extract64x2d0(x: vec128d): real(64);
     pragma "fn synchronization free"
-    extern proc type x8664_64x2d.extract1(x: vec128d): real(64);
+    extern proc extract64x2d1(x: vec128d): real(64);
 
     if idx == 0      then return extract64x2d0(x);
     else if idx == 1 then return extract64x2d1(x);
@@ -177,9 +177,9 @@ module IntrinX86_128 {
   }
   inline proc type x8664_64x2d.insert(x: vec128d, y: real(64), param idx: int): vec128d {
     pragma "fn synchronization free"
-    extern proc type x8664_64x2d.insert0(x: vec128d, y: real(64)): vec128d;
+    extern proc insert64x2d0(x: vec128d, y: real(64)): vec128d;
     pragma "fn synchronization free"
-    extern proc type x8664_64x2d.insert1(x: vec128d, y: real(64)): vec128d;
+    extern proc insert64x2d1(x: vec128d, y: real(64)): vec128d;
 
     if idx == 0      then return insert64x2d0(x, y);
     else if idx == 1 then return insert64x2d1(x, y);

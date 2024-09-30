@@ -110,18 +110,21 @@ module SIMD {
       x.data = Intrin.add(t.eltType, t.numElts, x.data, y.data);
 
     /* VECTOR + SCALAR */
-    inline operator+(x: vector(?eltType, ?numElts), y: eltType) {
+    inline operator+(x: vector(?eltType, ?numElts), y: ?scalarType)
+      where isCoercible(scalarType, eltType) {
       var result: x.type;
       result.data = Intrin.add(eltType, numElts, x.data,
                       Intrin.splat(eltType, numElts, y));
       return result;
     }
-    inline operator+=(ref x: vector(?eltType, ?numElts), y: eltType) do
+    inline operator+=(ref x: vector(?eltType, ?numElts), y: ?scalarType)
+      where isCoercible(scalarType, eltType) do
       x.data = Intrin.add(eltType, numElts, x.data,
                       Intrin.splat(eltType, numElts, y));
 
     /* SCALAR + VECTOR */
-    inline operator+(x: ?eltType, y: vector(eltType, ?numElts)) {
+    inline operator+(x: ?scalarType, y: vector(?eltType, ?numElts)) 
+      where isCoercible(scalarType, eltType) {
       var result: y.type;
       result.data = Intrin.add(eltType, numElts,
                       Intrin.splat(eltType, numElts, x), y.data);
@@ -138,18 +141,21 @@ module SIMD {
       x.data = Intrin.sub(t.eltType, t.numElts, x.data, y.data);
 
     /* VECTOR - SCALAR */
-    inline operator-(x: vector(?eltType, ?numElts), y: eltType) {
+    inline operator-(x: vector(?eltType, ?numElts), y: ?scalarType)
+      where isCoercible(scalarType, eltType) {
       var result: x.type;
       result.data = Intrin.sub(eltType, numElts, x.data,
                       Intrin.splat(eltType, numElts, y));
       return result;
     }
-    inline operator-=(ref x: vector(?eltType, ?numElts), y: eltType) do
+    inline operator-=(ref x: vector(?eltType, ?numElts), y: ?scalarType)
+      where isCoercible(scalarType, eltType) do
       x.data = Intrin.sub(eltType, numElts, x.data,
                       Intrin.splat(eltType, numElts, y));
 
     /* SCALAR - VECTOR */
-    inline operator-(x: ?eltType, y: vector(eltType, ?numElts)) {
+    inline operator-(x: ?scalarType, y: vector(?eltType, ?numElts)) 
+      where isCoercible(scalarType, eltType) {
       var result: y.type;
       result.data = Intrin.sub(eltType, numElts,
                       Intrin.splat(eltType, numElts, x), y.data);
@@ -166,18 +172,21 @@ module SIMD {
       x.data = Intrin.mul(t.eltType, t.numElts, x.data, y.data);
 
     /* VECTOR * SCALAR */
-    inline operator*(x: vector(?eltType, ?numElts), y: eltType) {
+    inline operator*(x: vector(?eltType, ?numElts), y: ?scalarType)
+      where isCoercible(scalarType, eltType) {
       var result: x.type;
       result.data = Intrin.mul(eltType, numElts, x.data,
                       Intrin.splat(eltType, numElts, y));
       return result;
     }
-    inline operator*=(ref x: vector(?eltType, ?numElts), y: eltType) do
+    inline operator*=(ref x: vector(?eltType, ?numElts), y: ?scalarType) 
+      where isCoercible(scalarType, eltType) do
       x.data = Intrin.mul(eltType, numElts, x.data,
                       Intrin.splat(eltType, numElts, y));
 
     /* SCALAR * VECTOR */
-    inline operator*(x: ?eltType, y: vector(eltType, ?numElts)) {
+    inline operator*(x: ?scalarType, y: vector(?eltType, ?numElts)) 
+      where isCoercible(scalarType, eltType) {
       var result: y.type;
       result.data = Intrin.mul(eltType, numElts,
                       Intrin.splat(eltType, numElts, x), y.data);
@@ -194,18 +203,21 @@ module SIMD {
       x.data = Intrin.div(t.eltType, t.numElts, x.data, y.data);
 
     /* VECTOR / SCALAR */
-    inline operator/(x: vector(?eltType, ?numElts), y: eltType) {
+    inline operator/(x: vector(?eltType, ?numElts), y: ?scalarType)
+      where isCoercible(scalarType, eltType) {
       var result: x.type;
       result.data = Intrin.div(eltType, numElts, x.data,
                       Intrin.splat(eltType, numElts, y));
       return result;
     }
-    inline operator/=(ref x: vector(?eltType, ?numElts), y: eltType) do
+    inline operator/=(ref x: vector(?eltType, ?numElts), y: ?scalarType)
+      where isCoercible(scalarType, eltType) do
       x.data = Intrin.div(eltType, numElts, x.data,
                       Intrin.splat(eltType, numElts, y));
 
     /* SCALAR / VECTOR */
-    inline operator/(x: ?eltType, y: vector(eltType, ?numElts)) {
+    inline operator/(x: ?scalarType, y: vector(?eltType, ?numElts))
+      where isCoercible(scalarType, eltType) {
       var result: y.type;
       result.data = Intrin.div(eltType, numElts,
                       Intrin.splat(eltType, numElts, x), y.data);

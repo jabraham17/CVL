@@ -1,0 +1,75 @@
+fmaTest for real(32) 4
+  a:  1.00,  2.00,  3.00,  4.00
+  b:  5.00,  6.00,  7.00,  8.00
+  c:  9.00, 10.00, 11.00, 12.00
+  -----------------
+  fma(a, b, c): 14.00, 22.00, 32.00, 44.00
+  fms(a, b, c): -4.00,  2.00, 10.00, 20.00
+fmaTest for real(64) 2
+  a:  1.00,  2.00
+  b:  3.00,  4.00
+  c:  5.00,  6.00
+  -----------------
+  fma(a, b, c):  8.00, 14.00
+  fms(a, b, c): -2.00,  2.00
+(chapel)[main]
+jade@HPE-D2RLK75V43:~/Development/SIMDLibrary
+$ chpl --fast nbody-fma.chpl -o nbody-fma -M src         
+(chapel)[main]
+jade@HPE-D2RLK75V43:~/Development/SIMDLibrary
+$ ./nbody-fma --n=1                                    
+-0.169075153
+-0.168977539
+(chapel)[main]
+jade@HPE-D2RLK75V43:~/Development/SIMDLibrary
+$ ./nbody-fma --n=50000000                             
+-0.169075153
+339.357001
+(chapel)[main]
+jade@HPE-D2RLK75V43:~/Development/SIMDLibrary
+$ ./nbody-fma --n=1       
+-0.169075153
+-0.168977539
+(chapel)[main]
+jade@HPE-D2RLK75V43:~/Development/SIMDLibrary
+$ ./nbody --n=1    
+-0.169075153
+-0.169074943
+(chapel)[main]
+jade@HPE-D2RLK75V43:~/Development/SIMDLibrary
+$ chpl tests/testAll.chpl -M src -stestName="'fmaTest'"
+src/IntrinX86_256.chpl:374: syntax error: (no token given)
+(chapel)[main]
+jade@HPE-D2RLK75V43:~/Development/SIMDLibrary
+$ chpl tests/testAll.chpl -M src -stestName="'fmaTest'"
+(chapel)[main]
+jade@HPE-D2RLK75V43:~/Development/SIMDLibrary
+$ ./a.out 
+fmaTest for real(32) 4
+  a:  1.00,  2.00,  3.00,  4.00
+  b:  5.00,  6.00,  7.00,  8.00
+  c:  9.00, 10.00, 11.00, 12.00
+  -----------------
+  fma(a, b, c): 14.00, 22.00, 32.00, 44.00
+  fms(a, b, c): -4.00,  2.00, 10.00, 20.00
+fmaTest for real(64) 2
+  a:  1.00,  2.00
+  b:  3.00,  4.00
+  c:  5.00,  6.00
+  -----------------
+  fma(a, b, c):  8.00, 14.00
+  fms(a, b, c): -2.00,  2.00
+fmaTest for real(32) 8
+  a:  1.00,  2.00,  3.00,  4.00,  5.00,  6.00,  7.00,  8.00
+  b:  9.00, 10.00, 11.00, 12.00, 13.00, 14.00, 15.00, 16.00
+  c: 17.00, 18.00, 19.00, 20.00, 21.00, 22.00, 23.00, 24.00
+  -----------------
+  fma(a, b, c): 26.00, 38.00, 52.00, 68.00, 86.00, 106.00, 128.00, 152.00
+  fms(a, b, c): -8.00,  2.00, 14.00, 28.00, 44.00, 62.00, 82.00, 104.00
+fmaTest for real(64) 4
+  a:  1.00,  2.00,  3.00,  4.00
+  b:  5.00,  6.00,  7.00,  8.00
+  c:  9.00, 10.00, 11.00, 12.00
+  -----------------
+  fma(a, b, c): 14.00, 22.00, 32.00, 44.00
+  fms(a, b, c): -4.00,  2.00, 10.00, 20.00

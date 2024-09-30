@@ -170,6 +170,17 @@ module IntrinArm64_128 {
     return vrsqrteq_f32(x);
   }
 
+  inline proc type arm64_32x4f.fmadd(x: vec32x4f, y: vec32x4f, z: vec32x4f): vec32x4f {
+    pragma "fn synchronization free"
+    extern proc vfmaq_f32(x: vec32x4f, y: vec32x4f, z: vec32x4f): vec32x4f;
+    return vfmaq_f32(z, x, y);
+  }
+  inline proc type arm64_32x4f.fmsub(x: vec32x4f, y: vec32x4f, z: vec32x4f): vec32x4f {
+    pragma "fn synchronization free"
+    extern proc vnegq_f32(x: vec32x4f): vec32x4f;
+    return this.fmadd(x, y, vnegq_f32(z));
+  }
+
   //
   // 64-bit float
   //
@@ -299,6 +310,17 @@ module IntrinArm64_128 {
     pragma "fn synchronization free"
     extern proc vrsqrteq_f64(x: vec64x2d): vec64x2d;
     return vrsqrteq_f64(x);
+  }
+
+  inline proc type arm64_64x2d.fmadd(x: vec64x2d, y: vec64x2d, z: vec64x2d): vec64x2d {
+    pragma "fn synchronization free"
+    extern proc vfmaq_f64(x: vec64x2d, y: vec64x2d, z: vec64x2d): vec64x2d;
+    return vfmaq_f64(z, x, y);
+  }
+  inline proc type arm64_64x2d.fmsub(x: vec64x2d, y: vec64x2d, z: vec64x2d): vec64x2d {
+    pragma "fn synchronization free"
+    extern proc vnegq_f64(x: vec64x2d): vec64x2d;
+    return this.fmadd(x, y, vnegq_f64(z));
   }
 
 }

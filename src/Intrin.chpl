@@ -126,7 +126,6 @@ module Intrin {
   inline proc div(type eltType, param numElts: int, x: vectorType(eltType, numElts), y: x.type): x.type do
     return implType(eltType, numElts).div(x, y);
 
-  // TODO: revist hadd semantics, x86 is all over the place
   /*
     Add pairs of adjacent elements
 
@@ -135,11 +134,25 @@ module Intrin {
 
     returns: [a+b, e+f, c+d, g+h]
   */
-  inline proc hadd(type eltType, param numElts: int, x: vectorType(eltType, numElts), y: x.type): x.type do
+  inline proc hadd(type eltType, param numElts: int,
+                   x: vectorType(eltType, numElts), y: x.type): x.type do
     return implType(eltType, numElts).hadd(x, y);
-  inline proc sqrt(type eltType, param numElts: int, x: vectorType(eltType, numElts)): x.type do
+  inline proc sqrt(type eltType, param numElts: int,
+                   x: vectorType(eltType, numElts)): x.type do
     return implType(eltType, numElts).sqrt(x);
-  inline proc rsqrt(type eltType, param numElts: int, x: vectorType(eltType, numElts)): x.type do
+  inline proc rsqrt(type eltType, param numElts: int,
+                    x: vectorType(eltType, numElts)): x.type do
     return implType(eltType, numElts).rsqrt(x);
 
+  /* Performs (x*y)+z */
+  inline proc fmadd(type eltType, param numElts: int,
+                    x: vectorType(eltType, numElts),
+                    y: x.type, z: x.type): x.type do
+    return implType(eltType, numElts).fmadd(x, y, z);
+
+  /* Performs (x*y)-z */
+  inline proc fmsub(type eltType, param numElts: int,
+                    x: vectorType(eltType, numElts),
+                    y: x.type, z: x.type): x.type do
+    return implType(eltType, numElts).fmsub(x, y, z);
 }

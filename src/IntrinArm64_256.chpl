@@ -85,6 +85,11 @@ module IntrinArm64_256 {
   inline proc type arm64_32x8f.rsqrt(x: vec32x8f): vec32x8f do
     return new vec32x8f(arm64_32x4f.rsqrt(x.lo), arm64_32x4f.rsqrt(x.hi));
 
+  inline proc type arm64_32x8f.fmadd(x: vec32x8f, y: vec32x8f, z: vec32x8f): vec32x8f do
+    return new vec32x8f(arm64_32x4f.fmadd(x.lo, y.lo, z.lo), arm64_32x4f.fmadd(x.hi, y.hi, z.hi));
+  inline proc type arm64_32x8f.fmsub(x: vec32x8f, y: vec32x8f, z: vec32x8f): vec32x8f do
+    return new vec32x8f(arm64_32x4f.fmsub(x.lo, y.lo, z.lo), arm64_32x4f.fmsub(x.hi, y.hi, z.hi));
+
   //
   // 64-bit float
   //
@@ -153,4 +158,10 @@ module IntrinArm64_256 {
     return new vec64x4d(arm64_64x2d.sqrt(x.lo), arm64_64x2d.sqrt(x.hi));
   inline proc type arm64_64x4d.rsqrt(x: vec64x4d): vec64x4d do
     return new vec64x4d(arm64_64x2d.rsqrt(x.lo), arm64_64x2d.rsqrt(x.hi));
+
+  inline proc type arm64_64x4d.fmadd(x: vec64x4d, y: vec64x4d, z: vec64x4d): vec64x4d do
+    return new vec64x4d(arm64_64x2d.fmadd(x.lo, y.lo, z.lo), arm64_64x2d.fmadd(x.hi, y.hi, z.hi));
+  inline proc type arm64_64x4d.fmsub(x: vec64x4d, y: vec64x4d, z: vec64x4d): vec64x4d do
+    return new vec64x4d(arm64_64x2d.fmsub(x.lo, y.lo, z.lo), arm64_64x2d.fmsub(x.hi, y.hi, z.hi));
+
 }

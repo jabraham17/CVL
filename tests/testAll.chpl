@@ -174,15 +174,30 @@ proc mathTest(type eltType, param numElts: int) {
   }
 }
 
-proc compute(ref points: [] real(32)) {
-  for p in points.domain by 3 {
-    // take each point, normalize it, and store it back
-    var point = vector(real(32), 3).load(points, p);
-    var radius = sqrt(point*point);
-    point = point / radius;
-    point.store(points, p);
+proc fmaTest(type eltType, param numElts: int) {
+  writeln("fmaTest for ", eltType:string, " ", numElts);
+
+  var a, b, c = new vector(eltType, numElts);
+  for param i in 0..#numElts {
+    a.set(i, (i+1):eltType);
+    b.set(i, numElts + (i+1));
+    c.set(i, numElts*2 + (i+1));
+  }
+  vecOut.writeln("  a: ", a);
+  vecOut.writeln("  b: ", b);
+  vecOut.writeln("  c: ", c);
+  vecOut.writeln("  -----------------");
+
+  {
+    var d = fma(a, b, c);
+    vecOut.writeln("  fma(a, b, c): ", d);
+  }
+  {
+    var d = fms(a, b, c);
+    vecOut.writeln("  fms(a, b, c): ", d);
   }
 }
+
 
 proc main() {
 
@@ -191,6 +206,7 @@ proc main() {
   param test_mathTest = testName == "all" || testName == "mathTest";
   param test_sqrtTest = testName == "all" || testName == "sqrtTest";
   param test_shuffleTest = testName == "all" || testName == "shuffleTest";
+  param test_fmaTest = testName == "all" || testName == "fmaTest";
 
   if test_arrTest {
     arrTest(real(32), 4);
@@ -221,6 +237,12 @@ proc main() {
     shuffleTest(real(64), 2);
     shuffleTest(real(32), 8);
     shuffleTest(real(64), 4);
+  }
+  if test_fmaTest {
+    fmaTest(real(32), 4);
+    fmaTest(real(64), 2);
+    fmaTest(real(32), 8);
+    fmaTest(real(64), 4);
   }
 
 }

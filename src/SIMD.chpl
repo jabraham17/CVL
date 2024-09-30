@@ -392,4 +392,19 @@ module SIMD {
     return result;
   }
 
+  inline proc fma(x: vector(?eltType, ?numElts),
+                    y: x.type,
+                    z: x.type): x.type {
+    var result: x.type;
+    result.data = Intrin.fmadd(eltType, numElts, x.data, y.data, z.data);
+    return result;
+  }
+  inline proc fms(x: vector(?eltType, ?numElts),
+                    y: x.type,
+                    z: x.type): x.type {
+    var result: x.type;
+    result.data = Intrin.fmsub(eltType, numElts, x.data, y.data, z.data);
+    return result;
+  }
+
 }

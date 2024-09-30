@@ -3,3 +3,4 @@
 -stestName="'mathTest'" # mathTest.good
 -stestName="'sqrtTest'" # sqrtTest.good
 -stestName="'shuffleTest'" # shuffleTest.good
+-stestName="'fmaTest'" # fmaTest.good

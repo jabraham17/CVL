@@ -161,6 +161,16 @@ module IntrinX86_128 {
     extern proc _mm_rsqrt_ps(x: vec128): vec128;
     return _mm_rsqrt_ps(x);
   }
+  inline proc type x8664_32x4f.fmadd(x: vec128, y: vec128, z: vec128): vec128 {
+    pragma "fn synchronization free"
+    extern proc _mm_fmadd_ps(x: vec128, y: vec128, z: vec128): vec128;
+    return _mm_fmadd_ps(x, y, z);
+  }
+  inline proc type x8664_32x4f.fmsub(x: vec128, y: vec128, z: vec128): vec128 {
+    pragma "fn synchronization free"
+    extern proc _mm_fmsub_ps(x: vec128, y: vec128, z: vec128): vec128;
+    return _mm_fmsub_ps(x, y, z);
+  }
 
   //
   // 64-bit float
@@ -303,6 +313,16 @@ module IntrinX86_128 {
     res = this.mul(this.mul(half, res), this.sub(three, muls));
 
     return res;
+  }
+  inline proc type x8664_64x2d.fmadd(x: vec128d, y: vec128d, z: vec128d): vec128d {
+    pragma "fn synchronization free"
+    extern proc _mm_fmadd_pd(x: vec128d, y: vec128d, z: vec128d): vec128d;
+    return _mm_fmadd_pd(x, y, z);
+  }
+  inline proc type x8664_64x2d.fmsub(x: vec128d, y: vec128d, z: vec128d): vec128d {
+    pragma "fn synchronization free"
+    extern proc _mm_fmsub_pd(x: vec128d, y: vec128d, z: vec128d): vec128d;
+    return _mm_fmsub_pd(x, y, z);
   }
 
   inline operator:(x: vec128d, type t: vec128) {

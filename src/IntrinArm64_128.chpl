@@ -832,4 +832,178 @@ module IntrinArm64_128 {
       return sub(mul(x, y), z);
     }
   }
+
+  record arm64_32x4i {
+    proc type vecType type do return vec32x4i;
+    proc type laneType type do return int(32);
+
+    inline proc type extract(x: vecType, param idx: int): laneType {
+      pragma "fn synchronization free"
+      extern proc get_lane_32x4i0(x: vecType): laneType;
+      pragma "fn synchronization free"
+      extern proc get_lane_32x4i1(x: vecType): laneType;
+      pragma "fn synchronization free"
+      extern proc get_lane_32x4i2(x: vecType): laneType;
+      pragma "fn synchronization free"
+      extern proc get_lane_32x4i3(x: vecType): laneType;
+
+      if idx == 0      then return get_lane_32x4i0(x);
+      else if idx == 1 then return get_lane_32x4i1(x);
+      else if idx == 2 then return get_lane_32x4i2(x);
+      else if idx == 3 then return get_lane_32x4i3(x);
+      else compilerError("invalid index");
+    }
+    inline proc type insert(x: vecType, y: laneType, param idx: int): vecType {
+      pragma "fn synchronization free"
+      extern proc set_lane_32x4i0(x: vecType, y: laneType): vecType;
+      pragma "fn synchronization free"
+      extern proc set_lane_32x4i1(x: vecType, y: laneType): vecType;
+      pragma "fn synchronization free"
+      extern proc set_lane_32x4i2(x: vecType, y: laneType): vecType;
+      pragma "fn synchronization free"
+      extern proc set_lane_32x4i3(x: vecType, y: laneType): vecType;
+
+      if idx == 0      then return set_lane_32x4i0(x, y);
+      else if idx == 1 then return set_lane_32x4i1(x, y);
+      else if idx == 2 then return set_lane_32x4i2(x, y);
+      else if idx == 3 then return set_lane_32x4i3(x, y);
+      else compilerError("invalid index");
+    }
+
+    inline proc type splat(x: laneType): vecType {
+      pragma "fn synchronization free"
+      extern proc vdupq_n_s32(x: laneType): vecType;
+      return vdupq_n_s32(x);
+    }
+    inline proc type set(x: laneType, y: laneType, z: laneType, w: laneType): vecType {
+      var result: vecType;
+      result = this.splat(x);
+      result = this.insert(result, y, 1);
+      result = this.insert(result, z, 2);
+      result = this.insert(result, w, 3);
+      return result;
+    }
+
+    inline proc type loada(x: c_ptrConst(laneType)): vecType {
+      pragma "fn synchronization free"
+      extern proc load32x4i(x: c_ptrConst(laneType)): vecType;
+      return load32x4i(x);
+    }
+    inline proc type loadu(x: c_ptrConst(laneType)): vecType do
+      return this.loada(x);
+    inline proc type storea(x: c_ptr(laneType), y: vecType): void {
+      pragma "fn synchronization free"
+      extern proc store32x4i(x: c_ptr(laneType), y: vecType): void;
+      store32x4i(x, y);
+    }
+    inline proc type storeu(x: c_ptr(laneType), y: vecType): void do
+      this.storea(x, y);
+
+    inline proc type swapPairs(x: vecType): vecType {
+      pragma "fn synchronization free"
+      extern proc vrev64q_s32(x: vecType): vecType;
+      return vrev64q_s32(x);
+    }
+    inline proc type swapLowHigh(x: vecType): vecType {
+      pragma "fn synchronization free"
+      extern proc extractVector32x4i2(x: vecType, y: vecType): vecType;
+      return extractVector32x4i2(x, x);
+    }
+    inline proc type reverse(x: vecType): vecType {
+      return this.swapPairs(this.swapLowHigh(x));
+    }
+    inline proc type rotateLeft(x: vecType): vecType {
+      pragma "fn synchronization free"
+      extern proc extractVector32x4i1(x: vecType, y: vecType): vecType;
+      return extractVector32x4i1(x, x);
+    }
+    inline proc type rotateRight(x: vecType): vecType {
+      pragma "fn synchronization free"
+      extern proc extractVector32x4i3(x: vecType, y: vecType): vecType;
+      return extractVector32x4i3(x, x);
+    }
+    inline proc type interleaveLower(x: vecType, y: vecType): vecType {
+      pragma "fn synchronization free"
+      extern proc vzip1q_s32(x: vecType, y: vecType): vecType;
+      return vzip1q_s32(x, y);
+    }
+    inline proc type interleaveUpper(x: vecType, y: vecType): vecType {
+      pragma "fn synchronization free"
+      extern proc vzip2q_s32(x: vecType, y: vecType): vecType;
+      return vzip2q_s32(x, y);
+    }
+    inline proc type deinterleaveLower(x: vecType, y: vecType): vecType {
+      pragma "fn synchronization free"
+      extern proc vuzp1q_s32(x: vecType, y: vecType): vecType;
+      return vuzp1q_s32(x, y);
+    }
+    inline proc type deinterleaveUpper(x: vecType, y: vecType): vecType {
+      pragma "fn synchronization free"
+      extern proc vuzp2q_s32(x: vecType, y: vecType): vecType;
+      return vuzp2q_s32(x, y);
+    }
+    inline proc type blendLowHigh(x: vecType, y: vecType): vecType {
+      extern "int32x2_t" type vec32x2i;
+      pragma "fn synchronization free"
+      extern proc vget_low_s32(x: vecType): vec32x2i;
+      pragma "fn synchronization free"
+      extern proc vget_high_s32(x: vecType): vec32x2i;
+      pragma "fn synchronization free"
+      extern proc vcombine_s32(x: vec32x2i, y: vec32x2i): vecType;
+      return vcombine_s32(vget_low_s32(x), vget_high_s32(y));
+    }
+
+    inline proc type add(x: vecType, y: vecType): vecType {
+      pragma "fn synchronization free"
+      extern proc vaddq_s32(x: vecType, y: vecType): vecType;
+      return vaddq_s32(x, y);
+    }
+    inline proc type sub(x: vecType, y: vecType): vecType {
+      pragma "fn synchronization free"
+      extern proc vsubq_s32(x: vecType, y: vecType): vecType;
+      return vsubq_s32(x, y);
+    }
+    inline proc type mul(x: vecType, y: vecType): vecType {
+      pragma "fn synchronization free"
+      extern proc vmulq_s32(x: vecType, y: vecType): vecType;
+      return vmulq_s32(x, y);
+    }
+    inline proc type div(x: vecType, y: vecType): vecType {
+      // cant do x/y becase neon does not have integer division
+      // emulate it
+      // convert to float32
+      // do float division
+      // convert back to int32
+      pragma "fn synchronization free"
+      extern proc vcvtq_f32_s32(x: vecType): arm64_32x4f.vecType;
+      pragma "fn synchronization free"
+      extern proc vcvtq_s32_f32(x: arm64_32x4f.vecType): vecType;
+
+      var x_f32 = vcvtq_f32_s32(x);
+      var y_f32 = vcvtq_f32_s32(y);
+      var res_f32 = arm64_32x4f.div(x_f32, y_f32);
+      return vcvtq_s32_f32(res_f32);
+    }
+    inline proc type hadd(x: vecType, y: vecType): vecType {
+      pragma "fn synchronization free"
+      extern proc vpaddq_s32(x: vecType, y: vecType): vecType;
+      var temp = vpaddq_s32(x, y);
+      return interleaveLower(temp, swapLowHigh(temp));
+    }
+    inline proc type sqrt(x: vecType): vecType {
+      return x; // TODO
+    }
+    inline proc type rsqrt(x: vecType): vecType {
+      return x; // TODO
+    }
+    inline proc type fmadd(x: vecType, y: vecType, z: vecType): vecType {
+      return add(mul(x, y), z);
+    }
+    inline proc type fmsub(x: vecType, y: vecType, z: vecType): vecType {
+      return sub(mul(x, y), z);
+    }
+  }
+
+
+
 }

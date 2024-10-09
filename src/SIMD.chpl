@@ -352,6 +352,13 @@ module SIMD {
         yield this.load(arr, i, aligned=aligned);
       }
     }
+    inline iter type vectorsRef(ref arr: [], param aligned: bool = false) ref : vectorRef(this, aligned) {
+      // TODO: how can I avoid the extra load per loop of the array metadata?
+      for i in arr.domain by numElts {
+        var vr = new vectorRef(this, this._computeAddress(arr, i), aligned=aligned);
+        yield vr;
+      }
+    }
     inline iter type vectorsJagged(arr: [], pad: eltType = 0, param aligned: bool = false): this {
       // TODO: is this really the most efficient way to do this?
       // this should iterate over a range, and pad the extra with 'pad'
@@ -476,6 +483,119 @@ module SIMD {
     var result: x.type;
     result.data = Intrin.fmsub(eltType, numElts, x.data, y.data, z.data);
     return result;
+  }
+
+  /* a transparent record that iterators can yield,
+     takes in modifications to the yielded vector and then writes them back out
+     to the raw address when this goes out of scope*/
+  record vectorRef: writeSerializable {
+    type vectorType;
+    param aligned: bool;
+    var vec: vectorType;
+    var address: c_ptr(vectorType.eltType);
+    forwarding vec;
+
+    proc init(type vectorType, param aligned: bool = false) {
+      this.vectorType = vectorType;
+      this.aligned = aligned;
+    }
+    proc init(vec: ?vecType, address: c_ptr(vecType.eltType), param aligned: bool = false) {
+      this.vectorType = vecType;
+      this.aligned = aligned;
+      this.vec = vec;
+      this.address = address;
+    }
+    proc init(type vectorType, address: c_ptr(vectorType.eltType), param aligned: bool = false) {
+      this.vectorType = vectorType;
+      this.vec = vectorType.load(address, 0, aligned=aligned);
+      this.address = address;
+    }
+    proc deinit() {
+      this.commitChanges();
+    }
+    proc commitChanges() {
+      this.vec.store(this.address, 0, aligned=this.aligned);
+    }
+
+    proc serialize(writer, ref serializer) throws {
+      writer.write(vec);
+    }
+
+    //
+    // Forwarding doesn't work for operators, so we need to manually implement them
+    //
+    operator+(lhs: ?lhsType, rhs: ?rhsType)
+      where _returnTypeForOperatorTypes(lhsType, rhsType) != nothing do
+      return _getValue(lhs) + _getValue(rhs);
+    operator+=(ref lhs: vectorRef(?), rhs: ?rhsType)
+      where _validEqOperatorTypes(lhs.type, rhsType) do
+      _getRef(lhs) += _getValue(rhs);
+
+    operator-(lhs: ?lhsType, rhs: ?rhsType)
+      where _returnTypeForOperatorTypes(lhsType, rhsType) != nothing do
+      return _getValue(lhs) + _getValue(rhs);
+    operator-=(ref lhs: vectorRef(?), rhs: ?rhsType)
+      where _validEqOperatorTypes(lhs.type, rhsType) do
+      _getRef(lhs) -= _getValue(rhs);
+
+    operator*(lhs: ?lhsType, rhs: ?rhsType)
+      where _returnTypeForOperatorTypes(lhsType, rhsType) != nothing do
+      return _getValue(lhs) * _getValue(rhs);
+    operator*=(ref lhs: vectorRef(?), rhs: ?rhsType)
+      where _validEqOperatorTypes(lhs.type, rhsType) do
+      _getRef(lhs) *= _getValue(rhs);
+
+    operator/(lhs: ?lhsType, rhs: ?rhsType)
+      where _returnTypeForOperatorTypes(lhsType, rhsType) != nothing do
+      return _getValue(lhs) + _getValue(rhs);
+    operator/=(ref lhs: vectorRef(?), rhs: ?rhsType)
+      where _validEqOperatorTypes(lhs.type, rhsType) do
+      _getRef(lhs) /= _getValue(rhs);
+
+    // more strict checking is technically needed to do assignment
+    // this is done by the vector type already
+    // TODO: we also need init= from vector, init= from vectorRef, and init= from tuple
+    // operator=(ref lhs: ?lhsType, rhs: ?rhsType)
+    //   where _isVectorType(lhsType) &&
+    //        (_isVectorType(rhsType) || isHomogeneousTupleType(rhsType)) do
+    //   _getRef(lhs) = _getValue(rhs);
+  }
+  private proc _isVectorType(type T) param do return isSubtype(T, vector) || isSubtype(T, vectorRef);
+  private proc _getEltType(type T) type where isSubtype(T, vector) do return T.eltType;
+  private proc _getEltType(type T) type where isSubtype(T, vectorRef) do return T.vectorType.eltType;
+  private proc _getNumElts(type T) param where isSubtype(T, vector) do return T.numElts;
+  private proc _getNumElts(type T) param where isSubtype(T, vectorRef) do return T.vectorType.numElts;
+
+  private inline proc _getValue(x) where isSubtype(x.type, vector) do return x;
+  private inline proc _getValue(x) where isSubtype(x.type, vectorRef) do return x.vec;
+  private inline proc _getValue(x) do return x;
+  private inline proc _getRef(ref x) ref where isSubtype(x.type, vector) do return x;
+  private inline proc _getRef(ref x) ref where isSubtype(x.type, vectorRef) do return x.vec;
+  private inline proc _getRef(ref x) ref do return x;
+
+  private proc _returnTypeForOperatorTypes(type lhsType, type rhsType) type {
+    // one of the types can be scalar, but not both
+    if !_isVectorType(lhsType) && _isVectorType(rhsType) {
+      return vector(_getEltType(rhsType), _getNumElts(rhsType));
+    } else if _isVectorType(lhsType) && !_isVectorType(rhsType) {
+      return vector(_getEltType(lhsType), _getNumElts(lhsType));
+    } else if _isVectorType(lhsType) && _isVectorType(rhsType) {
+      // must be same eltType/numElt
+      if _getEltType(lhsType) == _getEltType(rhsType) &&
+         _getNumElts(lhsType) == _getNumElts(rhsType) {
+        return vector(_getEltType(lhsType), _getNumElts(lhsType));
+      } else return nothing;
+    } else return nothing;
+  }
+  // must be a valid operator and the lhs must be a vector
+  proc _validEqOperatorTypes(type lhsType, type rhsType) param {
+    if _returnTypeForOperatorTypes(lhsType, rhsType) == nothing {
+      return false;
+    }
+    if !_isVectorType(lhsType) {
+      return false;
+    }
+    return true;
   }
 
 }

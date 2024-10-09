@@ -341,9 +341,9 @@ module IntrinX86_256 {
     }
     inline proc type rsqrt(x: vecType): vecType {
       pragma "fn synchronization free"
-      extern proc _mm256_cvtpd_ps(x: vecType): vec128;
+      extern proc _mm256_cvtpd_ps(x: vec256d): vec256;
       pragma "fn synchronization free"
-      extern proc _mm256_cvtps_pd(x: vec128): vecType;
+      extern proc _mm256_cvtps_pd(x: vec256): vec256d;
 
       var three = this.splat(3.0);
       var half = this.splat(0.5);

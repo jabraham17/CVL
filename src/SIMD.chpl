@@ -235,9 +235,6 @@ module SIMD {
         values_[i] = values[i]:eltType;
       data = Intrin.set(eltType, numElts, values_);
     }
-    inline proc ref set(values...) {
-      set(values);
-    }
     inline proc ref set(param idx: int, value)
       where isCoercible(value.type, eltType) {
       data = Intrin.insert(eltType, numElts, data, value:eltType, idx);

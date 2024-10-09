@@ -12,6 +12,7 @@ module IntrinArm64_128 {
   extern "float64x2_t" type vec64x2d;
 
   extern "int8x16_t" type vec8x16i;
+  extern "int16x8_t" type vec16x8i;
   extern "int32x4_t" type vec32x4i;
   extern "int64x2_t" type vec64x2i;
 
@@ -417,6 +418,8 @@ module IntrinArm64_128 {
       extern proc set_lane_8x16i13(x: vecType, y: laneType): vecType;
       pragma "fn synchronization free"
       extern proc set_lane_8x16i14(x: vecType, y: laneType): vecType;
+      pragma "fn synchronization free"
+      extern proc set_lane_8x16i15(x: vecType, y: laneType): vecType;
 
       if idx == 0      then return set_lane_8x16i0(x, y);
       else if idx == 1 then return set_lane_8x16i1(x, y);
@@ -547,9 +550,43 @@ module IntrinArm64_128 {
       return vmulq_s8(x, y);
     }
     inline proc type div(x: vecType, y: vecType): vecType {
+      // cant do x/y becase neon does not have integer division
+      // emulate it
+      // convert to int 16
+      // convert to float16
+      // do float division
+      // convert back to int16
+      // convert back to int8
+      extern "int8x8_t" type vec8x8i;
+      extern "float16x8_t" type vec16x8f;
       pragma "fn synchronization free"
-      extern proc vdivq_s8(x: vecType, y: vecType): vecType;
-      return vdivq_s8(x, y);
+      extern proc vmovl_s8(x: vecType): vec16x8i;
+      pragma "fn synchronization free"
+      extern proc vmovl_high_s8(x: vecType): vec16x8i;
+      pragma "fn synchronization free"
+      extern proc vmovn_s16(x: vec16x8i): vec8x8i;
+      pragma "fn synchronization free"
+      extern proc vmovn_high_s16(x: vec8x8i, y: vec16x8i): vecType;
+      pragma "fn synchronization free"
+      extern proc vcvtq_f16_s16(x: vec16x8i): vec16x8f;
+      pragma "fn synchronization free"
+      extern proc vcvtq_s16_f16(x: vec16x8f): vec16x8i;
+      pragma "fn synchronization free"
+      extern proc vcvtq_s16_s8(x: vec16x8i): vecType;
+      pragma "fn synchronization free"
+      extern proc vdivq_f16(x: vec16x8f, y: vec16x8f): vec16x8f;
+
+      proc inner(x: vec16x8i, y: vec16x8i): vec16x8i {
+        var x16f = vcvtq_f16_s16(x);
+        var y16f = vcvtq_f16_s16(y);
+        var result16f = vdivq_f16(x16f, y16f);
+        return vcvtq_s16_f16(result16f);
+      }
+
+      var res_low = inner(vmovl_s8(x), vmovl_s8(y));
+      var res_high = inner(vmovl_high_s8(x), vmovl_high_s8(y));
+      var res = vmovn_high_s16(vmovn_s16(res_low), res_high);
+      return res;
     }
     inline proc type hadd(x: vecType, y: vecType): vecType {
       pragma "fn synchronization free"
@@ -558,24 +595,16 @@ module IntrinArm64_128 {
       return interleaveLower(temp, swapLowHigh(temp));
     }
     inline proc type sqrt(x: vecType): vecType {
-      pragma "fn synchronization free"
-      extern proc vsqrtq_s8(x: vecType): vecType;
-      return vsqrtq_s8(x);
+      return x; // TODO
     }
     inline proc type rsqrt(x: vecType): vecType {
-      pragma "fn synchronization free"
-      extern proc vrsqrteq_s8(x: vecType): vecType;
-      return vrsqrteq_s8(x);
+      return x; // TODO
     }
-    inline proc fmadd(x: vecType, y: vecType, z: vecType): vecType {
-      pragma "fn synchronization free"
-      extern proc vfmaq_s8(x: vecType, y: vecType, z: vecType): vecType;
-      return vfmaq_s8(z, x, y);
+    inline proc type fmadd(x: vecType, y: vecType, z: vecType): vecType {
+      return add(mul(x, y), z);
     }
-    inline proc fmsub(x: vecType, y: vecType, z: vecType): vecType {
-      pragma "fn synchronization free"
-      extern proc vnegq_s8(x: vecType): vecType;
-      return this.fmadd(x, y, vnegq_s8(z));
+    inline proc type fmsub(x: vecType, y: vecType, z: vecType): vecType {
+      return sub(mul(x, y), z);
     }
 
   }

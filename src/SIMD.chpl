@@ -224,9 +224,8 @@ module SIMD {
       return result;
     }
 
-    inline proc ref set(value) where isCoercible(value.type, eltType) {
+    inline proc ref set(value) where isCoercible(value.type, eltType) do
       data = Intrin.splat(eltType, numElts, value:eltType);
-    }
     inline proc ref set(values) where isHomogeneousTupleType(values.type) &&
                                       isCoercible(values(0).type, eltType) &&
                                       values.size == numElts {
@@ -236,9 +235,8 @@ module SIMD {
       data = Intrin.set(eltType, numElts, values_);
     }
     inline proc ref set(param idx: int, value)
-      where isCoercible(value.type, eltType) {
+      where isCoercible(value.type, eltType) do
       data = Intrin.insert(eltType, numElts, data, value:eltType, idx);
-    }
 
     inline proc this(param idx: int) do
       return Intrin.extract(eltType, numElts, data, idx);
@@ -290,13 +288,12 @@ module SIMD {
     inline proc ref load(arr: [] eltType,
                          idx: int = 0,
                          param aligned: bool = false)
-      where arr.rank == 1 && arr.isRectangular() && arr._value.isDefaultRectangular() {
+      where arr.rank == 1 && arr.isRectangular() && arr._value.isDefaultRectangular() do
       load(this.type._computeAddressConst(arr, idx), idx=0, aligned=aligned);
-    }
     inline proc ref load(tup, idx: int = 0, param aligned: bool = false)
-      where isHomogeneousTuple(tup) && tup(0).type == eltType {
+      where isHomogeneousTuple(tup) && tup(0).type == eltType do
       load(this.type._computeAddress(tup, idx), idx=0, aligned=aligned);
-    }
+
     inline proc store(ptr: c_ptr(eltType),
                       idx: int = 0,
                       param aligned: bool = false) {
@@ -309,9 +306,9 @@ module SIMD {
     inline proc ref store(ref arr: [] eltType,
                           idx: int = 0,
                           param aligned: bool = false)
-      where arr.rank == 1 && arr.isRectangular() && arr._value.isDefaultRectangular() {
+      where arr.rank == 1 && arr.isRectangular() && arr._value.isDefaultRectangular() do
       store(this.type._computeAddress(arr, idx), idx=0, aligned=aligned);
-    }
+      
     inline proc store(ref tup, idx: int = 0, param aligned: bool = false)
       where isHomogeneousTuple(tup) && tup(0).type == eltType {
       if boundsChecking {
@@ -525,74 +522,74 @@ module SIMD {
     // Forwarding doesn't work for operators, so we need to manually implement them
     //
     operator+(lhs: ?lhsType, rhs: ?rhsType)
-      where _returnTypeForOperatorTypes(lhsType, rhsType) != nothing do
-      return _getValue(lhs) + _getValue(rhs);
+      where returnTypeForOperatorTypes(lhsType, rhsType) != nothing do
+      return getValue(lhs) + getValue(rhs);
     operator+=(ref lhs: vectorRef(?), rhs: ?rhsType)
       where _validEqOperatorTypes(lhs.type, rhsType) do
-      _getRef(lhs) += _getValue(rhs);
+      getRef(lhs) += getValue(rhs);
 
     operator-(lhs: ?lhsType, rhs: ?rhsType)
-      where _returnTypeForOperatorTypes(lhsType, rhsType) != nothing do
-      return _getValue(lhs) + _getValue(rhs);
+      where returnTypeForOperatorTypes(lhsType, rhsType) != nothing do
+      return getValue(lhs) + getValue(rhs);
     operator-=(ref lhs: vectorRef(?), rhs: ?rhsType)
       where _validEqOperatorTypes(lhs.type, rhsType) do
-      _getRef(lhs) -= _getValue(rhs);
+      getRef(lhs) -= getValue(rhs);
 
     operator*(lhs: ?lhsType, rhs: ?rhsType)
-      where _returnTypeForOperatorTypes(lhsType, rhsType) != nothing do
-      return _getValue(lhs) * _getValue(rhs);
+      where returnTypeForOperatorTypes(lhsType, rhsType) != nothing do
+      return getValue(lhs) * getValue(rhs);
     operator*=(ref lhs: vectorRef(?), rhs: ?rhsType)
       where _validEqOperatorTypes(lhs.type, rhsType) do
-      _getRef(lhs) *= _getValue(rhs);
+      getRef(lhs) *= getValue(rhs);
 
     operator/(lhs: ?lhsType, rhs: ?rhsType)
-      where _returnTypeForOperatorTypes(lhsType, rhsType) != nothing do
-      return _getValue(lhs) + _getValue(rhs);
+      where returnTypeForOperatorTypes(lhsType, rhsType) != nothing do
+      return getValue(lhs) + getValue(rhs);
     operator/=(ref lhs: vectorRef(?), rhs: ?rhsType)
       where _validEqOperatorTypes(lhs.type, rhsType) do
-      _getRef(lhs) /= _getValue(rhs);
+      getRef(lhs) /= getValue(rhs);
 
     // more strict checking is technically needed to do assignment
     // this is done by the vector type already
     // TODO: we also need init= from vector, init= from vectorRef, and init= from tuple
     // operator=(ref lhs: ?lhsType, rhs: ?rhsType)
-    //   where _isVectorType(lhsType) &&
-    //        (_isVectorType(rhsType) || isHomogeneousTupleType(rhsType)) do
-    //   _getRef(lhs) = _getValue(rhs);
+    //   where isVectorType(lhsType) &&
+    //        (isVectorType(rhsType) || isHomogeneousTupleType(rhsType)) do
+    //   getRef(lhs) = getValue(rhs);
   }
-  private proc _isVectorType(type T) param do return isSubtype(T, vector) || isSubtype(T, vectorRef);
-  private proc _getEltType(type T) type where isSubtype(T, vector) do return T.eltType;
-  private proc _getEltType(type T) type where isSubtype(T, vectorRef) do return T.vectorType.eltType;
-  private proc _getNumElts(type T) param where isSubtype(T, vector) do return T.numElts;
-  private proc _getNumElts(type T) param where isSubtype(T, vectorRef) do return T.vectorType.numElts;
+  private proc isVectorType(type T) param do return isSubtype(T, vector) || isSubtype(T, vectorRef);
+  private proc getEltType(type T) type where isSubtype(T, vector) do return T.eltType;
+  private proc getEltType(type T) type where isSubtype(T, vectorRef) do return T.vectorType.eltType;
+  private proc getNumElts(type T) param where isSubtype(T, vector) do return T.numElts;
+  private proc getNumElts(type T) param where isSubtype(T, vectorRef) do return T.vectorType.numElts;
 
-  private inline proc _getValue(x) where isSubtype(x.type, vector) do return x;
-  private inline proc _getValue(x) where isSubtype(x.type, vectorRef) do return x.vec;
-  private inline proc _getValue(x) do return x;
-  private inline proc _getRef(ref x) ref where isSubtype(x.type, vector) do return x;
-  private inline proc _getRef(ref x) ref where isSubtype(x.type, vectorRef) do return x.vec;
-  private inline proc _getRef(ref x) ref do return x;
+  private inline proc getValue(x) where isSubtype(x.type, vector) do return x;
+  private inline proc getValue(x) where isSubtype(x.type, vectorRef) do return x.vec;
+  private inline proc getValue(x) do return x;
+  private inline proc getRef(ref x) ref where isSubtype(x.type, vector) do return x;
+  private inline proc getRef(ref x) ref where isSubtype(x.type, vectorRef) do return x.vec;
+  private inline proc getRef(ref x) ref do return x;
 
-  private proc _returnTypeForOperatorTypes(type lhsType, type rhsType) type {
+  private proc returnTypeForOperatorTypes(type lhsType, type rhsType) type {
     // one of the types can be scalar, but not both
-    if !_isVectorType(lhsType) && _isVectorType(rhsType) {
-      return vector(_getEltType(rhsType), _getNumElts(rhsType));
-    } else if _isVectorType(lhsType) && !_isVectorType(rhsType) {
-      return vector(_getEltType(lhsType), _getNumElts(lhsType));
-    } else if _isVectorType(lhsType) && _isVectorType(rhsType) {
+    if !isVectorType(lhsType) && isVectorType(rhsType) {
+      return vector(getEltType(rhsType), getNumElts(rhsType));
+    } else if isVectorType(lhsType) && !isVectorType(rhsType) {
+      return vector(getEltType(lhsType), getNumElts(lhsType));
+    } else if isVectorType(lhsType) && isVectorType(rhsType) {
       // must be same eltType/numElt
-      if _getEltType(lhsType) == _getEltType(rhsType) &&
-         _getNumElts(lhsType) == _getNumElts(rhsType) {
-        return vector(_getEltType(lhsType), _getNumElts(lhsType));
+      if getEltType(lhsType) == getEltType(rhsType) &&
+         getNumElts(lhsType) == getNumElts(rhsType) {
+        return vector(getEltType(lhsType), getNumElts(lhsType));
       } else return nothing;
     } else return nothing;
   }
   // must be a valid operator and the lhs must be a vector
-  proc _validEqOperatorTypes(type lhsType, type rhsType) param {
-    if _returnTypeForOperatorTypes(lhsType, rhsType) == nothing {
+  proc validEqOperatorTypes(type lhsType, type rhsType) param {
+    if returnTypeForOperatorTypes(lhsType, rhsType) == nothing {
       return false;
     }
-    if !_isVectorType(lhsType) {
+    if !isVectorType(lhsType) {
       return false;
     }
     return true;

@@ -26,10 +26,7 @@ module Intrin {
                              else return vec256;
 
     } else if use_arm64_128(eltType, numElts) {
-      use IntrinArm64_128;
-      if eltType == real(32)      then return vec32x4f;
-      else if eltType == real(64) then return vec64x2d;
-      else compilerError("Unsupported vector type");
+      return implType(eltType, numElts).vecType;
 
     } else if use_arm64_256(eltType, numElts) {
       use IntrinArm64_256;
@@ -56,6 +53,7 @@ module Intrin {
       use IntrinArm64_128;
       if eltType == real(32)      then return arm64_32x4f;
       else if eltType == real(64) then return arm64_64x2d;
+      // else if eltType == int(8)    then return arm64_8x16i;
       else compilerError("Unsupported vector type");
 
     } else if use_arm64_256(eltType, numElts) {

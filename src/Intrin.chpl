@@ -33,7 +33,7 @@ module Intrin {
       use IntrinArm64_128;
       if eltType == real(32)      then return arm64_32x4f;
       else if eltType == real(64) then return arm64_64x2d;
-      // else if eltType == int(8)    then return arm64_8x16i;
+      else if eltType == int(8)   then return arm64_8x16i;
       else compilerError("Unsupported vector type");
 
     } else if use_arm64_256(eltType, numElts) {

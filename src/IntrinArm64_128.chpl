@@ -6,14 +6,12 @@ module IntrinArm64_128 {
     require "wrapper-arm64-128.h";
     require "wrapper-arm64-128-float.c";
     require "wrapper-arm64-128-double.c";
-    // require "wrapper-arm64-128-int8.h";
   }
 
   extern "float32x4_t" type vec32x4f;
   extern "float64x2_t" type vec64x2d;
 
   extern "int8x16_t" type vec8x16i;
-  extern "int16x8_t" type vec16x8i;
   extern "int32x4_t" type vec32x4i;
   extern "int64x2_t" type vec64x2i;
 
@@ -331,7 +329,7 @@ module IntrinArm64_128 {
     }
   }
 
-/*
+
   record arm64_8x16i {
     proc type vecType type do return vec8x16i;
     proc type laneType type do return int(8);
@@ -581,5 +579,5 @@ module IntrinArm64_128 {
     }
 
   }
-*/
+
 }

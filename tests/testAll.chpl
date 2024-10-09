@@ -223,6 +223,7 @@ proc main() {
     arrTest(real(64), 4);
 
     arrTest(int(8), 16);
+    arrTest(int(16), 8);
   }
   if test_initTest {
     initTest(real(32), 4);
@@ -231,6 +232,7 @@ proc main() {
     initTest(real(64), 4);
 
     initTest(int(8), 16);
+    initTest(int(16), 8);
   }
   if test_mathTest {
     mathTest(real(32), 4);
@@ -239,6 +241,7 @@ proc main() {
     mathTest(real(64), 4);
 
     mathTest(int(8), 16);
+    mathTest(int(16), 8);
   }
   if test_sqrtTest {
     sqrtTest(real(32), 4);
@@ -247,6 +250,7 @@ proc main() {
     sqrtTest(real(64), 4);
 
     sqrtTest(int(8), 16);
+    sqrtTest(int(16), 8);
   }
   if test_shuffleTest {
     shuffleTest(real(32), 4);
@@ -255,6 +259,7 @@ proc main() {
     shuffleTest(real(64), 4);
 
     shuffleTest(int(8), 16);
+    shuffleTest(int(16), 8);
   }
   if test_fmaTest {
     fmaTest(real(32), 4);
@@ -263,6 +268,7 @@ proc main() {
     fmaTest(real(64), 4);
 
     fmaTest(int(8), 16);
+    fmaTest(int(16), 8);
   }
 
 }

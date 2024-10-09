@@ -15,7 +15,7 @@ proc sqrtTest(type eltType, param numElts: int) {
   var a: vector(eltType, numElts);
   var v: numElts*eltType;
   for param i in 0..#a.numElts {
-    v(i) = (i+1)*(i+1);
+    v(i) = ((i+1)*(i+1)):eltType;
   }
   vecOut.writeln("  v: ", v);
   a.set(v);
@@ -71,7 +71,7 @@ proc initTest(type eltType, param numElts: int) {
     a.set(i, (i+1):eltType);
   }
   vecOut.writeln("  set individual: ", a);
-  a.set(0);
+  a.set(0:eltType);
   vecOut.writeln("  reset: ", a);
 
   var tup: numElts*eltType;
@@ -92,7 +92,7 @@ proc shuffleTest(type eltType, param numElts: int) {
   var a, other = new vector(eltType, numElts);
   for param i in 0..#numElts {
     a.set(i, (i+1):eltType);
-    other.set(i, numElts + (i+1));
+    other.set(i, (numElts + (i+1)):eltType);
   }
   vecOut.writeln("  a                : ", a);
   vecOut.writeln("  other            : ", other);
@@ -146,7 +146,7 @@ proc mathTest(type eltType, param numElts: int) {
   var a, b = new vector(eltType, numElts);
   for param i in 0..#numElts {
     a.set(i, (i+1):eltType);
-    b.set(i, numElts + (i+1));
+    b.set(i, (numElts + (i+1)):eltType);
   }
   vecOut.writeln("  a: ", a);
   vecOut.writeln("  b: ", b);
@@ -161,12 +161,20 @@ proc mathTest(type eltType, param numElts: int) {
     vecOut.writeln("  a - b: ", c);
   }
   {
+    var c = b - a;
+    vecOut.writeln("  b - a: ", c);
+  }
+  {
     var c = a * b;
     vecOut.writeln("  a * b: ", c);
   }
   {
     var c = a / b;
     vecOut.writeln("  a / b: ", c);
+  }
+  {
+    var c = b / a;
+    vecOut.writeln("  b / a: ", c);
   }
   {
     var c = pairwiseAdd(a, b);
@@ -180,8 +188,8 @@ proc fmaTest(type eltType, param numElts: int) {
   var a, b, c = new vector(eltType, numElts);
   for param i in 0..#numElts {
     a.set(i, (i+1):eltType);
-    b.set(i, numElts + (i+1));
-    c.set(i, numElts*2 + (i+1));
+    b.set(i, (numElts + (i+1)):eltType);
+    c.set(i, (numElts*2 + (i+1)):eltType);
   }
   vecOut.writeln("  a: ", a);
   vecOut.writeln("  b: ", b);
@@ -213,36 +221,48 @@ proc main() {
     arrTest(real(64), 2);
     arrTest(real(32), 8);
     arrTest(real(64), 4);
+
+    arrTest(int(8), 16);
   }
   if test_initTest {
     initTest(real(32), 4);
     initTest(real(64), 2);
     initTest(real(32), 8);
     initTest(real(64), 4);
+
+    initTest(int(8), 16);
   }
   if test_mathTest {
     mathTest(real(32), 4);
     mathTest(real(64), 2);
     mathTest(real(32), 8);
     mathTest(real(64), 4);
+
+    mathTest(int(8), 16);
   }
   if test_sqrtTest {
     sqrtTest(real(32), 4);
     sqrtTest(real(64), 2);
     sqrtTest(real(32), 8);
     sqrtTest(real(64), 4);
+
+    sqrtTest(int(8), 16);
   }
   if test_shuffleTest {
     shuffleTest(real(32), 4);
     shuffleTest(real(64), 2);
     shuffleTest(real(32), 8);
     shuffleTest(real(64), 4);
+
+    shuffleTest(int(8), 16);
   }
   if test_fmaTest {
     fmaTest(real(32), 4);
     fmaTest(real(64), 2);
     fmaTest(real(32), 8);
     fmaTest(real(64), 4);
+
+    fmaTest(int(8), 16);
   }
 
 }

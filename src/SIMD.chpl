@@ -248,6 +248,36 @@ module SIMD {
       }
     }
 
+    @chpldoc.nodoc
+    inline proc type _computeAddress(ref arr: [] eltType, idx: int): c_ptr(eltType)
+      where arr.rank == 1 && arr.isRectangular() && arr._value.isDefaultRectangular() {
+      if boundsChecking {
+        // TODO
+      }
+      const ptr = c_addrOf(arr[idx]);
+      return ptr;
+    }
+    @chpldoc.nodoc
+    inline proc type _computeAddressConst(arr: [] eltType, idx: int): c_ptrConst(eltType)
+      where arr.rank == 1 && arr.isRectangular() && arr._value.isDefaultRectangular() {
+      if boundsChecking {
+        // TODO
+      }
+      const ptr = c_addrOfConst(arr[idx]);
+      return ptr;
+    }
+    @chpldoc.nodoc
+    inline proc type _computeAddress(tup, idx: int = 0): c_ptr(eltType)
+      where isHomogeneousTuple(tup) && tup(0).type == eltType {
+      if boundsChecking {
+        if idx+numElts-1 >= tup.size {
+          halt("out of bounds load");
+        }
+      }
+      const ptr = c_addrOf(tup(idx));
+      return ptr;
+    }
+
     inline proc ref load(ptr: c_ptrConst(eltType),
                          idx: int = 0,
                          param aligned: bool = false) {
@@ -261,16 +291,11 @@ module SIMD {
                          idx: int = 0,
                          param aligned: bool = false)
       where arr.rank == 1 && arr.isRectangular() && arr._value.isDefaultRectangular() {
-      const ptr = c_addrOfConst(arr[idx]);
-      load(ptr, idx=0, aligned=aligned);
+      load(this.type._computeAddressConst(arr, idx), idx=0, aligned=aligned);
     }
     inline proc ref load(tup, idx: int = 0, param aligned: bool = false)
       where isHomogeneousTuple(tup) && tup(0).type == eltType {
-      var ptr_ = c_addrOfConst(tup(idx));
-      if aligned then
-        data = Intrin.loadAligned(eltType, numElts, ptr_);
-      else
-        data = Intrin.loadUnaligned(eltType, numElts, ptr_);
+      load(this.type._computeAddress(tup, idx), idx=0, aligned=aligned);
     }
     inline proc store(ptr: c_ptr(eltType),
                       idx: int = 0,
@@ -285,16 +310,16 @@ module SIMD {
                           idx: int = 0,
                           param aligned: bool = false)
       where arr.rank == 1 && arr.isRectangular() && arr._value.isDefaultRectangular() {
-      var ptr = c_addrOf(arr[idx]);
-      store(ptr, idx=0, aligned=aligned);
+      store(this.type._computeAddress(arr, idx), idx=0, aligned=aligned);
     }
     inline proc store(ref tup, idx: int = 0, param aligned: bool = false)
       where isHomogeneousTuple(tup) && tup(0).type == eltType {
-      var ptr_ = c_addrOf(tup(idx));
-      if aligned then
-        Intrin.storeAligned(eltType, numElts, ptr_, this.data);
-      else
-        Intrin.storeUnaligned(eltType, numElts, ptr_, this.data);
+      if boundsChecking {
+        if idx+numElts-1 >= tup.size {
+          halt("out of bounds store");
+        }
+      }
+      store(this.type._computeAddress(tup, idx), idx=0, aligned=aligned);
     }
     inline proc type load(container,
                           idx: int = 0,
@@ -306,6 +331,43 @@ module SIMD {
 
     // compares?
     // bitmath?
+
+
+    // TODO: we should have standalone, leader, and follower versions of all of these
+    inline iter type indicies(rng): rng.idxType
+      where isSubtype(rng.type, range(?)) || isSubtype(rng.type, domain(?)) {
+      for i in rng by numElts {
+        yield i;
+      }
+    }
+    inline iter type vectors(tup, param aligned: bool = false): this
+      where isHomogeneousTuple(tup) && tup(0).type == eltType {
+      for i in 0..#tup.size by numElts {
+        yield this.load(tup, i, aligned=aligned);
+      }
+    }
+    inline iter type vectors(arr: [], param aligned: bool = false): this {
+      // TODO: how can I avoid the extra load per loop of the array metadata?
+      for i in arr.domain by numElts {
+        yield this.load(arr, i, aligned=aligned);
+      }
+    }
+    inline iter type vectorsJagged(arr: [], pad: eltType = 0, param aligned: bool = false): this {
+      // TODO: is this really the most efficient way to do this?
+      // this should iterate over a range, and pad the extra with 'pad'
+      // so that the last iteration is a full vector
+      for i in arr.domain by numElts {
+        writeln("i: ", i);
+        if i+numElts <= arr.domain.high then
+          yield this.load(arr, i, aligned=aligned);
+        else {
+          var tup: numElts*eltType;
+          for param j in 0..#numElts do tup(j) = pad;
+          for j in 0..#(arr.domain.high-i+1) do tup(j) = arr[i+j];
+          yield this.load(tup, aligned=aligned);
+        }
+      }
+    }
 
 
     proc serialize(writer, ref serializer) throws {

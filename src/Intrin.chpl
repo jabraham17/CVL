@@ -14,28 +14,8 @@ module Intrin {
   proc use_arm64_256(type eltType, param numElts: int) param do
     return isArm64() && numBits(eltType) * numElts == 256;
 
-  proc vectorType(type eltType, param numElts: int) type {
-    if use_x8664_128(eltType, numElts) {
-      use IntrinX86_128;
-      if eltType == real(64) then return vec128d;
-                             else return vec128;
-
-    } else if use_x8664_256(eltType, numElts) {
-      use IntrinX86_256;
-      if eltType == real(64) then return vec256d;
-                             else return vec256;
-
-    } else if use_arm64_128(eltType, numElts) {
-      return implType(eltType, numElts).vecType;
-
-    } else if use_arm64_256(eltType, numElts) {
-      use IntrinArm64_256;
-      if eltType == real(32)      then return vec32x8f;
-      else if eltType == real(64) then return vec64x4d;
-      else compilerError("Unsupported vector type");
-
-    } else compilerError("Unsupported vector type");
-  }
+  proc vectorType(type eltType, param numElts: int) type do
+    return implType(eltType, numElts).vecType;
   proc implType(type eltType, param numElts: int) type {
     if use_x8664_128(eltType, numElts) {
       use IntrinX86_128;

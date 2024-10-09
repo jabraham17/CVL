@@ -2,3 +2,4 @@ target/
 Mason.lock
 .vscode
 a.out
+.cls-commands.json

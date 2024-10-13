@@ -82,3 +82,31 @@ shuffleTest for int(16) 8
   deinterleaveLower:     1,     3,     5,     7,     9,    11,    13,    15
   deinterleaveUpper:     2,     4,     6,     8,    10,    12,    14,    16
   blendLowHigh     :     1,     2,     3,     4,    13,    14,    15,    16
+shuffleTest for int(32) 4
+  a                :     1,     2,     3,     4
+  other            :     5,     6,     7,     8
+  -----------------
+  swapPairs        :     2,     1,     4,     3
+  swapLowHigh      :     3,     4,     1,     2
+  reverse          :     4,     3,     2,     1
+  rotateLeft       :     2,     3,     4,     1
+  rotateRight      :     4,     1,     2,     3
+  interleaveLower  :     1,     5,     2,     6
+  interleaveUpper  :     3,     7,     4,     8
+  deinterleaveLower:     1,     3,     5,     7
+  deinterleaveUpper:     2,     4,     6,     8
+  blendLowHigh     :     1,     2,     7,     8
+shuffleTest for int(64) 2
+  a                :     1,     2
+  other            :     3,     4
+  -----------------
+  swapPairs        :     2,     1
+  swapLowHigh      :     2,     1
+  reverse          :     2,     1
+  rotateLeft       :     2,     1
+  rotateRight      :     2,     1
+  interleaveLower  :     1,     3
+  interleaveUpper  :     2,     4
+  deinterleaveLower:     1,     3
+  deinterleaveUpper:     2,     4
+  blendLowHigh     :     1,     4

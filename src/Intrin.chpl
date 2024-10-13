@@ -35,6 +35,8 @@ module Intrin {
       else if eltType == real(64) then return arm64_64x2d;
       else if eltType == int(8)   then return arm64_8x16i;
       else if eltType == int(16)  then return arm64_16x8i;
+      else if eltType == int(32)  then return arm64_32x4i;
+      else if eltType == int(64)  then return arm64_64x2i;
       else compilerError("Unsupported vector type");
 
     } else if use_arm64_256(eltType, numElts) {
@@ -100,10 +102,16 @@ module Intrin {
     return implType(eltType, numElts).add(x, y);
   inline proc sub(type eltType, param numElts: int, x: vectorType(eltType, numElts), y: x.type): x.type do
     return implType(eltType, numElts).sub(x, y);
-  inline proc mul(type eltType, param numElts: int, x: vectorType(eltType, numElts), y: x.type): x.type do
-    return implType(eltType, numElts).mul(x, y);
-  inline proc div(type eltType, param numElts: int, x: vectorType(eltType, numElts), y: x.type): x.type do
+  inline proc mul(type eltType, param numElts: int, x: vectorType(eltType, numElts), y: x.type): x.type {
+    if eltType == int(64) then compilerError("mul not supported for int64");
+    else                  return implType(eltType, numElts).mul(x, y);
+  }
+  // TODO: right now we emulate div on ints by converting to float and back
+  //       is this a good idea? Should it be an error like sqrt/rsqrt on ints?
+  inline proc div(type eltType, param numElts: int, x: vectorType(eltType, numElts), y: x.type): x.type {
+    compilerWarning("div on ints is emulated by converting to float and back");
     return implType(eltType, numElts).div(x, y);
+  }
 
   /*
     Add pairs of adjacent elements
@@ -117,21 +125,33 @@ module Intrin {
                    x: vectorType(eltType, numElts), y: x.type): x.type do
     return implType(eltType, numElts).hadd(x, y);
   inline proc sqrt(type eltType, param numElts: int,
-                   x: vectorType(eltType, numElts)): x.type do
-    return implType(eltType, numElts).sqrt(x);
+                   x: vectorType(eltType, numElts)): x.type {
+    if isIntegralType(eltType) then
+      compilerError("sqrt not supported for integral types");
+    else
+      return implType(eltType, numElts).sqrt(x);
+  }
   inline proc rsqrt(type eltType, param numElts: int,
-                    x: vectorType(eltType, numElts)): x.type do
-    return implType(eltType, numElts).rsqrt(x);
+                    x: vectorType(eltType, numElts)): x.type {
+    if isIntegralType(eltType) then
+      compilerError("rsqrt not supported for integral types");
+    else
+      return implType(eltType, numElts).rsqrt(x);
+  }
 
   /* Performs (x*y)+z */
   inline proc fmadd(type eltType, param numElts: int,
                     x: vectorType(eltType, numElts),
-                    y: x.type, z: x.type): x.type do
-    return implType(eltType, numElts).fmadd(x, y, z);
+                    y: x.type, z: x.type): x.type {
+    if eltType == int(64) then compilerError("fmadd not supported for int64");
+    else                  return implType(eltType, numElts).fmadd(x, y, z);
+  }
 
   /* Performs (x*y)-z */
   inline proc fmsub(type eltType, param numElts: int,
                     x: vectorType(eltType, numElts),
-                    y: x.type, z: x.type): x.type do
-    return implType(eltType, numElts).fmsub(x, y, z);
+                    y: x.type, z: x.type): x.type {
+    if eltType == int(64) then compilerError("fmsub not supported for int64");
+    else                  return implType(eltType, numElts).fmsub(x, y, z);
+  }
 }

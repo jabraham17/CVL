@@ -164,7 +164,7 @@ proc mathTest(type eltType, param numElts: int) {
     var c = b - a;
     vecOut.writeln("  b - a: ", c);
   }
-  {
+  if eltType != int(64) { // UNSUPPORTED
     var c = a * b;
     vecOut.writeln("  a * b: ", c);
   }
@@ -207,6 +207,20 @@ proc fmaTest(type eltType, param numElts: int) {
 }
 
 
+proc typeForString(param s: string) type {
+       if s == "real(64)" then return real(64);
+  else if s == "real(32)" then return real(32);
+  else if s == "int(8)"   then return int(8);
+  else if s == "int(16)"  then return int(16);
+  else if s == "int(32)"  then return int(32);
+  else if s == "int(64)"  then return int(64);
+  else if s == "uint(8)"  then return uint(8);
+  else if s == "uint(16)" then return uint(16);
+  else if s == "uint(32)" then return uint(32);
+  else if s == "uint(64)" then return uint(64);
+  compilerError("Unknown type: ", s);
+}
+
 proc main() {
 
   param test_arrTest = testName == "all" || testName == "arrTest";
@@ -216,6 +230,15 @@ proc main() {
   param test_shuffleTest = testName == "all" || testName == "shuffleTest";
   param test_fmaTest = testName == "all" || testName == "fmaTest";
 
+  // Can't use this sadly, no param tuples
+  // var types = (("real(32)", 4),
+  //              ("real(64)", 2),
+  //              ("real(32)", 8),
+  //              ("real(64)", 4),
+  //              ("int(8)", 16),
+  //              ("int(16)", 8)
+  //              ("int(32)", 4));
+
   if test_arrTest {
     arrTest(real(32), 4);
     arrTest(real(64), 2);
@@ -224,6 +247,8 @@ proc main() {
 
     arrTest(int(8), 16);
     arrTest(int(16), 8);
+    arrTest(int(32), 4);
+    arrTest(int(64), 2);
   }
   if test_initTest {
     initTest(real(32), 4);
@@ -233,6 +258,8 @@ proc main() {
 
     initTest(int(8), 16);
     initTest(int(16), 8);
+    initTest(int(32), 4);
+    initTest(int(64), 2);
   }
   if test_mathTest {
     mathTest(real(32), 4);
@@ -242,6 +269,8 @@ proc main() {
 
     mathTest(int(8), 16);
     mathTest(int(16), 8);
+    mathTest(int(32), 4);
+    mathTest(int(64), 2);
   }
   if test_sqrtTest {
     sqrtTest(real(32), 4);
@@ -249,8 +278,10 @@ proc main() {
     sqrtTest(real(32), 8);
     sqrtTest(real(64), 4);
 
-    sqrtTest(int(8), 16);
-    sqrtTest(int(16), 8);
+    // sqrtTest(int(8), 16); // UNSUPPORTED
+    // sqrtTest(int(16), 8); // UNSUPPORTED
+    // sqrtTest(int(32), 4); // UNSUPPORTED
+    // sqrtTest(int(64), 2); // UNSUPPORTED
   }
   if test_shuffleTest {
     shuffleTest(real(32), 4);
@@ -260,6 +291,8 @@ proc main() {
 
     shuffleTest(int(8), 16);
     shuffleTest(int(16), 8);
+    shuffleTest(int(32), 4);
+    shuffleTest(int(64), 2);
   }
   if test_fmaTest {
     fmaTest(real(32), 4);
@@ -269,6 +302,8 @@ proc main() {
 
     fmaTest(int(8), 16);
     fmaTest(int(16), 8);
+    fmaTest(int(32), 4);
+    // fmaTest(int(64), 2); // UNSUPPORTED
   }
 
 }

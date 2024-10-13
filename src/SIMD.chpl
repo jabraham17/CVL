@@ -308,7 +308,7 @@ module SIMD {
                           param aligned: bool = false)
       where arr.rank == 1 && arr.isRectangular() && arr._value.isDefaultRectangular() do
       store(this.type._computeAddress(arr, idx), idx=0, aligned=aligned);
-      
+
     inline proc store(ref tup, idx: int = 0, param aligned: bool = false)
       where isHomogeneousTuple(tup) && tup(0).type == eltType {
       if boundsChecking {

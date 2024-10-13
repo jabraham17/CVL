@@ -28,3 +28,13 @@ initTest for int(16) 8
   reset:     0,     0,     0,     0,     0,     0,     0,     0
   set tuple:     1,     2,     3,     4,     5,     6,     7,     8
   get tuple (8*int(16)): (    1,     2,     3,     4,     5,     6,     7,     8)
+initTest for int(32) 4
+  set individual:     1,     2,     3,     4
+  reset:     0,     0,     0,     0
+  set tuple:     1,     2,     3,     4
+  get tuple (4*int(32)): (    1,     2,     3,     4)
+initTest for int(64) 2
+  set individual:     1,     2
+  reset:     0,     0
+  set tuple:     1,     2
+  get tuple (2*int(64)): (    1,     2)

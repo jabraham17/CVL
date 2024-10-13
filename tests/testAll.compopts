@@ -1,6 +1,6 @@
 -stestName="'arrTest'" # arrTest.good
 -stestName="'initTest'" # initTest.good
--stestName="'mathTest'" # mathTest.good
+-stestName="'mathTest'" --no-warnings # mathTest.good
 -stestName="'sqrtTest'" # sqrtTest.good
 -stestName="'shuffleTest'" # shuffleTest.good
 -stestName="'fmaTest'" # fmaTest.good

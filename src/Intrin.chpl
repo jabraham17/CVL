@@ -5,31 +5,22 @@ module Intrin {
   proc isX8664() param do return ChplConfig.CHPL_TARGET_ARCH == "x86_64";
   proc isArm64() param do return ChplConfig.CHPL_TARGET_ARCH == "arm64";
 
-  proc use_x8664_128(type eltType, param numElts: int) param do
-    return isX8664() && numBits(eltType) * numElts == 128;
-  proc use_x8664_256(type eltType, param numElts: int) param do
-    return isX8664() && numBits(eltType) * numElts == 256;
-  proc use_arm64_128(type eltType, param numElts: int) param do
-    return isArm64() && numBits(eltType) * numElts == 128;
-  proc use_arm64_256(type eltType, param numElts: int) param do
-    return isArm64() && numBits(eltType) * numElts == 256;
-
   proc vectorType(type eltType, param numElts: int) type do
     return implType(eltType, numElts).vecType;
   proc implType(type eltType, param numElts: int) type {
-    if use_x8664_128(eltType, numElts) {
+    if isX8664() && numBits(eltType) * numElts == 128 {
       use IntrinX86_128;
       if eltType == real(32)      then return x8664_32x4f;
       else if eltType == real(64) then return x8664_64x2d;
       else compilerError("Unsupported vector type");
 
-    } else if use_x8664_256(eltType, numElts) {
+    } else if isX8664() && numBits(eltType) * numElts == 256 {
       use IntrinX86_256;
       if eltType == real(32)      then return x8664_32x8f;
       else if eltType == real(64) then return x8664_64x4d;
       else compilerError("Unsupported vector type");
 
-    } else if use_arm64_128(eltType, numElts) {
+    } else if isArm64() && numBits(eltType) * numElts == 128 {
       use IntrinArm64_128;
       if eltType == real(32)      then return arm64_32x4f;
       else if eltType == real(64) then return arm64_64x2d;
@@ -39,10 +30,14 @@ module Intrin {
       else if eltType == int(64)  then return arm64_64x2i;
       else compilerError("Unsupported vector type");
 
-    } else if use_arm64_256(eltType, numElts) {
+    } else if isArm64() && numBits(eltType) * numElts == 256 {
       use IntrinArm64_256;
       if eltType == real(32)      then return arm64_32x8f;
       else if eltType == real(64) then return arm64_64x4d;
+      else if eltType == int(8)   then return arm64_8x32i;
+      else if eltType == int(16)  then return arm64_16x16i;
+      else if eltType == int(32)  then return arm64_32x8i;
+      else if eltType == int(64)  then return arm64_64x4i;
       else compilerError("Unsupported vector type");
 
     } else compilerError("Unsupported vector type");

@@ -20,6 +20,13 @@ module IntrinArm64_128 {
   extern "uint32x4_t" type vec32x4u;
   extern "uint64x2_t" type vec64x2u;
 
+  proc numBits(type t) param
+    where t == vec32x4f || t == vec64x2d ||
+          t == vec8x16i || t == vec16x8i || t == vec32x4i || t == vec64x2i ||
+          t == vec8x16u || t == vec16x8u || t == vec32x4u || t == vec64x2u
+    do return 128;
+
+
   record arm64_32x4f {
     proc type vecType type do return vec32x4f;
     proc type laneType type do return real(32);

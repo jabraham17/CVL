@@ -249,6 +249,11 @@ proc main() {
     arrTest(int(16), 8);
     arrTest(int(32), 4);
     arrTest(int(64), 2);
+
+    arrTest(int(8), 32);
+    arrTest(int(16), 16);
+    arrTest(int(32), 8);
+    arrTest(int(64), 4);
   }
   if test_initTest {
     initTest(real(32), 4);
@@ -260,6 +265,11 @@ proc main() {
     initTest(int(16), 8);
     initTest(int(32), 4);
     initTest(int(64), 2);
+
+    initTest(int(8), 32);
+    initTest(int(16), 16);
+    initTest(int(32), 8);
+    initTest(int(64), 4);
   }
   if test_mathTest {
     mathTest(real(32), 4);
@@ -271,6 +281,11 @@ proc main() {
     mathTest(int(16), 8);
     mathTest(int(32), 4);
     mathTest(int(64), 2);
+
+    mathTest(int(8), 32);
+    mathTest(int(16), 16);
+    mathTest(int(32), 8);
+    mathTest(int(64), 4);
   }
   if test_sqrtTest {
     sqrtTest(real(32), 4);
@@ -282,6 +297,11 @@ proc main() {
     // sqrtTest(int(16), 8); // UNSUPPORTED
     // sqrtTest(int(32), 4); // UNSUPPORTED
     // sqrtTest(int(64), 2); // UNSUPPORTED
+
+    // sqrtTest(int(8), 32); // UNSUPPORTED
+    // sqrtTest(int(16), 16); // UNSUPPORTED
+    // sqrtTest(int(32), 8); // UNSUPPORTED
+    // sqrtTest(int(64), 4); // UNSUPPORTED
   }
   if test_shuffleTest {
     shuffleTest(real(32), 4);
@@ -293,6 +313,11 @@ proc main() {
     shuffleTest(int(16), 8);
     shuffleTest(int(32), 4);
     shuffleTest(int(64), 2);
+
+    shuffleTest(int(8), 32);
+    shuffleTest(int(16), 16);
+    shuffleTest(int(32), 8);
+    shuffleTest(int(64), 4);
   }
   if test_fmaTest {
     fmaTest(real(32), 4);
@@ -304,6 +329,11 @@ proc main() {
     fmaTest(int(16), 8);
     fmaTest(int(32), 4);
     // fmaTest(int(64), 2); // UNSUPPORTED
+
+    fmaTest(int(8), 32);
+    fmaTest(int(16), 16);
+    fmaTest(int(32), 8);
+    // fmaTest(int(64), 4); // UNSUPPORTED
   }
 
 }

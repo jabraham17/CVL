@@ -2,5 +2,5 @@
 -stestName="'initTest'" # initTest.good
 -stestName="'mathTest'" --no-warnings # mathTest.good
 -stestName="'sqrtTest'" # sqrtTest.good
--stestName="'shuffleTest'" # shuffleTest.good
+-stestName="'shuffleTest'" --no-warnings # shuffleTest.good
 -stestName="'fmaTest'" # fmaTest.good

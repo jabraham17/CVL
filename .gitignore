@@ -3,3 +3,4 @@ Mason.lock
 .vscode
 a.out
 .cls-commands.json
+__pycache__/

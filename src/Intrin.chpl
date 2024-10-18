@@ -22,8 +22,8 @@ module Intrin {
 
     } else if isArm64() && numBits(eltType) * numElts == 128 {
       use IntrinArm64_128;
-      if eltType == real(32)      then return arm64_32x4f;
-      else if eltType == real(64) then return arm64_64x2d;
+      if eltType == real(32)      then return arm64_32x4r;
+      else if eltType == real(64) then return arm64_64x2r;
       else if eltType == int(8)   then return arm64_8x16i;
       else if eltType == int(16)  then return arm64_16x8i;
       else if eltType == int(32)  then return arm64_32x4i;
@@ -32,8 +32,8 @@ module Intrin {
 
     } else if isArm64() && numBits(eltType) * numElts == 256 {
       use IntrinArm64_256;
-      if eltType == real(32)      then return arm64_32x8f;
-      else if eltType == real(64) then return arm64_64x4d;
+      if eltType == real(32)      then return arm64_32x8r;
+      else if eltType == real(64) then return arm64_64x4r;
       else if eltType == int(8)   then return arm64_8x32i;
       else if eltType == int(16)  then return arm64_16x16i;
       else if eltType == int(32)  then return arm64_32x8i;
@@ -104,7 +104,9 @@ module Intrin {
   // TODO: right now we emulate div on ints by converting to float and back
   //       is this a good idea? Should it be an error like sqrt/rsqrt on ints?
   inline proc div(type eltType, param numElts: int, x: vectorType(eltType, numElts), y: x.type): x.type {
-    compilerWarning("div on ints is emulated by converting to float and back");
+    import SIMD;
+    if isIntegralType(eltType) then
+      if SIMD.implementationWarnings then compilerWarning("div on ints is emulated by converting to float and back");
     return implType(eltType, numElts).div(x, y);
   }
 

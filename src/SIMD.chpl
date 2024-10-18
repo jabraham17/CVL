@@ -1,7 +1,8 @@
 module SIMD {
+  config param implementationWarnings = true;
   use Types;
   use IO;
-  use CTypes;
+  use CTypes only c_ptr, c_ptrConst, c_ptrTo, c_ptrToConst, c_addrOf, c_addrOfConst;
   import Intrin;
 
   record vector: writeSerializable {
@@ -36,12 +37,12 @@ module SIMD {
       this.numElts = numElts;
       this.data = value.data;
     }
-    proc init=(value: ?t) where isSubtype(t, vector) {
+    proc init=(value: vector(?)) {
       this.eltType = value.eltType;
       this.numElts = value.numElts;
       this.data = value.data;
     }
-    inline operator=(ref lhs: ?t, rhs: t) where isSubtype(t, vector) {
+    inline operator=(ref lhs: vector(?), rhs: lhs.type) {
       lhs.data = rhs.data;
     }
 
@@ -87,30 +88,29 @@ module SIMD {
     //
     // cast to tuple
     //
-    inline operator:(x: ?t, type tupType)
-      where isSubtype(t, vector) &&
-            isHomogeneousTupleType(tupType) &&
-            isCoercible(t.eltType, tupType(0)) &&
-            tupType.size == t.numElts {
+    inline operator:(x: vector(?eltType, ?numElts), type tupType)
+      where isHomogeneousTupleType(tupType) &&
+            isCoercible(eltType, tupType(0)) &&
+            tupType.size == numElts {
       type resEltType = tupType(0);
       var result: tupType;
-      for param i in 0..#t.numElts {
+      for param i in 0..#numElts {
         result(i) = x[i]:resEltType;
       }
       return result;
     }
 
     /* VECTOR + VECTOR */
-    inline operator+(x: ?t, y: t) where isSubtype(t, vector) {
-      var result: t;
-      result.data = Intrin.add(t.eltType, t.numElts, x.data, y.data);
+    inline operator+(x: vector(?eltType, ?numElts), y: x.type): x.type {
+      var result: x.type;
+      result.data = Intrin.add(eltType, numElts, x.data, y.data);
       return result;
     }
-    inline operator+=(ref x: ?t, y: t) where isSubtype(t, vector) do
-      x.data = Intrin.add(t.eltType, t.numElts, x.data, y.data);
+    inline operator+=(ref x: vector(?eltType, ?numElts), y: x.type) do
+      x.data = Intrin.add(eltType, numElts, x.data, y.data);
 
     /* VECTOR + SCALAR */
-    inline operator+(x: vector(?eltType, ?numElts), y: ?scalarType)
+    inline operator+(x: vector(?eltType, ?numElts), y: ?scalarType): x.type
       where isCoercible(scalarType, eltType) {
       var result: x.type;
       result.data = Intrin.add(eltType, numElts, x.data,
@@ -123,7 +123,7 @@ module SIMD {
                       Intrin.splat(eltType, numElts, y));
 
     /* SCALAR + VECTOR */
-    inline operator+(x: ?scalarType, y: vector(?eltType, ?numElts)) 
+    inline operator+(x: ?scalarType, y: vector(?eltType, ?numElts)): y.type
       where isCoercible(scalarType, eltType) {
       var result: y.type;
       result.data = Intrin.add(eltType, numElts,
@@ -132,16 +132,16 @@ module SIMD {
     }
 
     /* VECTOR - VECTOR */
-    inline operator-(x: ?t, y: t) where isSubtype(t, vector) {
-      var result: t;
-      result.data = Intrin.sub(t.eltType, t.numElts, x.data, y.data);
+    inline operator-(x: vector(?eltType, ?numElts), y: x.type): x.type {
+      var result: x.type;
+      result.data = Intrin.sub(eltType, numElts, x.data, y.data);
       return result;
     }
-    inline operator-=(ref x: ?t, y: t) where isSubtype(t, vector) do
-      x.data = Intrin.sub(t.eltType, t.numElts, x.data, y.data);
+    inline operator-=(ref x: vector(?eltType, ?numElts), y: x.type) do
+      x.data = Intrin.sub(eltType, numElts, x.data, y.data);
 
     /* VECTOR - SCALAR */
-    inline operator-(x: vector(?eltType, ?numElts), y: ?scalarType)
+    inline operator-(x: vector(?eltType, ?numElts), y: ?scalarType): x.type
       where isCoercible(scalarType, eltType) {
       var result: x.type;
       result.data = Intrin.sub(eltType, numElts, x.data,
@@ -154,7 +154,7 @@ module SIMD {
                       Intrin.splat(eltType, numElts, y));
 
     /* SCALAR - VECTOR */
-    inline operator-(x: ?scalarType, y: vector(?eltType, ?numElts)) 
+    inline operator-(x: ?scalarType, y: vector(?eltType, ?numElts)): y.type
       where isCoercible(scalarType, eltType) {
       var result: y.type;
       result.data = Intrin.sub(eltType, numElts,
@@ -163,16 +163,16 @@ module SIMD {
     }
 
     /* VECTOR * VECTOR */
-    inline operator*(x: ?t, y: t) where isSubtype(t, vector) {
-      var result: t;
-      result.data = Intrin.mul(t.eltType, t.numElts, x.data, y.data);
+    inline operator*(x: vector(?eltType, ?numElts), y: x.type): x.type {
+      var result: x.type;
+      result.data = Intrin.mul(eltType, numElts, x.data, y.data);
       return result;
     }
-    inline operator*=(ref x: ?t, y: t) where isSubtype(t, vector) do
-      x.data = Intrin.mul(t.eltType, t.numElts, x.data, y.data);
+    inline operator*=(ref x:vector(?eltType, ?numElts), y: x.type) do
+      x.data = Intrin.mul(eltType, numElts, x.data, y.data);
 
     /* VECTOR * SCALAR */
-    inline operator*(x: vector(?eltType, ?numElts), y: ?scalarType)
+    inline operator*(x: vector(?eltType, ?numElts), y: ?scalarType): x.type
       where isCoercible(scalarType, eltType) {
       var result: x.type;
       result.data = Intrin.mul(eltType, numElts, x.data,
@@ -185,7 +185,7 @@ module SIMD {
                       Intrin.splat(eltType, numElts, y));
 
     /* SCALAR * VECTOR */
-    inline operator*(x: ?scalarType, y: vector(?eltType, ?numElts)) 
+    inline operator*(x: ?scalarType, y: vector(?eltType, ?numElts)): y.type
       where isCoercible(scalarType, eltType) {
       var result: y.type;
       result.data = Intrin.mul(eltType, numElts,
@@ -194,16 +194,16 @@ module SIMD {
     }
 
     /* VECTOR / VECTOR */
-    inline operator/(x: ?t, y: t) where isSubtype(t, vector) {
-      var result: t;
-      result.data = Intrin.div(t.eltType, t.numElts, x.data, y.data);
+    inline operator/(x: vector(?eltType, ?numElts), y: x.type): x.type {
+      var result: x.type;
+      result.data = Intrin.div(eltType, numElts, x.data, y.data);
       return result;
     }
-    inline operator/=(ref x: ?t, y: t) where isSubtype(t, vector) do
-      x.data = Intrin.div(t.eltType, t.numElts, x.data, y.data);
+    inline operator/=(ref x: vector(?eltType, ?numElts), y: x.type) do
+      x.data = Intrin.div(eltType, numElts, x.data, y.data);
 
     /* VECTOR / SCALAR */
-    inline operator/(x: vector(?eltType, ?numElts), y: ?scalarType)
+    inline operator/(x: vector(?eltType, ?numElts), y: ?scalarType): x.type
       where isCoercible(scalarType, eltType) {
       var result: x.type;
       result.data = Intrin.div(eltType, numElts, x.data,
@@ -216,7 +216,7 @@ module SIMD {
                       Intrin.splat(eltType, numElts, y));
 
     /* SCALAR / VECTOR */
-    inline operator/(x: ?scalarType, y: vector(?eltType, ?numElts))
+    inline operator/(x: ?scalarType, y: vector(?eltType, ?numElts)): y.type
       where isCoercible(scalarType, eltType) {
       var result: y.type;
       result.data = Intrin.div(eltType, numElts,
@@ -238,9 +238,9 @@ module SIMD {
       where isCoercible(value.type, eltType) do
       data = Intrin.insert(eltType, numElts, data, value:eltType, idx);
 
-    inline proc this(param idx: int) do
+    inline proc this(param idx: int): eltType do
       return Intrin.extract(eltType, numElts, data, idx);
-    iter these() {
+    inline iter these(): eltType {
       for param i in 0..#numElts {
         yield this[i];
       }
@@ -318,7 +318,7 @@ module SIMD {
       }
       store(this.type._computeAddress(tup, idx), idx=0, aligned=aligned);
     }
-    inline proc type load(container,
+    inline proc type load(container: ?t,
                           idx: int = 0,
                           param aligned: bool = false): this {
       var result: this;
@@ -326,8 +326,11 @@ module SIMD {
       return result;
     }
 
-    // compares?
-    // bitmath?
+    // compares
+    // bitmath (and, or, not, xor)
+    // abs, min, max
+    // transmute (bitcast)
+    // typecaste
 
 
     // TODO: we should have standalone, leader, and follower versions of all of these
@@ -510,7 +513,7 @@ module SIMD {
     proc deinit() {
       this.commitChanges();
     }
-    proc commitChanges() {
+    inline proc commitChanges() {
       this.vec.store(this.address, 0, aligned=this.aligned);
     }
 
@@ -557,18 +560,18 @@ module SIMD {
     //        (isVectorType(rhsType) || isHomogeneousTupleType(rhsType)) do
     //   getRef(lhs) = getValue(rhs);
   }
-  private proc isVectorType(type T) param do return isSubtype(T, vector) || isSubtype(T, vectorRef);
+  private proc isVectorType(type T) param: bool do return isSubtype(T, vector) || isSubtype(T, vectorRef);
   private proc getEltType(type T) type where isSubtype(T, vector) do return T.eltType;
   private proc getEltType(type T) type where isSubtype(T, vectorRef) do return T.vectorType.eltType;
-  private proc getNumElts(type T) param where isSubtype(T, vector) do return T.numElts;
-  private proc getNumElts(type T) param where isSubtype(T, vectorRef) do return T.vectorType.numElts;
+  private proc getNumElts(type T) param: int where isSubtype(T, vector) do return T.numElts;
+  private proc getNumElts(type T) param: int where isSubtype(T, vectorRef) do return T.vectorType.numElts;
 
-  private inline proc getValue(x) where isSubtype(x.type, vector) do return x;
-  private inline proc getValue(x) where isSubtype(x.type, vectorRef) do return x.vec;
-  private inline proc getValue(x) do return x;
-  private inline proc getRef(ref x) ref where isSubtype(x.type, vector) do return x;
-  private inline proc getRef(ref x) ref where isSubtype(x.type, vectorRef) do return x.vec;
-  private inline proc getRef(ref x) ref do return x;
+  private inline proc getValue(x: vector(?)): x.type do return x;
+  private inline proc getValue(x: vectorRef(?)): x.vectorType do return x.vec;
+  private inline proc getValue(x: ?t): t do return x;
+  private inline proc getRef(ref x: vector(?)) ref: x.type do return x;
+  private inline proc getRef(ref x: vectorRef(?)) ref: x.vectorType do return x.vec;
+  private inline proc getRef(ref x: ?t) ref: t do return x;
 
   private proc returnTypeForOperatorTypes(type lhsType, type rhsType) type {
     // one of the types can be scalar, but not both
@@ -585,7 +588,7 @@ module SIMD {
     } else return nothing;
   }
   // must be a valid operator and the lhs must be a vector
-  proc validEqOperatorTypes(type lhsType, type rhsType) param {
+  proc validEqOperatorTypes(type lhsType, type rhsType) param: bool {
     if returnTypeForOperatorTypes(lhsType, rhsType) == nothing {
       return false;
     }

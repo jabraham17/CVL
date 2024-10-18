@@ -22,25 +22,26 @@ module IntrinArm64_256 {
   }
 
   // unneeded for now, nobody should be using the raw types directly
-  // proc vec32x8f type do return vecPair(vec32x4f);
-  // proc vec64x4d type do return vecPair(vec64x2d);
+  // proc vec32x8r type do return vecPair(vec32x4r);
+  // proc vec64x4r type do return vecPair(vec64x2r);
   // proc vec8x32i type do return vecPair(vec8x16i);
   // proc vec16x16i type do return vecPair(vec16x8i);
   // proc vec32x8i type do return vecPair(vec32x4i);
   // proc vec64x4i type do return vecPair(vec64x2i);
 
 
-  proc numBits(type t) param where isSubtype(t, vecPair) do
+  proc numBits(type t) param: int where isSubtype(t, vecPair) do
     return numBits(t.vt) * 2;
 
 
+  @lint.typeOnly
   record generic_wide {
     // operations that are generic for all wide types, which use vecPair
 
     type implVecType;
     proc type vecType type do return vecPair(implVecType.vecType);
     proc type laneType type do return implVecType.laneType;
-    proc type offset param do return numBits(implVecType.vecType) / numBits(laneType);
+    proc type offset param: int do return numBits(implVecType.vecType) / numBits(laneType);
 
     inline proc type extract(x: vecType, param idx: int): laneType {
       if idx < offset then return implVecType.extract(x.lo, idx);
@@ -75,11 +76,13 @@ module IntrinArm64_256 {
     inline proc type reverse(x: vecType): vecType do
       return new vecType(implVecType.reverse(x.hi), implVecType.reverse(x.lo));
     inline proc type rotateLeft(x: vecType): vecType {
-      compilerWarning("rotateLeft not implemented");
+      import SIMD;
+      if SIMD.implementationWarnings then compilerWarning("rotateLeft not implemented");
       return x; // TODO
     }
     inline proc type rotateRight(x: vecType): vecType {
-      compilerWarning("rotateRight not implemented");
+      import SIMD;
+      if SIMD.implementationWarnings then compilerWarning("rotateRight not implemented");
       return x; // TODO
     }
     inline proc type interleaveLower(x: vecType, y: vecType): vecType do
@@ -105,8 +108,8 @@ module IntrinArm64_256 {
     inline proc type hadd(x: vecType, y: vecType): vecType {
 
       proc vpaddName(type t) param {
-        if t == vec32x4f then return "vpaddq_f32";
-        if t == vec64x2d then return "vpaddq_f64";
+        if t == vec32x4r then return "vpaddq_f32";
+        if t == vec64x2r then return "vpaddq_f64";
         if t == vec8x16i then return "vpaddq_s8";
         if t == vec16x8i then return "vpaddq_s16";
         if t == vec32x4i then return "vpaddq_s32";
@@ -140,8 +143,8 @@ module IntrinArm64_256 {
   }
 
 
-  proc arm64_32x8f type do return generic_wide(arm64_32x4f);
-  proc arm64_64x4d type do return generic_wide(arm64_64x2d);
+  proc arm64_32x8r type do return generic_wide(arm64_32x4r);
+  proc arm64_64x4r type do return generic_wide(arm64_64x2r);
   proc arm64_8x32i type do return generic_wide(arm64_8x16i);
   proc arm64_16x16i type do return generic_wide(arm64_16x8i);
   proc arm64_32x8i type do return generic_wide(arm64_32x4i);

@@ -1,5 +1,14 @@
-#!/usr/bin/env bash
+#!/usr/bin/env python3
 
-from_mason=$(python3 -c 'import tomllib; import sys; f = open(sys.argv[1], "rb"); data = tomllib.load(f); f.close(); print(data["brick"].get("compopts", ""))' ../Mason.toml)
+import os
+import tomllib
 
-echo "$from_mason -M ../src"
+workspace = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+Mason_toml = os.path.join(workspace, "Mason.toml")
+src = os.path.join(workspace, "src")
+
+with open(Mason_toml, "rb") as f:
+  data = tomllib.load(f)
+
+compopts = data["brick"].get("compopts", "")
+print(f"-M{src} {compopts}")

@@ -21,6 +21,7 @@ module IntrinX86_128 {
     return _mm_castps_pd(x);
   }
 
+  @lint.typeOnly
   record x8664_32x4f {
     proc type vecType type do return vec128;
     proc type laneType type do return real(32);
@@ -182,6 +183,7 @@ module IntrinX86_128 {
     }
   }
 
+  @lint.typeOnly
   record x8664_64x2d {
     proc type vecType type do return vec128d;
     proc type laneType type do return real(64);

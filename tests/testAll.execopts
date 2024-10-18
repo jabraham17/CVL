@@ -1,0 +1,6 @@
+--runTestName='arrTest' # arrTest.good
+--runTestName='initTest' # initTest.good
+--runTestName='mathTest' # mathTest.good
+--runTestName='sqrtTest' # sqrtTest.good
+--runTestName='shuffleTest' # shuffleTest.good
+--runTestName='fmaTest' # fmaTest.good

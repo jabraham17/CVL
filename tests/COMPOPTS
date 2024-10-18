@@ -1,1 +1,5 @@
--M ../src
+#!/usr/bin/env bash
+
+from_mason=$(python3 -c 'import tomllib; import sys; f = open(sys.argv[1], "rb"); data = tomllib.load(f); f.close(); print(data["brick"].get("compopts", ""))' ../Mason.toml)
+
+echo "$from_mason -M ../src"

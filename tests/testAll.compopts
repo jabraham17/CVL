@@ -1,6 +1,0 @@
--stestName="'arrTest'" # arrTest.good
--stestName="'initTest'" # initTest.good
--stestName="'mathTest'" -sSIMD.implementationWarnings=false # mathTest.good
--stestName="'sqrtTest'" # sqrtTest.good
--stestName="'shuffleTest'" -sSIMD.implementationWarnings=false # shuffleTest.good
--stestName="'fmaTest'" # fmaTest.good

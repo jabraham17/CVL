@@ -6,8 +6,8 @@ config const precision = 2;
 config const padding = 5;
 var vecOut = stdout.withSerializer(new precisionSerializer(precision=precision, padding=padding));
 
-config param testName: string = "all";
-
+config param compileTestName: string = "all";
+config const runTestName: string = "all";
 
 proc sqrtTest(type eltType, param numElts: int) {
   writeln("sqrtTest for ", eltType:string, " ", numElts);
@@ -206,40 +206,14 @@ proc fmaTest(type eltType, param numElts: int) {
   }
 }
 
-
-proc typeForString(param s: string) type {
-       if s == "real(64)" then return real(64);
-  else if s == "real(32)" then return real(32);
-  else if s == "int(8)"   then return int(8);
-  else if s == "int(16)"  then return int(16);
-  else if s == "int(32)"  then return int(32);
-  else if s == "int(64)"  then return int(64);
-  else if s == "uint(8)"  then return uint(8);
-  else if s == "uint(16)" then return uint(16);
-  else if s == "uint(32)" then return uint(32);
-  else if s == "uint(64)" then return uint(64);
-  compilerError("Unknown type: ", s);
-}
+proc shouldCompileTest(param name: string) param do
+  return compileTestName == "all" || compileTestName == name;
+proc shouldRunTest(param name: string) do
+  return runTestName == "all" || runTestName == name;
 
 proc main() {
 
-  param test_arrTest = testName == "all" || testName == "arrTest";
-  param test_initTest = testName == "all" || testName == "initTest";
-  param test_mathTest = testName == "all" || testName == "mathTest";
-  param test_sqrtTest = testName == "all" || testName == "sqrtTest";
-  param test_shuffleTest = testName == "all" || testName == "shuffleTest";
-  param test_fmaTest = testName == "all" || testName == "fmaTest";
-
-  // Can't use this sadly, no param tuples
-  // var types = (("real(32)", 4),
-  //              ("real(64)", 2),
-  //              ("real(32)", 8),
-  //              ("real(64)", 4),
-  //              ("int(8)", 16),
-  //              ("int(16)", 8)
-  //              ("int(32)", 4));
-
-  if test_arrTest {
+  if shouldCompileTest("arrTest") && shouldRunTest("arrTest") {
     arrTest(real(32), 4);
     arrTest(real(64), 2);
     arrTest(real(32), 8);
@@ -255,7 +229,7 @@ proc main() {
     arrTest(int(32), 8);
     arrTest(int(64), 4);
   }
-  if test_initTest {
+  if shouldCompileTest("initTest") && shouldRunTest("initTest") {
     initTest(real(32), 4);
     initTest(real(64), 2);
     initTest(real(32), 8);
@@ -271,7 +245,7 @@ proc main() {
     initTest(int(32), 8);
     initTest(int(64), 4);
   }
-  if test_mathTest {
+  if shouldCompileTest("mathTest") && shouldRunTest("mathTest") {
     mathTest(real(32), 4);
     mathTest(real(64), 2);
     mathTest(real(32), 8);
@@ -287,7 +261,7 @@ proc main() {
     mathTest(int(32), 8);
     mathTest(int(64), 4);
   }
-  if test_sqrtTest {
+  if shouldCompileTest("sqrtTest") && shouldRunTest("sqrtTest") {
     sqrtTest(real(32), 4);
     sqrtTest(real(64), 2);
     sqrtTest(real(32), 8);
@@ -303,7 +277,7 @@ proc main() {
     // sqrtTest(int(32), 8); // UNSUPPORTED
     // sqrtTest(int(64), 4); // UNSUPPORTED
   }
-  if test_shuffleTest {
+  if shouldCompileTest("shuffleTest") && shouldRunTest("shuffleTest") {
     shuffleTest(real(32), 4);
     shuffleTest(real(64), 2);
     shuffleTest(real(32), 8);
@@ -319,7 +293,7 @@ proc main() {
     shuffleTest(int(32), 8);
     shuffleTest(int(64), 4);
   }
-  if test_fmaTest {
+  if shouldCompileTest("fmaTest") && shouldRunTest("fmaTest") {
     fmaTest(real(32), 4);
     fmaTest(real(64), 2);
     fmaTest(real(32), 8);
@@ -335,5 +309,10 @@ proc main() {
     fmaTest(int(32), 8);
     // fmaTest(int(64), 4); // UNSUPPORTED
   }
+
+  // mathFunc: abs, min, max
+
+  // bitmath
+  // cmps
 
 }

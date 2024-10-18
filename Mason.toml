@@ -4,6 +4,8 @@ version="0.1.0"
 chplVersion="2.2.0"
 license="None"
 type="library"
+# TODO: implementation still in progress, use -sSIMD.implementationWarnings=false
+compopts="--using-attribute-toolname=lint -sSIMD.implementationWarnings=false"
 
 [dependencies]
 

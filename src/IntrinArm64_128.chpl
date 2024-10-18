@@ -85,8 +85,10 @@ module IntrinArm64_128 {
   */
    inline proc doSimpleOp(param op: string, x: ?t): t do
     return doSimpleOp(op, t, x);
-  inline proc doSimpleOp(param op: string, x: ?t1, y: ?t2): t1 do
-    return doSimpleOp(op, t1, x, y);
+  inline proc doSimpleOp(param op: string, x: ?t, y: ?): t do
+    return doSimpleOp(op, t, x, y);
+  inline proc doSimpleOp(param op: string, x: ?t, y: ?, z: ?): t do
+    return doSimpleOp(op, t, x, y, z);
   /*
     Call a simple op on a vector type
     returnType specifies the return type
@@ -104,6 +106,13 @@ module IntrinArm64_128 {
     pragma "fn synchronization free"
     extern externName proc func(externX: t1, externY: t2): returnType;
     return func(x, y);
+  }
+  inline proc doSimpleOp(param op: string, type returnType, x: ?t1, y: ?t2, z: ?t3): returnType {
+    param externName = op + "_" + typeToSuffix(returnType);
+
+    pragma "fn synchronization free"
+    extern externName proc func(externX: t1, externY: t2, externZ: t3): returnType;
+    return func(x, y, z);
   }
 
   @lint.typeOnly
@@ -177,14 +186,30 @@ module IntrinArm64_128 {
                 doSimpleOp("vget_high", getHalfType(vecType), y));
 
 
-    inline proc type add(x: vecType, y: vecType): vecType do
-      return doSimpleOp("vaddq", x, y);
-    inline proc type sub(x: vecType, y: vecType): vecType do
-      return doSimpleOp("vsubq", x, y);
-    inline proc type mul(x: vecType, y: vecType): vecType do
-      return doSimpleOp("vmulq", x, y);
-    inline proc type div(x: vecType, y: vecType): vecType do
-      return doSimpleOp("vdivq", x, y);
+    inline proc type add(x: vecType, y: vecType): vecType {
+      if canResolveTypeMethod(extensionType, "add", x, y) then
+        return extensionType.add(x, y);
+      else
+        return doSimpleOp("vaddq", x, y);
+    }
+    inline proc type sub(x: vecType, y: vecType): vecType {
+      if canResolveTypeMethod(extensionType, "sub", x, y) then
+        return extensionType.sub(x, y);
+      else
+        return doSimpleOp("vsubq", x, y);
+    }
+    inline proc type mul(x: vecType, y: vecType): vecType {
+      if canResolveTypeMethod(extensionType, "mul", x, y) then
+        return extensionType.mul(x, y);
+      else
+        return doSimpleOp("vmulq", x, y);
+    }
+    inline proc type div(x: vecType, y: vecType): vecType {
+      if canResolveTypeMethod(extensionType, "div", x, y) then
+        return extensionType.div(x, y);
+      else
+        return doSimpleOp("vdivq", x, y);
+    }
 
     inline proc type and(x: vecType, y: vecType): vecType {
       if canResolveTypeMethod(extensionType, "and", x, y) then
@@ -269,7 +294,7 @@ module IntrinArm64_128 {
       if canResolveTypeMethod(extensionType, "fmadd", x, y, z) then
         return extensionType.fmadd(x, y, z);
       else
-        return doSimpleOp("vfmaq", x, y, z);
+        return doSimpleOp("vfmaq", z, x, y); // arm fma has weird order
     }
     inline proc type fmsub(x: vecType, y: vecType, z: vecType): vecType {
       if canResolveTypeMethod(extensionType, "fmsub", x, y, z) then
@@ -445,10 +470,10 @@ module IntrinArm64_128 {
     }
 
     inline proc type fmadd(x: vecType, y: vecType, z: vecType): vecType {
-      return add(mul(x, y), z);
+      return base.add(base.mul(x, y), z);
     }
     inline proc type fmsub(x: vecType, y: vecType, z: vecType): vecType {
-      return sub(mul(x, y), z);
+      return base.sub(base.mul(x, y), z);
     }
 
   }
@@ -533,10 +558,10 @@ module IntrinArm64_128 {
     }
 
     inline proc type fmadd(x: vecType, y: vecType, z: vecType): vecType {
-      return add(mul(x, y), z);
+      return base.add(base.mul(x, y), z);
     }
     inline proc type fmsub(x: vecType, y: vecType, z: vecType): vecType {
-      return sub(mul(x, y), z);
+      return base.sub(base.mul(x, y), z);
     }
   }
 
@@ -594,10 +619,12 @@ module IntrinArm64_128 {
       return vcvtq_s32_f32(res_f32);
     }
 
-    inline proc type fmadd(x: vecType, y: vecType, z: vecType): vecType do
-      return add(mul(x, y), z);
-    inline proc type fmsub(x: vecType, y: vecType, z: vecType): vecType do
-      return sub(mul(x, y), z);
+    inline proc type fmadd(x: vecType, y: vecType, z: vecType): vecType {
+      return base.add(base.mul(x, y), z);
+    }
+    inline proc type fmsub(x: vecType, y: vecType, z: vecType): vecType {
+      return base.sub(base.mul(x, y), z);
+    }
   }
 
   @lint.typeOnly
@@ -639,6 +666,7 @@ module IntrinArm64_128 {
       var res_f64 = arm64_64x2r.div(x_f64, y_f64);
       return vcvtq_s64_f64(res_f64);
     }
+
   }
 
 

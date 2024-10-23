@@ -54,6 +54,7 @@ def rules(driver):
         loc = result.node.location()
         proc_text = chapel.range_to_text(loc, lines)
         proc_text = "inline " + proc_text
+        # TODO: this works only because private/public is not included in location
         fixit = Fixit.build(Edit.build(loc, proc_text))
         fixit.description = "Add inline keyword"
         return fixit
@@ -76,6 +77,7 @@ def rules(driver):
         loc = result.node.location()
         proc_text = chapel.range_to_text(loc, lines)
         proc_text = proc_text.removeprefix("inline").lstrip()
+        # TODO: this works only because private/public is not included in location
         fixit = Fixit.build(Edit.build(loc, proc_text))
         fixit.description = "Remove inline keyword"
         return fixit

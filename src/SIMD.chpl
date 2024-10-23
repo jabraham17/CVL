@@ -5,6 +5,25 @@ module SIMD {
   use CTypes only c_ptr, c_ptrConst, c_ptrTo, c_ptrToConst, c_addrOf, c_addrOfConst;
   import Intrin;
 
+  proc numBits(type t) param: int where isSubtype(t, vector) do
+    return numBits(t.eltType) * t.numElts;
+
+  private proc isValidContainer(container: ?, type eltType) param: bool where isArray(container) {
+    return container.rank == 1 &&
+           container.isRectangular() &&
+           container._value.isDefaultRectangular() &&
+           container.eltType == eltType;
+  }
+  private proc isValidContainer(container: ?, type eltType) param: bool where isHomogeneousTuple(container) {
+    return container(0).type == eltType;
+  }
+  private proc isValidContainer(container: ?, type eltType) param: bool {
+    return false;
+  }
+  private proc isDomainOrRange(v: ?t) param: bool do
+    return isSubtype(t, domain(?)) || isSubtype(t, range(?));
+
+
   record vector: writeSerializable {
     type eltType;
     param numElts: int;
@@ -44,6 +63,9 @@ module SIMD {
     }
     inline operator=(ref lhs: vector(?), rhs: lhs.type) {
       lhs.data = rhs.data;
+    }
+    inline proc ref set(value: vector(eltType, numElts)) {
+      this.data = value.data;
     }
 
     //
@@ -162,6 +184,12 @@ module SIMD {
       return result;
     }
 
+    inline operator-(x: vector(?eltType, ?numElts)): x.type {
+      var result: x.type;
+      result.data = Intrin.neg(eltType, numElts, x.data);
+      return result;
+    }
+
     /* VECTOR * VECTOR */
     inline operator*(x: vector(?eltType, ?numElts), y: x.type): x.type {
       var result: x.type;
@@ -179,7 +207,7 @@ module SIMD {
                       Intrin.splat(eltType, numElts, y));
       return result;
     }
-    inline operator*=(ref x: vector(?eltType, ?numElts), y: ?scalarType) 
+    inline operator*=(ref x: vector(?eltType, ?numElts), y: ?scalarType)
       where isCoercible(scalarType, eltType) do
       x.data = Intrin.mul(eltType, numElts, x.data,
                       Intrin.splat(eltType, numElts, y));
@@ -224,6 +252,205 @@ module SIMD {
       return result;
     }
 
+
+    /* VECTOR & VECTOR */
+    inline operator&(x: vector(?eltType, ?numElts), y: x.type): x.type {
+      var result: x.type;
+      result.data = Intrin.and(eltType, numElts, x.data, y.data);
+      return result;
+    }
+    inline operator&=(ref x: vector(?eltType, ?numElts), y: x.type) do
+      x.data = Intrin.and(eltType, numElts, x.data, y.data);
+    /* VECTOR & SCALAR */
+    inline operator&(x: vector(?eltType, ?numElts), y: ?scalarType): x.type
+      where isCoercible(scalarType, eltType) {
+      var result: x.type;
+      result.data = Intrin.and(eltType, numElts, x.data,
+                      Intrin.splat(eltType, numElts, y));
+      return result;
+    }
+    inline operator&=(ref x: vector(?eltType, ?numElts), y: ?scalarType)
+      where isCoercible(scalarType, eltType) do
+      x.data = Intrin.and(eltType, numElts, x.data,
+                      Intrin.splat(eltType, numElts, y));
+    /* SCALAR & VECTOR */
+    inline operator&(x: ?scalarType, y: vector(?eltType, ?numElts)): y.type
+      where isCoercible(scalarType, eltType) {
+      var result: y.type;
+      result.data = Intrin.and(eltType, numElts,
+                      Intrin.splat(eltType, numElts, x), y.data);
+      return result;
+    }
+
+    /* VECTOR | VECTOR */
+    inline operator|(x: vector(?eltType, ?numElts), y: x.type): x.type {
+      var result: x.type;
+      result.data = Intrin.or(eltType, numElts, x.data, y.data);
+      return result;
+    }
+    inline operator|=(ref x: vector(?eltType, ?numElts), y: x.type) do
+      x.data = Intrin.or(eltType, numElts, x.data, y.data);
+    /* VECTOR | SCALAR */
+    inline operator|(x: vector(?eltType, ?numElts), y: ?scalarType): x.type
+      where isCoercible(scalarType, eltType) {
+      var result: x.type;
+      result.data = Intrin.or(eltType, numElts, x.data,
+                      Intrin.splat(eltType, numElts, y));
+      return result;
+    }
+    inline operator|=(ref x: vector(?eltType, ?numElts), y: ?scalarType)
+      where isCoercible(scalarType, eltType) do
+      x.data = Intrin.or(eltType, numElts, x.data,
+                      Intrin.splat(eltType, numElts, y));
+    /* SCALAR | VECTOR */
+    inline operator|(x: ?scalarType, y: vector(?eltType, ?numElts)): y.type
+      where isCoercible(scalarType, eltType) {
+      var result: y.type;
+      result.data = Intrin.or(eltType, numElts,
+                      Intrin.splat(eltType, numElts, x), y.data);
+      return result;
+    }
+
+    /* VECTOR ^ VECTOR */
+    inline operator^(x: vector(?eltType, ?numElts), y: x.type): x.type {
+      var result: x.type;
+      result.data = Intrin.xor(eltType, numElts, x.data, y.data);
+      return result;
+    }
+    inline operator^=(ref x: vector(?eltType, ?numElts), y: x.type) do
+      x.data = Intrin.xor(eltType, numElts, x.data, y.data);
+    /* VECTOR ^ SCALAR */
+    inline operator^(x: vector(?eltType, ?numElts), y: ?scalarType): x.type
+      where isCoercible(scalarType, eltType) {
+      var result: x.type;
+      result.data = Intrin.xor(eltType, numElts, x.data,
+                      Intrin.splat(eltType, numElts, y));
+      return result;
+    }
+    inline operator^=(ref x: vector(?eltType, ?numElts), y: ?scalarType)
+      where isCoercible(scalarType, eltType) do
+      x.data = Intrin.xor(eltType, numElts, x.data,
+                      Intrin.splat(eltType, numElts, y));
+    /* SCALAR ^ VECTOR */
+    inline operator^(x: ?scalarType, y: vector(?eltType, ?numElts)): y.type
+      where isCoercible(scalarType, eltType) {
+      var result: y.type;
+      result.data = Intrin.xor(eltType, numElts,
+                      Intrin.splat(eltType, numElts, x), y.data);
+      return result;
+    }
+
+    /* ~VECTOR */
+    inline operator~(x: vector(?eltType, ?numElts)): x.type {
+      var result: x.type;
+      result.data = Intrin.not(eltType, numElts, x.data);
+      return result;
+    }
+
+    // TODO shifts
+
+
+    /* VECTOR == VECTOR */
+    inline operator==(x: vector(?eltType, ?numElts), y: x.type): x.type {
+      var result: x.type;
+      result.data = Intrin.cmpEq(eltType, numElts, x.data, y.data);
+      return result;
+    }
+    /* VECTOR == SCALAR */
+    inline operator==(x: vector(?eltType, ?numElts), y: ?scalarType): x.type
+      where isCoercible(scalarType, eltType) {
+      return x == (y:x.type);
+    }
+    /* SCALAR == VECTOR */
+    inline operator==(x: ?scalarType, y: vector(?eltType, ?numElts)): y.type
+      where isCoercible(scalarType, eltType) {
+      return (x:y.type) == y;
+    }
+    /* VECTOR != VECTOR */
+    inline operator!=(x: vector(?eltType, ?numElts), y: x.type): x.type {
+      var result: x.type;
+      result.data = Intrin.cmpNe(eltType, numElts, x.data, y.data);
+      return result;
+    }
+    /* VECTOR != SCALAR */
+    inline operator!=(x: vector(?eltType, ?numElts), y: ?scalarType): x.type
+      where isCoercible(scalarType, eltType) {
+      return x != (y:x.type);
+    }
+    /* SCALAR != VECTOR */
+    inline operator!=(x: ?scalarType, y: vector(?eltType, ?numElts)): y.type
+      where isCoercible(scalarType, eltType) {
+      return (x:y.type) != y;
+    }
+    /* VECTOR < VECTOR */
+    inline operator<(x: vector(?eltType, ?numElts), y: x.type): x.type {
+      var result: x.type;
+      result.data = Intrin.cmpLt(eltType, numElts, x.data, y.data);
+      return result;
+    }
+    /* VECTOR < SCALAR */
+    inline operator<(x: vector(?eltType, ?numElts), y: ?scalarType): x.type
+      where isCoercible(scalarType, eltType) {
+      return x < (y:x.type);
+    }
+    /* SCALAR < VECTOR */
+    inline operator<(x: ?scalarType, y: vector(?eltType, ?numElts)): y.type
+      where isCoercible(scalarType, eltType) {
+      return (x:y.type) < y;
+    }
+    /* VECTOR <= VECTOR */
+    inline operator<=(x: vector(?eltType, ?numElts), y: x.type): x.type {
+      var result: x.type;
+      result.data = Intrin.cmpLe(eltType, numElts, x.data, y.data);
+      return result;
+    }
+    /* VECTOR <= SCALAR */
+    inline operator<=(x: vector(?eltType, ?numElts), y: ?scalarType): x.type
+      where isCoercible(scalarType, eltType) {
+      return x <= (y:x.type);
+    }
+    /* SCALAR <= VECTOR */
+    inline operator<=(x: ?scalarType, y: vector(?eltType, ?numElts)): y.type
+      where isCoercible(scalarType, eltType) {
+      return (x:y.type) <= y;
+    }
+    /* VECTOR > VECTOR */
+    inline operator>(x: vector(?eltType, ?numElts), y: x.type): x.type {
+      var result: x.type;
+      result.data = Intrin.cmpGt(eltType, numElts, x.data, y.data);
+      return result;
+    }
+    /* VECTOR > SCALAR */
+    inline operator>(x: vector(?eltType, ?numElts), y: ?scalarType): x.type
+      where isCoercible(scalarType, eltType) {
+      return x > (y:x.type);
+    }
+    /* SCALAR > VECTOR */
+    inline operator>(x: ?scalarType, y: vector(?eltType, ?numElts)): y.type
+      where isCoercible(scalarType, eltType) {
+      return (x:y.type) > y;
+    }
+    /* VECTOR >= VECTOR */
+    inline operator>=(x: vector(?eltType, ?numElts), y: x.type): x.type {
+      var result: x.type;
+      result.data = Intrin.cmpGe(eltType, numElts, x.data, y.data);
+      return result;
+    }
+    /* VECTOR >= SCALAR */
+    inline operator>=(x: vector(?eltType, ?numElts), y: ?scalarType): x.type
+      where isCoercible(scalarType, eltType) {
+      return x >= (y:x.type);
+    }
+    /* SCALAR >= VECTOR */
+    inline operator>=(x: ?scalarType, y: vector(?eltType, ?numElts)): y.type
+      where isCoercible(scalarType, eltType) {
+      return (x:y.type) >= y;
+    }
+
+
+
+
+
     inline proc ref set(value) where isCoercible(value.type, eltType) do
       data = Intrin.splat(eltType, numElts, value:eltType);
     inline proc ref set(values) where isHomogeneousTupleType(values.type) &&
@@ -234,11 +461,11 @@ module SIMD {
         values_[i] = values[i]:eltType;
       data = Intrin.set(eltType, numElts, values_);
     }
-    inline proc ref set(param idx: int, value)
+    inline proc ref set(param idx: integral, value)
       where isCoercible(value.type, eltType) do
       data = Intrin.insert(eltType, numElts, data, value:eltType, idx);
 
-    inline proc this(param idx: int): eltType do
+    inline proc this(param idx: integral): eltType do
       return Intrin.extract(eltType, numElts, data, idx);
     inline iter these(): eltType {
       for param i in 0..#numElts {
@@ -247,26 +474,28 @@ module SIMD {
     }
 
     @chpldoc.nodoc
-    inline proc type _computeAddress(ref arr: [] eltType, idx: int): c_ptr(eltType)
-      where arr.rank == 1 && arr.isRectangular() && arr._value.isDefaultRectangular() {
+    inline proc type _computeAddress(ref arr: [] eltType, idx: integral): c_ptr(eltType)
+      where isValidContainer(arr, eltType) {
       if boundsChecking {
-        // TODO
+        // reuse array slice bounds checking
+        arr[idx.. by arr.domain.stride # numElts];
       }
       const ptr = c_addrOf(arr[idx]);
       return ptr;
     }
     @chpldoc.nodoc
-    inline proc type _computeAddressConst(arr: [] eltType, idx: int): c_ptrConst(eltType)
-      where arr.rank == 1 && arr.isRectangular() && arr._value.isDefaultRectangular() {
+    inline proc type _computeAddressConst(arr: [] eltType, idx: integral): c_ptrConst(eltType)
+      where isValidContainer(arr, eltType) {
       if boundsChecking {
-        // TODO
+        // reuse array slice bounds checking
+        arr[idx.. by arr.domain.stride # numElts];
       }
       const ptr = c_addrOfConst(arr[idx]);
       return ptr;
     }
     @chpldoc.nodoc
-    inline proc type _computeAddress(tup, idx: int = 0): c_ptr(eltType)
-      where isHomogeneousTuple(tup) && tup(0).type == eltType {
+    inline proc type _computeAddress(ref tup, idx: integral = 0): c_ptr(eltType)
+      where isValidContainer(tup, eltType) {
       if boundsChecking {
         if idx+numElts-1 >= tup.size {
           halt("out of bounds load");
@@ -275,9 +504,21 @@ module SIMD {
       const ptr = c_addrOf(tup(idx));
       return ptr;
     }
+    @chpldoc.nodoc
+    inline proc type _computeAddressConst(tup, idx: integral = 0): c_ptrConst(eltType)
+      where isValidContainer(tup, eltType) {
+      if boundsChecking {
+        if idx+numElts-1 >= tup.size {
+          halt("out of bounds load");
+        }
+      }
+      const ptr = c_addrOfConst(tup(idx));
+      return ptr;
+    }
+
 
     inline proc ref load(ptr: c_ptrConst(eltType),
-                         idx: int = 0,
+                         idx: integral = 0,
                          param aligned: bool = false) {
       var ptr_ = ptr + idx;
       if aligned then
@@ -286,16 +527,17 @@ module SIMD {
         data = Intrin.loadUnaligned(eltType, numElts, ptr_);
     }
     inline proc ref load(arr: [] eltType,
-                         idx: int = 0,
+                         idx: integral = 0,
                          param aligned: bool = false)
-      where arr.rank == 1 && arr.isRectangular() && arr._value.isDefaultRectangular() do
+      where isValidContainer(arr, eltType) do
       load(this.type._computeAddressConst(arr, idx), idx=0, aligned=aligned);
-    inline proc ref load(tup, idx: int = 0, param aligned: bool = false)
-      where isHomogeneousTuple(tup) && tup(0).type == eltType do
-      load(this.type._computeAddress(tup, idx), idx=0, aligned=aligned);
+
+    inline proc ref load(tup, idx: integral = 0, param aligned: bool = false)
+      where isValidContainer(tup, eltType) && isHomogeneousTuple(tup) do
+      load(this.type._computeAddressConst(tup, idx), idx=0, aligned=aligned);
 
     inline proc store(ptr: c_ptr(eltType),
-                      idx: int = 0,
+                      idx: integral = 0,
                       param aligned: bool = false) {
       var ptr_ = ptr + idx;
       if aligned then
@@ -303,14 +545,14 @@ module SIMD {
       else
         Intrin.storeUnaligned(eltType, numElts, ptr_, data);
     }
-    inline proc ref store(ref arr: [] eltType,
-                          idx: int = 0,
+    inline proc store(ref arr: [] eltType,
+                          idx: integral = 0,
                           param aligned: bool = false)
-      where arr.rank == 1 && arr.isRectangular() && arr._value.isDefaultRectangular() do
+      where isValidContainer(arr, eltType) do
       store(this.type._computeAddress(arr, idx), idx=0, aligned=aligned);
 
-    inline proc store(ref tup, idx: int = 0, param aligned: bool = false)
-      where isHomogeneousTuple(tup) && tup(0).type == eltType {
+    inline proc store(ref tup, idx: integral = 0, param aligned: bool = false)
+      where isValidContainer(tup, eltType) && isHomogeneousTuple(tup) {
       if boundsChecking {
         if idx+numElts-1 >= tup.size {
           halt("out of bounds store");
@@ -318,48 +560,85 @@ module SIMD {
       }
       store(this.type._computeAddress(tup, idx), idx=0, aligned=aligned);
     }
-    inline proc type load(container: ?t,
-                          idx: int = 0,
+    inline proc type load(container: ?,
+                          idx: integral = 0,
                           param aligned: bool = false): this {
       var result: this;
       result.load(container, idx=idx, aligned=aligned);
       return result;
     }
 
-    // compares
-    // bitmath (and, or, not, xor)
-    // abs, min, max
-    // transmute (bitcast)
-    // typecaste
+    // TODO: transmute (bitcast)
+    // TODO: typecast
 
 
-    // TODO: we should have standalone, leader, and follower versions of all of these
-    inline iter type indicies(rng): rng.idxType
-      where isSubtype(rng.type, range(?)) || isSubtype(rng.type, domain(?)) {
-      for i in rng by numElts {
-        yield i;
+
+    inline proc type indicies(rng: ?) where isDomainOrRange(rng) do
+      return rng by numElts;
+    inline proc type indicies(container: ?) where isHomogeneousTuple(container) do
+      return 0..#container.size by numElts;
+    inline proc type indicies(container: ?) where isArray(container) do
+      return container.domain by numElts;
+
+    // TODO: how can I avoid the extra load per loop of the array metadata?
+
+    inline iter type vectors(container: ?, param aligned: bool = false)
+      where isValidContainer(container, eltType) {
+      for i in indicies(container) {
+        yield this.load(container, i, aligned=aligned);
       }
     }
-    inline iter type vectors(tup, param aligned: bool = false): this
-      where isHomogeneousTuple(tup) && tup(0).type == eltType {
-      for i in 0..#tup.size by numElts {
-        yield this.load(tup, i, aligned=aligned);
+    inline iter type vectors(param tag: iterKind, container: ?, param aligned: bool = false)
+      where tag == iterKind.standalone && isValidContainer(container, eltType) {
+      for i in indicies(container).these(tag=tag) {
+        yield this.load(container, i, aligned=aligned);
       }
     }
-    inline iter type vectors(arr: [], param aligned: bool = false): this {
-      // TODO: how can I avoid the extra load per loop of the array metadata?
-      for i in arr.domain by numElts {
-        yield this.load(arr, i, aligned=aligned);
+    inline iter type vectors(param tag: iterKind, container: ?, param aligned: bool = false)
+      where tag == iterKind.leader && isValidContainer(container, eltType) {
+      for followThis in indicies(container).these(tag=tag) {
+        yield followThis;
       }
     }
-    inline iter type vectorsRef(ref arr: [], param aligned: bool = false) ref : vectorRef(this, aligned) {
-      // TODO: how can I avoid the extra load per loop of the array metadata?
-      for i in arr.domain by numElts {
-        var vr = new vectorRef(this, this._computeAddress(arr, i), aligned=aligned);
+    inline iter type vectors(param tag: iterKind, followThis, container: ?, param aligned: bool = false)
+      where tag == iterKind.follower && isValidContainer(container, eltType) {
+      for i in indicies(container).these(tag=tag, followThis=followThis) {
+        yield this.load(container, i, aligned=aligned);
+      }
+    }
+
+    inline iter type vectorsRef(ref container: ?, param aligned: bool = false) ref
+      where isValidContainer(container, eltType) {
+      for i in indicies(container) {
+        var vr = new vectorRef(this, this._computeAddress(container, i), aligned=aligned);
         yield vr;
       }
     }
-    inline iter type vectorsJagged(arr: [], pad: eltType = 0, param aligned: bool = false): this {
+    inline iter type vectorsRef(param tag: iterKind, ref container: ?, param aligned: bool = false) ref
+      where tag == iterKind.standalone && isValidContainer(container, eltType) {
+      for i in indicies(container).these(tag=tag) {
+        var vr = new vectorRef(this, this._computeAddress(container, i), aligned=aligned);
+        yield vr;
+      }
+    }
+    inline iter type vectorsRef(param tag: iterKind, ref container: ?, param aligned: bool = false) ref
+      where tag == iterKind.leader && isValidContainer(container, eltType) {
+      for followThis in indicies(container).these(tag=tag) {
+        yield followThis;
+      }
+    }
+    inline iter type vectorsRef(param tag: iterKind, followThis, ref container: ?, param aligned: bool = false) ref
+      where tag == iterKind.follower && isValidContainer(container, eltType) {
+      for i in indicies(container).these(tag=tag, followThis=followThis) {
+        var vr = new vectorRef(this, this._computeAddress(container, i), aligned=aligned);
+        yield vr;
+      }
+    }
+
+
+
+    // TODO: is it really worth having this?
+    inline iter type vectorsJagged(arr: ?, pad: eltType = 0, param aligned: bool = false): this {
       // TODO: is this really the most efficient way to do this?
       // this should iterate over a range, and pad the extra with 'pad'
       // so that the last iteration is a full vector
@@ -459,12 +738,12 @@ module SIMD {
   }
 
 
-  proc sqrt(x: vector(?eltType, ?numElts)): x.type {
+  inline proc sqrt(x: vector(?eltType, ?numElts)): x.type {
     var result: x.type;
     result.data = Intrin.sqrt(eltType, numElts, x.data);
     return result;
   }
-  proc rsqrt(x: vector(?eltType, ?numElts)): x.type {
+  inline proc rsqrt(x: vector(?eltType, ?numElts)): x.type {
     var result: x.type;
     result.data = Intrin.rsqrt(eltType, numElts, x.data);
     return result;
@@ -482,6 +761,48 @@ module SIMD {
                     z: x.type): x.type {
     var result: x.type;
     result.data = Intrin.fmsub(eltType, numElts, x.data, y.data, z.data);
+    return result;
+  }
+
+  inline proc bitSelect(mask: vector(?), x: vector(?eltType, ?numElts), y: x.type): x.type where numBits(mask.type) == numBits(x.type) {
+    var result: x.type;
+    result.data = Intrin.bitSelect(eltType, numElts, mask.data, x.data, y.data);
+    return result;
+  }
+
+  inline proc andNot(x: vector(?eltType, ?numElts), y: x.type): x.type {
+    var result: x.type;
+    result.data = Intrin.andNot(eltType, numElts, x.data, y.data);
+    return result;
+  }
+  inline proc andNot(x: vector(?eltType, ?numElts), y: ?scalarType): x.type where isCoercible(scalarType, eltType) {
+    var result: x.type;
+    result.data = Intrin.andNot(eltType, numElts, x.data,
+                                Intrin.splat(eltType, numElts, y));
+    return result;
+  }
+  inline proc andNot(x: ?scalarType, y: vector(?eltType, ?numElts)): y.type where isCoercible(scalarType, eltType) {
+    var result: y.type;
+    result.data = Intrin.andNot(eltType, numElts,
+                                Intrin.splat(eltType, numElts, x), y.data);
+    return result;
+  }
+
+  inline proc min(x: vector(?eltType, ?numElts),
+                  y: x.type): x.type do {
+    var result: x.type;
+    result.data = Intrin.min(eltType, numElts, x.data, y.data);
+    return result;
+  }
+  inline proc max(x: vector(?eltType, ?numElts),
+                  y: x.type): x.type {
+    var result: x.type;
+    result.data = Intrin.max(eltType, numElts, x.data, y.data);
+    return result;
+  }
+  inline proc abs(x: vector(?eltType, ?numElts)): x.type {
+    var result: x.type;
+    result.data = Intrin.abs(eltType, numElts, x.data);
     return result;
   }
 
@@ -521,36 +842,40 @@ module SIMD {
       writer.write(vec);
     }
 
+    // TODO: handle the free functions like min and max
+
+    // TODO: handle all the rest of the operators
+
     //
     // Forwarding doesn't work for operators, so we need to manually implement them
     //
-    operator+(lhs: ?lhsType, rhs: ?rhsType)
+    inline operator+(lhs: ?lhsType, rhs: ?rhsType): returnTypeForOperatorTypes(lhsType, rhsType)
       where returnTypeForOperatorTypes(lhsType, rhsType) != nothing do
       return getValue(lhs) + getValue(rhs);
-    operator+=(ref lhs: vectorRef(?), rhs: ?rhsType)
-      where _validEqOperatorTypes(lhs.type, rhsType) do
+    inline operator+=(ref lhs: vectorRef(?), rhs: ?rhsType)
+      where validEqOperatorTypes(lhs.type, rhsType) do
       getRef(lhs) += getValue(rhs);
 
-    operator-(lhs: ?lhsType, rhs: ?rhsType)
+    inline operator-(lhs: ?lhsType, rhs: ?rhsType): returnTypeForOperatorTypes(lhsType, rhsType)
       where returnTypeForOperatorTypes(lhsType, rhsType) != nothing do
       return getValue(lhs) + getValue(rhs);
-    operator-=(ref lhs: vectorRef(?), rhs: ?rhsType)
-      where _validEqOperatorTypes(lhs.type, rhsType) do
+    inline operator-=(ref lhs: vectorRef(?), rhs: ?rhsType)
+      where validEqOperatorTypes(lhs.type, rhsType) do
       getRef(lhs) -= getValue(rhs);
 
-    operator*(lhs: ?lhsType, rhs: ?rhsType)
+    inline operator*(lhs: ?lhsType, rhs: ?rhsType): returnTypeForOperatorTypes(lhsType, rhsType)
       where returnTypeForOperatorTypes(lhsType, rhsType) != nothing do
       return getValue(lhs) * getValue(rhs);
-    operator*=(ref lhs: vectorRef(?), rhs: ?rhsType)
-      where _validEqOperatorTypes(lhs.type, rhsType) do
+    inline operator*=(ref lhs: vectorRef(?), rhs: ?rhsType)
+      where validEqOperatorTypes(lhs.type, rhsType) do
       getRef(lhs) *= getValue(rhs);
 
-    operator/(lhs: ?lhsType, rhs: ?rhsType)
-      where returnTypeForOperatorTypes(lhsType, rhsType) != nothing do
-      return getValue(lhs) + getValue(rhs);
-    operator/=(ref lhs: vectorRef(?), rhs: ?rhsType)
-      where _validEqOperatorTypes(lhs.type, rhsType) do
-      getRef(lhs) /= getValue(rhs);
+    // inline operator/(lhs: ?lhsType, rhs: ?rhsType): returnTypeForOperatorTypes(lhsType, rhsType)
+    //   where returnTypeForOperatorTypes(lhsType, rhsType) != nothing do
+    //   return getValue(lhs) / getValue(rhs);
+    // inline operator/=(ref lhs: vectorRef(?), rhs: ?rhsType)
+    //   where validEqOperatorTypes(lhs.type, rhsType) do
+    //   getRef(lhs) /= getValue(rhs);
 
     // more strict checking is technically needed to do assignment
     // this is done by the vector type already

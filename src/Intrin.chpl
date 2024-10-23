@@ -2,8 +2,8 @@ module Intrin {
   use CTypes only c_ptr, c_ptrConst;
 
   import ChplConfig;
-  proc isX8664() param do return ChplConfig.CHPL_TARGET_ARCH == "x86_64";
-  proc isArm64() param do return ChplConfig.CHPL_TARGET_ARCH == "arm64";
+  proc isX8664() param: bool do return ChplConfig.CHPL_TARGET_ARCH == "x86_64";
+  proc isArm64() param: bool do return ChplConfig.CHPL_TARGET_ARCH == "arm64";
 
   proc vectorType(type eltType, param numElts: int) type do
     return implType(eltType, numElts).vecType;
@@ -109,6 +109,33 @@ module Intrin {
       if SIMD.implementationWarnings then compilerWarning("div on ints is emulated by converting to float and back");
     return implType(eltType, numElts).div(x, y);
   }
+  inline proc neg(type eltType, param numElts: int, x: vectorType(eltType, numElts)): x.type do
+    return implType(eltType, numElts).neg(x);
+
+
+  inline proc and(type eltType, param numElts: int, x: vectorType(eltType, numElts), y: x.type): x.type do
+    return implType(eltType, numElts).and(x, y);
+  inline proc or(type eltType, param numElts: int, x: vectorType(eltType, numElts), y: x.type): x.type do
+    return implType(eltType, numElts).or(x, y);
+  inline proc xor(type eltType, param numElts: int, x: vectorType(eltType, numElts), y: x.type): x.type do
+    return implType(eltType, numElts).xor(x, y);
+  inline proc not(type eltType, param numElts: int, x: vectorType(eltType, numElts)): x.type do
+    return implType(eltType, numElts).not(x);
+  inline proc andNot(type eltType, param numElts: int, x: vectorType(eltType, numElts), y: x.type): x.type do
+    return implType(eltType, numElts).andNot(x, y);
+
+  inline proc cmpEq(type eltType, param numElts: int, x: vectorType(eltType, numElts), y: x.type): x.type do
+    return implType(eltType, numElts).cmpEq(x, y);
+  inline proc cmpNe(type eltType, param numElts: int, x: vectorType(eltType, numElts), y: x.type): x.type do
+    return implType(eltType, numElts).cmpNe(x, y);
+  inline proc cmpLt(type eltType, param numElts: int, x: vectorType(eltType, numElts), y: x.type): x.type do
+    return implType(eltType, numElts).cmpLt(x, y);
+  inline proc cmpLe(type eltType, param numElts: int, x: vectorType(eltType, numElts), y: x.type): x.type do
+    return implType(eltType, numElts).cmpLe(x, y);
+  inline proc cmpGt(type eltType, param numElts: int, x: vectorType(eltType, numElts), y: x.type): x.type do
+    return implType(eltType, numElts).cmpGt(x, y);
+  inline proc cmpGe(type eltType, param numElts: int, x: vectorType(eltType, numElts), y: x.type): x.type do
+    return implType(eltType, numElts).cmpGe(x, y);
 
   /*
     Add pairs of adjacent elements
@@ -151,4 +178,18 @@ module Intrin {
     if eltType == int(64) then compilerError("fmsub not supported for int64");
     else                  return implType(eltType, numElts).fmsub(x, y, z);
   }
+
+  inline proc min(type eltType, param numElts: int,
+                  x: vectorType(eltType, numElts), y: x.type): x.type do
+    return implType(eltType, numElts).min(x, y);
+  inline proc max(type eltType, param numElts: int,
+                  x: vectorType(eltType, numElts), y: x.type): x.type do
+    return implType(eltType, numElts).max(x, y);
+  inline proc bitSelect(type eltType, param numElts: int,
+                        mask: ?, x: vectorType(eltType, numElts), y: x.type): x.type {
+    return implType(eltType, numElts).bitSelect(mask, x, y);
+  }
+  inline proc abs(type eltType, param numElts: int,
+                  x: vectorType(eltType, numElts)): x.type do
+    return implType(eltType, numElts).abs(x);
 }

@@ -51,6 +51,20 @@ module IntrinArm64_128 {
     else compilerError("Unknown type: ", t);
   }
 
+  proc getBitMaskType(type t) type {
+          if t == vec32x4r then return vec32x4u;
+      else if t == vec64x2r then return vec64x2u;
+      else if t == vec8x16i then return vec8x16u;
+      else if t == vec16x8i then return vec16x8u;
+      else if t == vec32x4i then return vec32x4u;
+      else if t == vec64x2i then return vec64x2u;
+      else if t == vec8x16u then return vec8x16u;
+      else if t == vec16x8u then return vec16x8u;
+      else if t == vec32x4u then return vec32x4u;
+      else if t == vec64x2u then return vec64x2u;
+      else compilerError("Unknown type: ", t);
+  }
+
   proc typeToSuffix(type t) param : string {
          if t == real(32) || t == vec32x4r || t == vec32x2r then return "f32";
     else if t == real(64) || t == vec64x2r || t == vec64x1r then return "f64";
@@ -113,6 +127,17 @@ module IntrinArm64_128 {
     pragma "fn synchronization free"
     extern externName proc func(externX: t1, externY: t2, externZ: t3): returnType;
     return func(x, y, z);
+  }
+
+
+  inline proc reinterpret(vec: ?, type t): t {
+    param fromType = typeToSuffix(vec.type);
+    param toType = typeToSuffix(t);
+    param externName = "vreinterpret_" + fromType + "_" + toType;
+
+    pragma "fn synchronization free"
+    extern externName proc func(externVec: vec.type): t;
+    return func(vec);
   }
 
   @lint.typeOnly
@@ -210,6 +235,12 @@ module IntrinArm64_128 {
       else
         return doSimpleOp("vdivq", x, y);
     }
+    inline proc type neg(x: vecType): vecType {
+      if canResolveTypeMethod(extensionType, "neg", x) then
+        return extensionType.neg(x);
+      else
+        return doSimpleOp("vnegq", x);
+    }
 
     inline proc type and(x: vecType, y: vecType): vecType {
       if canResolveTypeMethod(extensionType, "and", x, y) then
@@ -235,6 +266,12 @@ module IntrinArm64_128 {
       else
         return doSimpleOp("vmvnq", x);
     }
+    inline proc type andNot(x: vecType, y: vecType): vecType {
+      if canResolveTypeMethod(extensionType, "andNot", x, y) then
+        return extensionType.andNot(x, y);
+      else
+        return doSimpleOp("vbicq", y, x);
+    }
     // inline proc type shiftRightArith(x: vecType, param offset: int): vecType {
     //   if canResolveTypeMethod(extensionType, "shiftRightArith", x) then
     //     return extensionType.shiftRightArith(x);
@@ -248,26 +285,70 @@ module IntrinArm64_128 {
     //     return doSimpleOp("vshlq_n", x, offset); // TODO this is not going to work because of macros/const int issues
     // }
 
-    // inline proc type cmpEq(x: vecType, y: vecType): vecType do
-    //   return extensionType.cmpEq(x, y);
-    // inline proc type cmpNe(x: vecType, y: vecType): vecType do
-    //   return extensionType.cmpNe(x, y);
-    // inline proc type cmpGt(x: vecType, y: vecType): vecType do
-    //   return extensionType.cmpGt(x, y);
-    // inline proc type cmpGe(x: vecType, y: vecType): vecType do
-    //   return extensionType.cmpGe(x, y);
-    // inline proc type cmpLt(x: vecType, y: vecType): vecType do
-    //   return extensionType.cmpLt(x, y);
-    // inline proc type cmpLe(x: vecType, y: vecType): vecType do
-    //   return extensionType.cmpLe(x, y);
+    inline proc type cmpEq(x: vecType, y: vecType): vecType {
+      if canResolveTypeMethod(extensionType, "cmpEq", x, y) then
+        return extensionType.cmpEq(x, y);
+      else
+        return doSimpleOp("vceqq", x, y);
+    }
+    inline proc type cmpNe(x: vecType, y: vecType): vecType {
+      if canResolveTypeMethod(extensionType, "cmpNe", x, y) then
+        return extensionType.cmpNe(x, y);
+      else
+        return not(cmpEq(x, y));
+    }
+    inline proc type cmpLt(x: vecType, y: vecType): vecType {
+      if canResolveTypeMethod(extensionType, "cmpLt", x, y) then
+        return extensionType.cmpLt(x, y);
+      else
+        return doSimpleOp("vcltq", x, y);
+    }
+    inline proc type cmpLe(x: vecType, y: vecType): vecType {
+      if canResolveTypeMethod(extensionType, "cmpLe", x, y) then
+        return extensionType.cmpLe(x, y);
+      else
+        return not(cmpLt(y, x));
+    }
+    inline proc type cmpGt(x: vecType, y: vecType): vecType {
+      if canResolveTypeMethod(extensionType, "cmpGt", x, y) then
+        return extensionType.cmpGt(x, y);
+      else
+        return cmpLt(y, x);
+    }
+    inline proc type cmpGe(x: vecType, y: vecType): vecType {
+      if canResolveTypeMethod(extensionType, "cmpGe", x, y) then
+        return extensionType.cmpGe(x, y);
+      else
+        return not(cmpLt(x, y));
+    }
+    inline proc type bitSelect(mask: ?, x: vecType, y: vecType): vecType
+      where numBits(mask.type) == numBits(vecType) {
+      if canResolveTypeMethod(extensionType, "bitSelect", mask, x, y) then
+        return extensionType.bitSelect(mask, x, y);
+      else {
+        // var maskT = reinterpret(mask, getBitMaskType(vecType));
+        return doSimpleOp("vbslq", vecType, mask, x, y);
+      }
+    }
 
-    inline proc type min(x: vecType, y: vecType): vecType do
-      return doSimpleOp("vminq", x, y);
-    inline proc type max(x: vecType, y: vecType): vecType do
-      return doSimpleOp("vmaxq", x, y);
-    inline proc type abs(x: vecType): vecType do
-      return doSimpleOp("vabsq", x);
-
+    inline proc type min(x: vecType, y: vecType): vecType {
+      if canResolveTypeMethod(extensionType, "min", x, y) then
+        return extensionType.min(x, y);
+      else
+        return doSimpleOp("vminq", x, y);
+    }
+    inline proc type max(x: vecType, y: vecType): vecType {
+      if canResolveTypeMethod(extensionType, "max", x, y) then
+        return extensionType.max(x, y);
+      else
+        return doSimpleOp("vmaxq", x, y);
+    }
+    inline proc type abs(x: vecType): vecType {
+      if canResolveTypeMethod(extensionType, "abs", x) then
+        return extensionType.abs(x);
+      else
+        return doSimpleOp("vabsq", x);
+    }
     inline proc type hadd(x: vecType, y: vecType): vecType {
       if canResolveTypeMethod(extensionType, "hadd", x, y) then
         return extensionType.hadd(x, y);
@@ -305,12 +386,18 @@ module IntrinArm64_128 {
   }
 
 
-  proc arm64_32x4r type do return arm64_NxM(arm64_32x4r_extension(arm64_NxM(arm64_32x4r_extension(nothing))));
-  proc arm64_64x2r type do return arm64_NxM(arm64_64x2r_extension(arm64_NxM(arm64_64x2r_extension(nothing))));
-  proc arm64_8x16i type do return arm64_NxM(arm64_8x16i_extension(arm64_NxM(arm64_8x16i_extension(nothing))));
-  proc arm64_16x8i type do return arm64_NxM(arm64_16x8i_extension(arm64_NxM(arm64_16x8i_extension(nothing))));
-  proc arm64_32x4i type do return arm64_NxM(arm64_32x4i_extension(arm64_NxM(arm64_32x4i_extension(nothing))));
-  proc arm64_64x2i type do return arm64_NxM(arm64_64x2i_extension(arm64_NxM(arm64_64x2i_extension(nothing))));
+  proc arm64_32x4r type do return arm64_NxM(arm64_32x4r_extension(
+                                    arm64_NxM(arm64_32x4r_extension(nothing))));
+  proc arm64_64x2r type do return arm64_NxM(arm64_64x2r_extension(
+                                    arm64_NxM(arm64_64x2r_extension(nothing))));
+  proc arm64_8x16i type do return arm64_NxM(arm64_8x16i_extension(
+                                    arm64_NxM(arm64_8x16i_extension(nothing))));
+  proc arm64_16x8i type do return arm64_NxM(arm64_16x8i_extension(
+                                    arm64_NxM(arm64_16x8i_extension(nothing))));
+  proc arm64_32x4i type do return arm64_NxM(arm64_32x4i_extension(
+                                    arm64_NxM(arm64_32x4i_extension(nothing))));
+  proc arm64_64x2i type do return arm64_NxM(arm64_64x2i_extension(
+                                    arm64_NxM(arm64_64x2i_extension(nothing))));
 
   @lint.typeOnly
   record arm64_32x4r_extension {
@@ -354,6 +441,36 @@ module IntrinArm64_128 {
       extern proc extractVector32x4r3(x: vecType, y: vecType): vecType;
       return extractVector32x4r3(x, x);
     }
+
+    inline proc type and(x: vecType, y: vecType): vecType {
+      // no vandq_f32, convert to mask type, do and, convert back
+      var maskX = reinterpret(x, getBitMaskType(vecType));
+      var maskY = reinterpret(y, getBitMaskType(vecType));
+      return reinterpret(doSimpleOp("vandq", maskX, maskY), vecType);
+    }
+    inline proc type or(x: vecType, y: vecType): vecType {
+      // no vorrq_f32, convert to mask type, do or, convert back
+      var maskX = reinterpret(x, getBitMaskType(vecType));
+      var maskY = reinterpret(y, getBitMaskType(vecType));
+      return reinterpret(doSimpleOp("vorrq", maskX, maskY), vecType);
+    }
+    inline proc type xor(x: vecType, y: vecType): vecType {
+      // no veorq_f32, convert to mask type, do xor, convert back
+      var maskX = reinterpret(x, getBitMaskType(vecType));
+      var maskY = reinterpret(y, getBitMaskType(vecType));
+      return reinterpret(doSimpleOp("veorq", maskX, maskY), vecType);
+    }
+    inline proc type not(x: vecType): vecType {
+      // no vmvnq_f32, convert to mask type, do not, convert back
+      var maskX = reinterpret(x, getBitMaskType(vecType));
+      return reinterpret(doSimpleOp("vmvnq", maskX), vecType);
+    }
+    inline proc type andNot(x: vecType, y: vecType): vecType {
+      // no vbicq_f32, convert to mask type, do and not, convert back
+      var maskX = reinterpret(x, getBitMaskType(vecType));
+      var maskY = reinterpret(y, getBitMaskType(vecType));
+      return reinterpret(doSimpleOp("vbicq", maskY, maskX), vecType);
+    }
   }
 
   @lint.typeOnly
@@ -377,6 +494,36 @@ module IntrinArm64_128 {
     inline proc type reverse(x: vecType): vecType do return base.swapPairs(x);
     inline proc type rotateLeft(x: vecType): vecType do return base.swapPairs(x);
     inline proc type rotateRight(x: vecType): vecType do return base.swapPairs(x);
+
+    inline proc type and(x: vecType, y: vecType): vecType {
+      // no vandq_f64, convert to mask type, do and, convert back
+      var maskX = reinterpret(x, getBitMaskType(vecType));
+      var maskY = reinterpret(y, getBitMaskType(vecType));
+      return reinterpret(doSimpleOp("vandq", maskX, maskY), vecType);
+    }
+    inline proc type or(x: vecType, y: vecType): vecType {
+      // no vorrq_f64, convert to mask type, do or, convert back
+      var maskX = reinterpret(x, getBitMaskType(vecType));
+      var maskY = reinterpret(y, getBitMaskType(vecType));
+      return reinterpret(doSimpleOp("vorrq", maskX, maskY), vecType);
+    }
+    inline proc type xor(x: vecType, y: vecType): vecType {
+      // no veorq_f64, convert to mask type, do xor, convert back
+      var maskX = reinterpret(x, getBitMaskType(vecType));
+      var maskY = reinterpret(y, getBitMaskType(vecType));
+      return reinterpret(doSimpleOp("veorq", maskX, maskY), vecType);
+    }
+    inline proc type not(x: vecType): vecType {
+      // no vmvnq_f64, convert to mask type, do not, convert back
+      var maskX = reinterpret(x, getBitMaskType(vecType));
+      return reinterpret(doSimpleOp("vmvnq", maskX), vecType);
+    }
+    inline proc type andNot(x: vecType, y: vecType): vecType {
+      // no vbicq_f64, convert to mask type, do and not, convert back
+      var maskX = reinterpret(x, getBitMaskType(vecType));
+      var maskY = reinterpret(y, getBitMaskType(vecType));
+      return reinterpret(doSimpleOp("vbicq", maskY, maskX), vecType);
+    }
 
   }
 
@@ -665,6 +812,15 @@ module IntrinArm64_128 {
       var y_f64 = vcvtq_f64_s64(y);
       var res_f64 = arm64_64x2r.div(x_f64, y_f64);
       return vcvtq_s64_f64(res_f64);
+    }
+
+    inline proc type min(x: vecType, y: vecType): vecType {
+      // no vminq_s64, emulate with cmp and select
+      return base.bitSelect(base.cmpLt(x, y), x, y);
+    }
+    inline proc type max(x: vecType, y: vecType): vecType {
+      // no vmaxq_s64, emulate with cmp and select
+      return base.bitSelect(base.cmpGt(x, y), x, y);
     }
 
   }

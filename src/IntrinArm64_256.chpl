@@ -104,6 +104,44 @@ module IntrinArm64_256 {
       return new vecType(implVecType.mul(x.lo, y.lo), implVecType.mul(x.hi, y.hi));
     inline proc type div(x: vecType, y: vecType): vecType do
       return new vecType(implVecType.div(x.lo, y.lo), implVecType.div(x.hi, y.hi));
+    inline proc type neg(x: vecType): vecType do
+      return new vecType(implVecType.neg(x.lo), implVecType.neg(x.hi));
+
+    inline proc type and(x: vecType, y: vecType): vecType do
+      return new vecType(implVecType.and(x.lo, y.lo), implVecType.and(x.hi, y.hi));
+    inline proc type or(x: vecType, y: vecType): vecType do
+      return new vecType(implVecType.or(x.lo, y.lo), implVecType.or(x.hi, y.hi));
+    inline proc type xor(x: vecType, y: vecType): vecType do
+      return new vecType(implVecType.xor(x.lo, y.lo), implVecType.xor(x.hi, y.hi));
+    inline proc type not(x: vecType): vecType do
+      return new vecType(implVecType.not(x.lo), implVecType.not(x.hi));
+    inline proc type andNot(x: vecType, y: vecType): vecType do
+      return new vecType(implVecType.andNot(x.lo, y.lo), implVecType.andNot(x.hi, y.hi));
+
+    inline proc type cmpEq(x: vecType, y: vecType): vecType do
+      return new vecType(implVecType.cmpEq(x.lo, y.lo), implVecType.cmpEq(x.hi, y.hi));
+    inline proc type cmpNe(x: vecType, y: vecType): vecType do
+      return new vecType(implVecType.cmpNe(x.lo, y.lo), implVecType.cmpNe(x.hi, y.hi));
+    inline proc type cmpLt(x: vecType, y: vecType): vecType do
+      return new vecType(implVecType.cmpLt(x.lo, y.lo), implVecType.cmpLt(x.hi, y.hi));
+    inline proc type cmpLe(x: vecType, y: vecType): vecType do
+      return new vecType(implVecType.cmpLe(x.lo, y.lo), implVecType.cmpLe(x.hi, y.hi));
+    inline proc type cmpGt(x: vecType, y: vecType): vecType do
+      return new vecType(implVecType.cmpGt(x.lo, y.lo), implVecType.cmpGt(x.hi, y.hi));
+    inline proc type cmpGe(x: vecType, y: vecType): vecType do
+      return new vecType(implVecType.cmpGe(x.lo, y.lo), implVecType.cmpGe(x.hi, y.hi));
+    inline proc type bitSelect(mask: vecPair(?), x: vecType, y: vecType): vecType
+      where numBits(mask.type) == numBits(vecType) do
+      return new vecType(implVecType.bitSelect(mask.lo, x.lo, y.lo),
+                         implVecType.bitSelect(mask.hi, x.hi, y.hi));
+
+    inline proc type min(x: vecType, y: vecType): vecType do
+      return new vecType(implVecType.min(x.lo, y.lo), implVecType.min(x.hi, y.hi));
+    inline proc type max(x: vecType, y: vecType): vecType do
+      return new vecType(implVecType.max(x.lo, y.lo), implVecType.max(x.hi, y.hi));
+
+    inline proc type abs(x: vecType): vecType do
+      return new vecType(implVecType.abs(x.lo), implVecType.abs(x.hi));
 
     inline proc type hadd(x: vecType, y: vecType): vecType {
 

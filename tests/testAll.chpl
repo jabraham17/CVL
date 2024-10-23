@@ -2,188 +2,200 @@ use IO;
 use SIMD;
 use PrecisionSerializer;
 
+config const shouldPrint = true;
 config const precision = 2;
 config const padding = 5;
 var vecOut = stdout.withSerializer(new precisionSerializer(precision=precision, padding=padding));
+
+
+proc log(args...) do log((...args), strm=stdout);
+proc log(args..., strm: fileWriter(?)) {
+  if !shouldPrint then return;
+  strm.writeln((...args));
+}
 
 config param compileTestName: string = "all";
 config const runTestName: string = "all";
 
 proc sqrtTest(type eltType, param numElts: int) {
-  writeln("sqrtTest for ", eltType:string, " ", numElts);
+  log("sqrtTest for ", eltType:string, " ", numElts);
 
   var a: vector(eltType, numElts);
   var v: numElts*eltType;
   for param i in 0..#a.numElts {
     v(i) = ((i+1)*(i+1)):eltType;
   }
-  vecOut.writeln("  v: ", v);
+  log(strm=vecOut, "  v: ", v);
   a.set(v);
 
-  vecOut.writeln("  a: ", v);
+  log(strm=vecOut, "  a: ", v);
   a = sqrt(a);
-  vecOut.writeln("  sqrt(a): ", a);
+  log(strm=vecOut, "  sqrt(a): ", a);
 
   a = rsqrt(a*a);
-  vecOut.writeln("  rsqrt(a): ", a);
+  log(strm=vecOut, "  rsqrt(a): ", a);
 }
 
 proc arrTest(type eltType, param numElts: int) {
-  writeln("arrTest for ", eltType:string, " ", numElts);
+  log("arrTest for ", eltType:string, " ", numElts);
 
   var arr: [1..#(numElts*4)] eltType;
   arr = [i in arr.domain] i:eltType;
 
-  vecOut.writeln("  arr: ", arr);
+  log(strm=vecOut, "  arr: ", arr);
 
   var a: vector(eltType, numElts);
   for i in arr.domain by numElts {
     a.load(arr, i);
-    vecOut.writeln("  vec at ", i, ": ", a);
+    log(strm=vecOut, "  vec at ", i, ": ", a);
 
     var b = new a.type();
     b = a+a;
     b.store(arr, i);
   }
-  vecOut.writeln("  arr: ", arr);
+  log(strm=vecOut, "  arr: ", arr);
 
   param stride = 2;
   var strided: [1.. by stride #(numElts*4)] eltType;
   strided = [i in strided.domain] i:eltType;
 
-  vecOut.writeln("  strided: ", strided);
+  log(strm=vecOut, "  strided: ", strided);
   for i in strided.domain by numElts {
     a.load(strided, i);
-    vecOut.writeln("  vec at ", i, ": ", a);
+    log(strm=vecOut, "  vec at ", i, ": ", a);
 
     var b = new a.type();
     b = a+a;
     b.store(strided, i);
   }
 
-  vecOut.writeln("  strided: ", strided);
+  log(strm=vecOut, "  strided: ", strided);
 }
 proc initTest(type eltType, param numElts: int) {
-  writeln("initTest for ", eltType:string, " ", numElts);
+  log("initTest for ", eltType:string, " ", numElts);
 
   var a = new vector(eltType, numElts);
   for param i in 0..#numElts {
     a.set(i, (i+1):eltType);
   }
-  vecOut.writeln("  set individual: ", a);
+  log(strm=vecOut, "  set individual: ", a);
   a.set(0:eltType);
-  vecOut.writeln("  reset: ", a);
+  log(strm=vecOut, "  reset: ", a);
 
   var tup: numElts*eltType;
   for param i in 0..#numElts {
     tup(i) = (i+1):eltType;
   }
   a.set(tup);
-  vecOut.writeln("  set tuple: ", a);
+  log(strm=vecOut, "  set tuple: ", a);
 
   var res = a:(numElts*eltType);
-  vecOut.writeln("  get tuple (", res.type:string, "): ", res);
+  log(strm=vecOut, "  get tuple (", res.type:string, "): ", res);
 
 }
 
 proc shuffleTest(type eltType, param numElts: int) {
-  writeln("shuffleTest for ", eltType:string, " ", numElts);
+  log("shuffleTest for ", eltType:string, " ", numElts);
 
   var a, other = new vector(eltType, numElts);
   for param i in 0..#numElts {
     a.set(i, (i+1):eltType);
     other.set(i, (numElts + (i+1)):eltType);
   }
-  vecOut.writeln("  a                : ", a);
-  vecOut.writeln("  other            : ", other);
-  vecOut.writeln("  -----------------");
+  log(strm=vecOut, "  a                : ", a);
+  log(strm=vecOut, "  other            : ", other);
+  log(strm=vecOut, "  -----------------");
 
   {
     var b = swapPairs(a);
-    vecOut.writeln("  swapPairs        : ", b);
+    log(strm=vecOut, "  swapPairs        : ", b);
   }
   {
     var b = swapLowHigh(a);
-    vecOut.writeln("  swapLowHigh      : ", b);
+    log(strm=vecOut, "  swapLowHigh      : ", b);
   }
   {
     var b = reverse(a);
-    vecOut.writeln("  reverse          : ", b);
+    log(strm=vecOut, "  reverse          : ", b);
   }
   {
     var b = rotateLeft(a);
-    vecOut.writeln("  rotateLeft       : ", b);
+    log(strm=vecOut, "  rotateLeft       : ", b);
   }
   {
     var b = rotateRight(a);
-    vecOut.writeln("  rotateRight      : ", b);
+    log(strm=vecOut, "  rotateRight      : ", b);
   }
   {
     var b = interleaveLower(a, other);
-    vecOut.writeln("  interleaveLower  : ", b);
+    log(strm=vecOut, "  interleaveLower  : ", b);
   }
   {
     var b = interleaveUpper(a, other);
-    vecOut.writeln("  interleaveUpper  : ", b);
+    log(strm=vecOut, "  interleaveUpper  : ", b);
   }
   {
     var b = deinterleaveLower(a, other);
-    vecOut.writeln("  deinterleaveLower: ", b);
+    log(strm=vecOut, "  deinterleaveLower: ", b);
   }
   {
     var b = deinterleaveUpper(a, other);
-    vecOut.writeln("  deinterleaveUpper: ", b);
+    log(strm=vecOut, "  deinterleaveUpper: ", b);
   }
   {
     var b = blendLowHigh(a, other);
-    vecOut.writeln("  blendLowHigh     : ", b);
+    log(strm=vecOut, "  blendLowHigh     : ", b);
   }
 }
 
 proc mathTest(type eltType, param numElts: int) {
-  writeln("mathTest for ", eltType:string, " ", numElts);
+  log("mathTest for ", eltType:string, " ", numElts);
 
   var a, b = new vector(eltType, numElts);
   for param i in 0..#numElts {
     a.set(i, (i+1):eltType);
     b.set(i, (numElts + (i+1)):eltType);
   }
-  vecOut.writeln("  a: ", a);
-  vecOut.writeln("  b: ", b);
-  vecOut.writeln("  -----------------");
+  log(strm=vecOut, "  a: ", a);
+  log(strm=vecOut, "  b: ", b);
+  log(strm=vecOut, "  -----------------");
 
   {
     var c = a + b;
-    vecOut.writeln("  a + b: ", c);
+    log(strm=vecOut, "  a + b: ", c);
+  }
+  {
+    var c = -a;
+    log(strm=vecOut, "     -a: ", c);
   }
   {
     var c = a - b;
-    vecOut.writeln("  a - b: ", c);
+    log(strm=vecOut, "  a - b: ", c);
   }
   {
     var c = b - a;
-    vecOut.writeln("  b - a: ", c);
+    log(strm=vecOut, "  b - a: ", c);
   }
   if eltType != int(64) { // UNSUPPORTED
     var c = a * b;
-    vecOut.writeln("  a * b: ", c);
+    log(strm=vecOut, "  a * b: ", c);
   }
   {
     var c = a / b;
-    vecOut.writeln("  a / b: ", c);
+    log(strm=vecOut, "  a / b: ", c);
   }
   {
     var c = b / a;
-    vecOut.writeln("  b / a: ", c);
+    log(strm=vecOut, "  b / a: ", c);
   }
   {
     var c = pairwiseAdd(a, b);
-    vecOut.writeln("  pairAdd(a, b): ", c);
+    log(strm=vecOut, "  pairAdd(a, b): ", c);
   }
 }
 
 proc fmaTest(type eltType, param numElts: int) {
-  writeln("fmaTest for ", eltType:string, " ", numElts);
+  log("fmaTest for ", eltType:string, " ", numElts);
 
   var a, b, c = new vector(eltType, numElts);
   for param i in 0..#numElts {
@@ -191,18 +203,133 @@ proc fmaTest(type eltType, param numElts: int) {
     b.set(i, (numElts + (i+1)):eltType);
     c.set(i, (numElts*2 + (i+1)):eltType);
   }
-  vecOut.writeln("  a: ", a);
-  vecOut.writeln("  b: ", b);
-  vecOut.writeln("  c: ", c);
-  vecOut.writeln("  -----------------");
+  log(strm=vecOut, "  a: ", a);
+  log(strm=vecOut, "  b: ", b);
+  log(strm=vecOut, "  c: ", c);
+  log(strm=vecOut, "  -----------------");
 
   {
     var d = fma(a, b, c);
-    vecOut.writeln("  fma(a, b, c): ", d);
+    log(strm=vecOut, "  fma(a, b, c): ", d);
   }
   {
     var d = fms(a, b, c);
-    vecOut.writeln("  fms(a, b, c): ", d);
+    log(strm=vecOut, "  fms(a, b, c): ", d);
+  }
+}
+
+proc mathFuncs(type eltType, param numElts: int) {
+  log("math functions for ", eltType:string, " ", numElts);
+
+  var a, b = new vector(eltType, numElts);
+  for param i in 0..#numElts {
+    a.set(i, (i+1):eltType);
+    b.set(i, (numElts + (i+1)):eltType);
+  }
+  a = -a;
+  log(strm=vecOut, "  a: ", a);
+  log(strm=vecOut, "  b: ", b);
+  log(strm=vecOut, "  -----------------");
+
+  {
+    var r = min(a, b);
+    log(strm=vecOut, "  min(a, b): ", r);
+  }
+  {
+    var r = max(a, b);
+    log(strm=vecOut, "  max(a, b): ", r);
+  }
+  {
+    var r = abs(a);
+    log(strm=vecOut, "     abs(a): ", r);
+  }
+}
+
+
+proc bitTest(type eltType, param numElts: int) {
+  log("bit functions for ", eltType:string, " ", numElts);
+
+  var a, b = new vector(eltType, numElts);
+  for param i in 0..#numElts {
+    a.set(i, (i+1):eltType);
+    b.set(i, (numElts + (i+1)):eltType);
+  }
+  log(strm=vecOut, "  a: ", a);
+  log(strm=vecOut, "  b: ", b);
+  log(strm=vecOut, "  -----------------");
+
+  {
+    var mask = ~(a & 0:eltType); // all 1s
+    var r = bitSelect(mask, a, b);
+    log(strm=vecOut, "  bitSelect(ONE, a, b) : ", r);
+    r = bitSelect(~(mask), a, b); // all 0s
+    log(strm=vecOut, "  bitSelect(ZERO, a, b): ", r);
+    for param i in 0..#numElts by 2 {
+      mask.set(i, 0:eltType);
+    }
+    r = bitSelect(mask, a, b);
+    log(strm=vecOut, "  bitSelect(EVEN, a, b): ", r);
+    r = bitSelect(~(mask), a, b);
+    log(strm=vecOut, "  bitSelect(ODD, a, b) : ", r);
+  }
+  {
+    var r = a & b;
+    log(strm=vecOut, "  a & b: ", r);
+  }
+  {
+    var r = a | b;
+    log(strm=vecOut, "  a | b: ", r);
+  }
+  {
+    var r = a ^ b;
+    log(strm=vecOut, "  a ^ b: ", r);
+  }
+  {
+    var r = ~a;
+    log(strm=vecOut, "     ~a: ", r);
+  }
+  {
+    var r = andNot(a, b);
+    log(strm=vecOut, "  andNot(a, b): ", r);
+  }
+  // TODO shifts
+}
+
+proc cmpTest(type eltType, param numElts: int) {
+  log("comparisons for ", eltType:string, " ", numElts);
+
+  var a, b = new vector(eltType, numElts);
+  for param i in 0..#numElts {
+    a.set(i, (i+1):eltType);
+    b.set(i, (numElts - (i+1)):eltType);
+  }
+  log(strm=vecOut, "  a: ", a);
+  log(strm=vecOut, "  b: ", b);
+  log(strm=vecOut, "  -----------------");
+
+  {
+    var r = a == b;
+    log(strm=vecOut, "  a == b: ", r);
+  }
+  {
+    var r = a != b;
+    log(strm=vecOut, "  a != b: ", r);
+  }
+  {
+    var r = a < b;
+    log(strm=vecOut, "  a < b: ", r);
+  }
+  {
+    var r = a <= b;
+    log(strm=vecOut, "  a <= b: ", r);
+  }
+  {
+    var r = a > b;
+    log(strm=vecOut, "  a > b: ", r);
+  }
+  {
+    var r = a >= b;
+    log(strm=vecOut, "  a >= b: ", r);
   }
 }
 
@@ -310,9 +437,55 @@ proc main() {
     // fmaTest(int(64), 4); // UNSUPPORTED
   }
 
-  // mathFunc: abs, min, max
+  if shouldCompileTest("mathFuncs") && shouldRunTest("mathFuncs") {
+    mathFuncs(real(32), 4);
+    mathFuncs(real(64), 2);
+    mathFuncs(real(32), 8);
+    mathFuncs(real(64), 4);
 
-  // bitmath
-  // cmps
+    mathFuncs(int(8), 16);
+    mathFuncs(int(16), 8);
+    mathFuncs(int(32), 4);
+    mathFuncs(int(64), 2);
+
+    mathFuncs(int(8), 32);
+    mathFuncs(int(16), 16);
+    mathFuncs(int(32), 8);
+    mathFuncs(int(64), 4);
+  }
+
+  if shouldCompileTest("bitTest") && shouldRunTest("bitTest") {
+    bitTest(real(32), 4);
+    bitTest(real(64), 2);
+    bitTest(real(32), 8);
+    bitTest(real(64), 4);
+
+    bitTest(int(8), 16);
+    bitTest(int(16), 8);
+    bitTest(int(32), 4);
+    bitTest(int(64), 2);
+
+    bitTest(int(8), 32);
+    bitTest(int(16), 16);
+    bitTest(int(32), 8);
+    bitTest(int(64), 4);
+  }
+
+  if shouldCompileTest("cmpTest") && shouldRunTest("cmpTest") {
+    cmpTest(real(32), 4);
+    cmpTest(real(64), 2);
+    cmpTest(real(32), 8);
+    cmpTest(real(64), 4);
+
+    cmpTest(int(8), 16);
+    cmpTest(int(16), 8);
+    cmpTest(int(32), 4);
+    cmpTest(int(64), 2);
+
+    cmpTest(int(8), 32);
+    cmpTest(int(16), 16);
+    cmpTest(int(32), 8);
+    cmpTest(int(64), 4);
+  }
 
 }

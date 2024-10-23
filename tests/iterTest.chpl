@@ -36,3 +36,75 @@ for v in vecType.vectorsJagged(jaggedArr) {
 for v in vecType.vectorsJagged(jaggedArr, 99) {
   writeln("  v: ", v);
 }
+
+
+{
+  var myArr = arr;
+  writeln("arr: ", myArr);
+  for v in vecType.vectorsRef(myArr) {
+    v *= 2 + v;
+  }
+  writeln("arr: ", myArr);
+}
+
+// {
+//   var arr = [i in 1..#100] i:real(32);
+//   var arr2 = [i in 1..#100] -i:real(32);
+//   forall (i1, i2) in zip(vecType.indicies(arr.domain), vecType.indicies(arr2.domain)) {
+//     var v1 = vecType.load(arr, i1);
+//     var v2 = vecType.load(arr2, i2);
+//     writeln("  i1: ", i1, " i2: ", i2, " v1: ", v1, " v2: ", v2);
+//   }
+// }
+
+// {
+//   var arr = [i in 1..#100] i:real(32);
+//   var arr2 = [i in 1..#100] -i:real(32);
+//   forall (v1, v2) in zip(vecType.vectors(arr), vecType.vectors(arr2)) {
+//     // var v1 = vecType.load(arr, i1);
+//     // var v2 = vecType.load(arr2, i2);
+//     writeln("v1: ", v1, " v2: ", v2);
+//   }
+// }
+
+{
+  const D = {1..#100};
+  const D2 = {0..by 2#100};
+  var arr: [D] real(32) = D;
+  var arr2: [D2] real(32) = -D;
+  writeln("arr: ", arr2);
+  forall (i, v) in zip(vecType.indicies(arr), vecType.vectorsRef(arr2)) {
+    writeln("  i: ", i);
+    v += vecType.load(arr, i);
+  }
+  writeln("arr: ", arr2);
+}
+
+{ // assign
+  type vecType = vector(int, 4);
+  const D = {1..#100};
+  const D2 = {0..by 2#100};
+  var arr: [D] int = D;
+  var arr2: [D2] int;
+  writeln("arr: ", arr);
+  writeln("arr2: ", arr2);
+  forall (v, i) in zip(vecType.vectors(arr), vecType.indicies(arr2)) {
+    v.store(arr2, i);
+  }
+  writeln("arr2: ", arr2);
+}
+
+{ // assign2
+  type vecType = vector(int, 4);
+  const D = {1..#100};
+  const D2 = {0..by 2#100};
+  var arr: [D] int = D;
+  var arr2: [D2] int;
+  writeln("arr: ", arr);
+  writeln("arr2: ", arr2);
+  forall (v, v2) in zip(vecType.vectors(arr), vecType.vectorsRef(arr2)) {
+    // v2 = v; // can;t assign because i can't write an init=
+    v2.set(v);
+  }
+  writeln("arr2: ", arr2);
+}

@@ -4,3 +4,4 @@
 --runTestName='sqrtTest' # sqrtTest.good
 --runTestName='shuffleTest' # shuffleTest.good
 --runTestName='fmaTest' # fmaTest.good
+--runTestName='mathFuncs' # mathFuncs.good

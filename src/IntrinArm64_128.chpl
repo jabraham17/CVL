@@ -307,19 +307,19 @@ module IntrinArm64_128 {
       if canResolveTypeMethod(extensionType, "cmpLe", x, y) then
         return extensionType.cmpLe(x, y);
       else
-        return not(cmpLt(y, x));
+        return doSimpleOp("vcleq", x, y);
     }
     inline proc type cmpGt(x: vecType, y: vecType): vecType {
       if canResolveTypeMethod(extensionType, "cmpGt", x, y) then
         return extensionType.cmpGt(x, y);
       else
-        return cmpLt(y, x);
+        return doSimpleOp("vcgtq", x, y);
     }
     inline proc type cmpGe(x: vecType, y: vecType): vecType {
       if canResolveTypeMethod(extensionType, "cmpGe", x, y) then
         return extensionType.cmpGe(x, y);
       else
-        return not(cmpLt(x, y));
+        return doSimpleOp("vcgeq", x, y);
     }
     inline proc type bitSelect(mask: ?, x: vecType, y: vecType): vecType
       where numBits(mask.type) == numBits(vecType) {

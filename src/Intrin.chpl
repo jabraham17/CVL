@@ -10,14 +10,14 @@ module Intrin {
   proc implType(type eltType, param numElts: int) type {
     if isX8664() && numBits(eltType) * numElts == 128 {
       use IntrinX86_128;
-      if eltType == real(32)      then return x8664_32x4f;
-      else if eltType == real(64) then return x8664_64x2d;
+      if eltType == real(32)      then return x8664_32x4r;
+      else if eltType == real(64) then return x8664_64x2r;
       else compilerError("Unsupported vector type");
 
     } else if isX8664() && numBits(eltType) * numElts == 256 {
       use IntrinX86_256;
-      if eltType == real(32)      then return x8664_32x8f;
-      else if eltType == real(64) then return x8664_64x4d;
+      if eltType == real(32)      then return x8664_32x8r;
+      else if eltType == real(64) then return x8664_64x4r;
       else compilerError("Unsupported vector type");
 
     } else if isArm64() && numBits(eltType) * numElts == 128 {

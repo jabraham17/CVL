@@ -11,6 +11,9 @@ module IntrinX86_256 {
   extern "__m256" type vec256;
   extern "__m256d" type vec256d;
 
+  extern "__m128" type vec128;
+  extern "__m128d" type vec128d;
+
   inline operator:(x: vec256d, type t: vec256) {
     pragma "fn synchronization free"
     extern proc _mm256_castpd_ps(x: vec256d): vec256;
@@ -23,7 +26,7 @@ module IntrinX86_256 {
   }
 
   @lint.typeOnly
-  record x8664_32x8f {
+  record x8664_32x8r {
     proc type vecType type do return vec256;
     proc type laneType type do return real(32);
 
@@ -33,14 +36,14 @@ module IntrinX86_256 {
       pragma "fn synchronization free"
       extern proc extract128x2f1(x: vecType): vec128;
 
-      if idx == 0      then return x8664_32x4f.extract(extract128x2f0(x), 0);
-      else if idx == 1 then return x8664_32x4f.extract(extract128x2f0(x), 1);
-      else if idx == 2 then return x8664_32x4f.extract(extract128x2f0(x), 2);
-      else if idx == 3 then return x8664_32x4f.extract(extract128x2f0(x), 3);
-      else if idx == 4 then return x8664_32x4f.extract(extract128x2f1(x), 0);
-      else if idx == 5 then return x8664_32x4f.extract(extract128x2f1(x), 1);
-      else if idx == 6 then return x8664_32x4f.extract(extract128x2f1(x), 2);
-      else if idx == 7 then return x8664_32x4f.extract(extract128x2f1(x), 3);
+      if idx == 0      then return x8664_32x4r.extract(extract128x2f0(x), 0);
+      else if idx == 1 then return x8664_32x4r.extract(extract128x2f0(x), 1);
+      else if idx == 2 then return x8664_32x4r.extract(extract128x2f0(x), 2);
+      else if idx == 3 then return x8664_32x4r.extract(extract128x2f0(x), 3);
+      else if idx == 4 then return x8664_32x4r.extract(extract128x2f1(x), 0);
+      else if idx == 5 then return x8664_32x4r.extract(extract128x2f1(x), 1);
+      else if idx == 6 then return x8664_32x4r.extract(extract128x2f1(x), 2);
+      else if idx == 7 then return x8664_32x4r.extract(extract128x2f1(x), 3);
       else compilerError("invalid index");
     }
     inline proc type insert(x: vecType, y: laneType, param idx: int): vecType {
@@ -53,14 +56,14 @@ module IntrinX86_256 {
       pragma "fn synchronization free"
       extern proc extract128x2f1(x: vecType): vec128;
 
-      if idx == 0      then return insert128x2f0(x, x8664_32x4f.insert(extract128x2f0(x), y, 0));
-      else if idx == 1 then return insert128x2f0(x, x8664_32x4f.insert(extract128x2f0(x), y, 1));
-      else if idx == 2 then return insert128x2f0(x, x8664_32x4f.insert(extract128x2f0(x), y, 2));
-      else if idx == 3 then return insert128x2f0(x, x8664_32x4f.insert(extract128x2f0(x), y, 3));
-      else if idx == 4 then return insert128x2f1(x, x8664_32x4f.insert(extract128x2f1(x), y, 0));
-      else if idx == 5 then return insert128x2f1(x, x8664_32x4f.insert(extract128x2f1(x), y, 1));
-      else if idx == 6 then return insert128x2f1(x, x8664_32x4f.insert(extract128x2f1(x), y, 2));
-      else if idx == 7 then return insert128x2f1(x, x8664_32x4f.insert(extract128x2f1(x), y, 3));
+      if idx == 0      then return insert128x2f0(x, x8664_32x4r.insert(extract128x2f0(x), y, 0));
+      else if idx == 1 then return insert128x2f0(x, x8664_32x4r.insert(extract128x2f0(x), y, 1));
+      else if idx == 2 then return insert128x2f0(x, x8664_32x4r.insert(extract128x2f0(x), y, 2));
+      else if idx == 3 then return insert128x2f0(x, x8664_32x4r.insert(extract128x2f0(x), y, 3));
+      else if idx == 4 then return insert128x2f1(x, x8664_32x4r.insert(extract128x2f1(x), y, 0));
+      else if idx == 5 then return insert128x2f1(x, x8664_32x4r.insert(extract128x2f1(x), y, 1));
+      else if idx == 6 then return insert128x2f1(x, x8664_32x4r.insert(extract128x2f1(x), y, 2));
+      else if idx == 7 then return insert128x2f1(x, x8664_32x4r.insert(extract128x2f1(x), y, 3));
       else compilerError("invalid index");
     }
 
@@ -97,53 +100,53 @@ module IntrinX86_256 {
 
     inline proc type swapPairs(x: vecType): vecType {
       pragma "fn synchronization free"
-      extern proc swapPairs32x8f(x: vecType): vecType;
-      return swapPairs32x8f(x);
+      extern proc swapPairs32x8r(x: vecType): vecType;
+      return swapPairs32x8r(x);
     }
     inline proc type swapLowHigh(x: vecType): vecType {
       pragma "fn synchronization free"
-      extern proc swapLowHigh32x8f(x: vecType): vecType;
-      return swapLowHigh32x8f(x);
+      extern proc swapLowHigh32x8r(x: vecType): vecType;
+      return swapLowHigh32x8r(x);
     }
     inline proc type reverse(x: vecType): vecType {
       pragma "fn synchronization free"
-      extern proc reverse32x8f(x: vecType): vecType;
-      return reverse32x8f(x);
+      extern proc reverse32x8r(x: vecType): vecType;
+      return reverse32x8r(x);
     }
     inline proc type rotateLeft(x: vecType): vecType {
       pragma "fn synchronization free"
-      extern proc rotateLeft32x8f(x: vecType): vecType;
-      return rotateLeft32x8f(x);
+      extern proc rotateLeft32x8r(x: vecType): vecType;
+      return rotateLeft32x8r(x);
     }
     inline proc type rotateRight(x: vecType): vecType {
       pragma "fn synchronization free"
-      extern proc rotateRight32x8f(x: vecType): vecType;
-      return rotateRight32x8f(x);
+      extern proc rotateRight32x8r(x: vecType): vecType;
+      return rotateRight32x8r(x);
     }
     inline proc type interleaveLower(x: vecType, y: vecType): vecType {
       pragma "fn synchronization free"
-      extern proc interleaveLower32x8f(x: vecType, y: vecType): vecType;
-      return interleaveLower32x8f(x, y);
+      extern proc interleaveLower32x8r(x: vecType, y: vecType): vecType;
+      return interleaveLower32x8r(x, y);
     }
     inline proc type interleaveUpper(x: vecType, y: vecType): vecType {
       pragma "fn synchronization free"
-      extern proc interleaveUpper32x8f(x: vecType, y: vecType): vecType;
-      return interleaveUpper32x8f(x, y);
+      extern proc interleaveUpper32x8r(x: vecType, y: vecType): vecType;
+      return interleaveUpper32x8r(x, y);
     }
     inline proc type deinterleaveLower(x: vecType, y: vecType): vecType {
       pragma "fn synchronization free"
-      extern proc deinterleaveLower32x8f(x: vecType, y: vecType): vecType;
-      return deinterleaveLower32x8f(x, y);
+      extern proc deinterleaveLower32x8r(x: vecType, y: vecType): vecType;
+      return deinterleaveLower32x8r(x, y);
     }
     inline proc type deinterleaveUpper(x: vecType, y: vecType): vecType {
       pragma "fn synchronization free"
-      extern proc deinterleaveUpper32x8f(x: vecType, y: vecType): vecType;
-      return deinterleaveUpper32x8f(x, y);
+      extern proc deinterleaveUpper32x8r(x: vecType, y: vecType): vecType;
+      return deinterleaveUpper32x8r(x, y);
     }
     inline proc type blendLowHigh(x: vecType, y: vecType): vecType {
       pragma "fn synchronization free"
-      extern proc blendLowHigh32x8f(x: vecType, y: vecType): vecType;
-      return blendLowHigh32x8f(x, y);
+      extern proc blendLowHigh32x8r(x: vecType, y: vecType): vecType;
+      return blendLowHigh32x8r(x, y);
     }
 
     inline proc type add(x: vecType, y: vecType): vecType {
@@ -168,8 +171,8 @@ module IntrinX86_256 {
     }
     inline proc type hadd(x: vecType, y: vecType): vecType {
       pragma "fn synchronization free"
-      extern proc hadd32x8f(x: vecType, y: vecType): vecType;
-      return hadd32x8f(x, y);
+      extern proc hadd32x8r(x: vecType, y: vecType): vecType;
+      return hadd32x8r(x, y);
     }
 
     inline proc type sqrt(x: vecType): vecType {
@@ -195,7 +198,7 @@ module IntrinX86_256 {
   }
 
   @lint.typeOnly
-  record x8664_64x4d {
+  record x8664_64x4r {
     proc type vecType type do return vec256d;
     proc type laneType type do return real(64);
 
@@ -205,10 +208,10 @@ module IntrinX86_256 {
       pragma "fn synchronization free"
       extern proc extract128x2d1(x: vecType): vec128d;
 
-      if idx == 0      then return x8664_64x2d.extract(extract128x2d0(x), 0);
-      else if idx == 1 then return x8664_64x2d.extract(extract128x2d0(x), 1);
-      else if idx == 2 then return x8664_64x2d.extract(extract128x2d1(x), 0);
-      else if idx == 3 then return x8664_64x2d.extract(extract128x2d1(x), 1);
+      if idx == 0      then return x8664_64x2r.extract(extract128x2d0(x), 0);
+      else if idx == 1 then return x8664_64x2r.extract(extract128x2d0(x), 1);
+      else if idx == 2 then return x8664_64x2r.extract(extract128x2d1(x), 0);
+      else if idx == 3 then return x8664_64x2r.extract(extract128x2d1(x), 1);
       else compilerError("invalid index");
     }
     inline proc type insert(x: vecType, y: laneType, param idx: int): vecType {
@@ -221,10 +224,10 @@ module IntrinX86_256 {
       pragma "fn synchronization free"
       extern proc extract128x2d1(x: vecType): vec128d;
 
-      if idx == 0      then return insert128x2d0(x, x8664_64x2d.insert(extract128x2d0(x), y, 0));
-      else if idx == 1 then return insert128x2d0(x, x8664_64x2d.insert(extract128x2d0(x), y, 1));
-      else if idx == 2 then return insert128x2d1(x, x8664_64x2d.insert(extract128x2d1(x), y, 0));
-      else if idx == 3 then return insert128x2d1(x, x8664_64x2d.insert(extract128x2d1(x), y, 1));
+      if idx == 0      then return insert128x2d0(x, x8664_64x2r.insert(extract128x2d0(x), y, 0));
+      else if idx == 1 then return insert128x2d0(x, x8664_64x2r.insert(extract128x2d0(x), y, 1));
+      else if idx == 2 then return insert128x2d1(x, x8664_64x2r.insert(extract128x2d1(x), y, 0));
+      else if idx == 3 then return insert128x2d1(x, x8664_64x2r.insert(extract128x2d1(x), y, 1));
       else compilerError("invalid index");
     }
 
@@ -261,53 +264,53 @@ module IntrinX86_256 {
 
     inline proc type swapPairs(x: vecType): vecType {
       pragma "fn synchronization free"
-      extern proc swapPairs64x4d(x: vecType): vecType;
-      return swapPairs64x4d(x);
+      extern proc swapPairs64x4r(x: vecType): vecType;
+      return swapPairs64x4r(x);
     }
     inline proc type swapLowHigh(x: vecType): vecType {
       pragma "fn synchronization free"
-      extern proc swapLowHigh64x4d(x: vecType): vecType;
-      return swapLowHigh64x4d(x);
+      extern proc swapLowHigh64x4r(x: vecType): vecType;
+      return swapLowHigh64x4r(x);
     }
     inline proc type reverse(x: vecType): vecType {
       pragma "fn synchronization free"
-      extern proc reverse64x4d(x: vecType): vecType;
-      return reverse64x4d(x);
+      extern proc reverse64x4r(x: vecType): vecType;
+      return reverse64x4r(x);
     }
     inline proc type rotateLeft(x: vecType): vecType {
       pragma "fn synchronization free"
-      extern proc rotateLeft64x4d(x: vecType): vecType;
-      return rotateLeft64x4d(x);
+      extern proc rotateLeft64x4r(x: vecType): vecType;
+      return rotateLeft64x4r(x);
     }
     inline proc type rotateRight(x: vecType): vecType {
       pragma "fn synchronization free"
-      extern proc rotateRight64x4d(x: vecType): vecType;
-      return rotateRight64x4d(x);
+      extern proc rotateRight64x4r(x: vecType): vecType;
+      return rotateRight64x4r(x);
     }
     inline proc type interleaveLower(x: vecType, y: vecType): vecType {
       pragma "fn synchronization free"
-      extern proc interleaveLower64x4d(x: vecType, y: vecType): vecType;
-      return interleaveLower64x4d(x, y);
+      extern proc interleaveLower64x4r(x: vecType, y: vecType): vecType;
+      return interleaveLower64x4r(x, y);
     }
     inline proc type interleaveUpper(x: vecType, y: vecType): vecType {
       pragma "fn synchronization free"
-      extern proc interleaveUpper64x4d(x: vecType, y: vecType): vecType;
-      return interleaveUpper64x4d(x, y);
+      extern proc interleaveUpper64x4r(x: vecType, y: vecType): vecType;
+      return interleaveUpper64x4r(x, y);
     }
     inline proc type deinterleaveLower(x: vecType, y: vecType): vecType {
       pragma "fn synchronization free"
-      extern proc deinterleaveLower64x4d(x: vecType, y: vecType): vecType;
-      return deinterleaveLower64x4d(x, y);
+      extern proc deinterleaveLower64x4r(x: vecType, y: vecType): vecType;
+      return deinterleaveLower64x4r(x, y);
     }
     inline proc type deinterleaveUpper(x: vecType, y: vecType): vecType {
       pragma "fn synchronization free"
-      extern proc deinterleaveUpper64x4d(x: vecType, y: vecType): vecType;
-      return deinterleaveUpper64x4d(x, y);
+      extern proc deinterleaveUpper64x4r(x: vecType, y: vecType): vecType;
+      return deinterleaveUpper64x4r(x, y);
     }
     inline proc type blendLowHigh(x: vecType, y: vecType): vecType {
       pragma "fn synchronization free"
-      extern proc blendLowHigh64x4d(x: vecType, y: vecType): vecType;
-      return blendLowHigh64x4d(x, y);
+      extern proc blendLowHigh64x4r(x: vecType, y: vecType): vecType;
+      return blendLowHigh64x4r(x, y);
     }
 
     inline proc type add(x: vecType, y: vecType): vecType {
@@ -343,16 +346,16 @@ module IntrinX86_256 {
     }
     inline proc type rsqrt(x: vecType): vecType {
       pragma "fn synchronization free"
-      extern proc _mm256_cvtpd_ps(x: vecType): x8664_32x4f.vecType;
+      extern proc _mm256_cvtpd_ps(x: vecType): x8664_32x4r.vecType;
       pragma "fn synchronization free"
-      extern proc _mm256_cvtps_pd(x: x8664_32x4f.vecType): vecType;
+      extern proc _mm256_cvtps_pd(x: x8664_32x4r.vecType): vecType;
 
       var three = this.splat(3.0);
       var half = this.splat(0.5);
 
       var x_ps = _mm256_cvtpd_ps(x);
       // do rsqrt at 32-bit precision
-      var res = _mm256_cvtps_pd(x8664_32x4f.rsqrt(x_ps));
+      var res = _mm256_cvtps_pd(x8664_32x4r.rsqrt(x_ps));
 
       // TODO: would an FMA version be faster?
       // Newton-Raphson iteration

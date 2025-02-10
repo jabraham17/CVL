@@ -104,9 +104,9 @@ module Intrin {
   // TODO: right now we emulate div on ints by converting to float and back
   //       is this a good idea? Should it be an error like sqrt/rsqrt on ints?
   inline proc div(type eltType, param numElts: int, x: vectorType(eltType, numElts), y: x.type): x.type {
-    import SIMD;
+    import CVI;
     if isIntegralType(eltType) then
-      if SIMD.implementationWarnings then compilerWarning("div on ints is emulated by converting to float and back");
+      if CVI.implementationWarnings then compilerWarning("div on ints is emulated by converting to float and back");
     return implType(eltType, numElts).div(x, y);
   }
   inline proc neg(type eltType, param numElts: int, x: vectorType(eltType, numElts)): x.type do

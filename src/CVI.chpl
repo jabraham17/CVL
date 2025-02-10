@@ -1,4 +1,4 @@
-module SIMD {
+module CVI {
   config param implementationWarnings = true;
   use Types;
   use IO;

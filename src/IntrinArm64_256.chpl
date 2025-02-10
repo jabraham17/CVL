@@ -76,13 +76,13 @@ module IntrinArm64_256 {
     inline proc type reverse(x: vecType): vecType do
       return new vecType(implVecType.reverse(x.hi), implVecType.reverse(x.lo));
     inline proc type rotateLeft(x: vecType): vecType {
-      import SIMD;
-      if SIMD.implementationWarnings then compilerWarning("rotateLeft not implemented");
+      import CVI;
+      if CVI.implementationWarnings then compilerWarning("rotateLeft not implemented");
       return x; // TODO
     }
     inline proc type rotateRight(x: vecType): vecType {
-      import SIMD;
-      if SIMD.implementationWarnings then compilerWarning("rotateRight not implemented");
+      import CVI;
+      if CVI.implementationWarnings then compilerWarning("rotateRight not implemented");
       return x; // TODO
     }
     inline proc type interleaveLower(x: vecType, y: vecType): vecType do

@@ -43,9 +43,8 @@ def rules(driver):
 
         is_compile_time =  node.return_intent() in ("param", "type")
         is_extern = node.linkage() in ("extern", "export")
-        is_init_deinit = node.name() in ("init", "init=", "deinit", "postinit")
         is_serialize = node.name() in ("serialize", "deserialize")
-        return node.is_inline() or is_compile_time or is_extern or is_init_deinit or is_serialize
+        return node.is_inline() or is_compile_time or is_extern or is_serialize
 
 
     @driver.fixit(OnlyInlineProc)

@@ -5,7 +5,7 @@ chplVersion="2.2.0"
 license="None"
 type="library"
 # TODO: implementation still in progress, use -sSIMD.implementationWarnings=false
-compopts="--using-attribute-toolname=lint -sSIMD.implementationWarnings=false --no-overload-sets-checks"
+compopts="--using-attribute-toolname=lint -sCVI.implementationWarnings=false --no-overload-sets-checks"
 
 [dependencies]
 

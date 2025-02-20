@@ -7,5 +7,19 @@ type="library"
 # TODO: implementation still in progress, use -sSIMD.implementationWarnings=false
 compopts="--using-attribute-toolname=lint -sCVI.implementationWarnings=false --no-overload-sets-checks"
 
+# TODO
+# "BitTest.chpl"
+# "CmpTest.chpl"
+# "IterTest.chpl"
+tests = [
+  "ArrTest.chpl",
+  "FmaTest.chpl",
+  "InitTest.chpl",
+  "MathFuncs.chpl",
+  "MathTest.chpl",
+  "ShuffleTest.chpl",
+  "SqrtTest.chpl"
+]
+
 [dependencies]
 

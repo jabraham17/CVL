@@ -18,10 +18,11 @@ jobs:
           mason test --parallel --show
   mason-test-macos-arm:
     runs-on: macos-latest
-    container:
-      image: chapel/chapel:latest
     steps:
       - uses: actions/checkout@v4
+      - name: Install Chapel
+        run: |
+          brew install chapel
       - name: Run `mason test`
         run: |
           mason test --parallel --show

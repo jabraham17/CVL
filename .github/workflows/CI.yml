@@ -1,4 +1,4 @@
-name: mason test
+name: CI
 
 on:
   push:
@@ -16,3 +16,13 @@ jobs:
       - name: Run `mason test`
         run: |
           mason test --parallel --show
+  chplcheck:
+    runs-on: ubuntu-latest
+    container:
+      image: chapel/chapel:latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run chplcheck
+        run: |
+          set -x
+          ./lint.sh

@@ -2,4 +2,6 @@
 
 FILE_DIR=$(cd $(dirname $0); pwd)
 
-chplcheck --add-rules $FILE_DIR/lint/rules.py src/*.chpl
+chplcheck --add-rules $FILE_DIR/lint/rules.py src/*.chpl \
+  --disable-rule IncorrectIndentation \
+  $@

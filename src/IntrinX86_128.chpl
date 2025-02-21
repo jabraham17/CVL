@@ -73,27 +73,37 @@ module IntrinX86_128 {
 
     pragma "fn synchronization free"
     extern externName proc func(externX: t): returnType;
+
     return func(x);
   }
-  inline proc doSimpleOp(param op: string, type returnType, x: ?t1, y: ?t2): returnType {
+  inline proc doSimpleOp(param op: string,
+                         type returnType,
+                         x: ?t1, y: ?t2): returnType {
     param externName = op + typeToSuffix(returnType);
 
     pragma "fn synchronization free"
     extern externName proc func(externX: t1, externY: t2): returnType;
+
     return func(x, y);
   }
-  inline proc doSimpleOp(param op: string, type returnType, x: ?t1, y: ?t2, z: ?t3): returnType {
+  inline proc doSimpleOp(param op: string,
+                         type returnType,
+                         x: ?t1, y: ?t2, z: ?t3): returnType {
     param externName = op + typeToSuffix(returnType);
 
     pragma "fn synchronization free"
-    extern externName proc func(externX: t1, externY: t2, externZ: t3): returnType;
+    extern externName
+    proc func(externX: t1, externY: t2, externZ: t3): returnType;
+
     return func(x, y, z);
   }
-  inline proc doSimpleOp(param op: string, type returnType, xs): returnType where isTuple(xs) {
+  inline proc doSimpleOp(param op: string,
+                         type returnType, xs): returnType where isTuple(xs) {
     param externName = op + typeToSuffix(returnType);
 
     pragma "fn synchronization free"
     extern externName proc func(args...): returnType;
+
     return func((...xs));
   }
 
@@ -116,7 +126,8 @@ module IntrinX86_128 {
     type extensionType;
     proc type vecType type do return extensionType.vecType;
     proc type laneType type do return extensionType.laneType;
-    proc type numLanes param: int do return numBits(vecType) / numBits(laneType);
+    proc type numLanes param: int do
+      return numBits(vecType) / numBits(laneType);
 
     inline proc type extract(x: vecType, param idx: int): laneType {
       if idx < 0 || idx >= numLanes then compilerError("invalid index");

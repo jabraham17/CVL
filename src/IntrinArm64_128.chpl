@@ -113,20 +113,28 @@ module IntrinArm64_128 {
 
     pragma "fn synchronization free"
     extern externName proc func(externX: t): returnType;
+
     return func(x);
   }
-  inline proc doSimpleOp(param op: string, type returnType, x: ?t1, y: ?t2): returnType {
+  inline proc doSimpleOp(param op: string,
+                         type returnType,
+                         x: ?t1, y: ?t2): returnType {
     param externName = op + "_" + typeToSuffix(returnType);
 
     pragma "fn synchronization free"
     extern externName proc func(externX: t1, externY: t2): returnType;
+
     return func(x, y);
   }
-  inline proc doSimpleOp(param op: string, type returnType, x: ?t1, y: ?t2, z: ?t3): returnType {
+  inline proc doSimpleOp(param op: string,
+                         type returnType,
+                         x: ?t1, y: ?t2, z: ?t3): returnType {
     param externName = op + "_" + typeToSuffix(returnType);
 
     pragma "fn synchronization free"
-    extern externName proc func(externX: t1, externY: t2, externZ: t3): returnType;
+    extern externName
+    proc func(externX: t1, externY: t2, externZ: t3): returnType;
+
     return func(x, y, z);
   }
 
@@ -147,7 +155,8 @@ module IntrinArm64_128 {
     type extensionType;
     proc type vecType type do return extensionType.vecType;
     proc type laneType type do return extensionType.laneType;
-    proc type numLanes param: int do return numBits(vecType) / numBits(laneType);
+    proc type numLanes param: int do
+      return numBits(vecType) / numBits(laneType);
 
     inline proc type extract(x: vecType, param idx: int): laneType {
       if idx < 0 || idx >= numLanes then compilerError("invalid index");
@@ -414,7 +423,10 @@ module IntrinArm64_128 {
     proc type vecType type do return vec32x4r;
     proc type laneType type do return real(32);
 
-    inline proc type set(x: laneType, y: laneType, z: laneType, w: laneType): vecType {
+    inline proc type set(x: laneType,
+                         y: laneType,
+                         z: laneType,
+                         w: laneType): vecType {
       var result: vecType;
       result = base.splat(x);
       result = base.insert(result, y, 1);
@@ -500,10 +512,14 @@ module IntrinArm64_128 {
       extern proc extractVector64x2r1(x: vecType, y: vecType): vecType;
       return extractVector64x2r1(x, x);
     }
-    inline proc type swapLowHigh(x: vecType): vecType do return base.swapPairs(x);
-    inline proc type reverse(x: vecType): vecType do return base.swapPairs(x);
-    inline proc type rotateLeft(x: vecType): vecType do return base.swapPairs(x);
-    inline proc type rotateRight(x: vecType): vecType do return base.swapPairs(x);
+    inline proc type swapLowHigh(x: vecType): vecType do
+      return base.swapPairs(x);
+    inline proc type reverse(x: vecType): vecType do
+      return base.swapPairs(x);
+    inline proc type rotateLeft(x: vecType): vecType do
+      return base.swapPairs(x);
+    inline proc type rotateRight(x: vecType): vecType do
+      return base.swapPairs(x);
 
     inline proc type and(x: vecType, y: vecType): vecType {
       // no vandq_f64, convert to mask type, do and, convert back
@@ -544,7 +560,12 @@ module IntrinArm64_128 {
     proc type vecType type do return vec8x16i;
     proc type laneType type do return int(8);
 
-    inline proc type set(x: laneType, y: laneType, z: laneType, w: laneType, a: laneType, b: laneType, c: laneType, d: laneType, e: laneType, f: laneType, g: laneType, h: laneType, i: laneType, j: laneType, k: laneType, l: laneType): vecType {
+    inline proc type set(
+      x: laneType, y: laneType, z: laneType, w: laneType,
+      a: laneType, b: laneType, c: laneType, d: laneType,
+      e: laneType, f: laneType, g: laneType, h: laneType,
+      i: laneType, j: laneType, k: laneType, l: laneType
+    ): vecType {
       var result: vecType;
       result = base.splat(x);
       result = base.insert(result, y, 1);
@@ -643,7 +664,10 @@ module IntrinArm64_128 {
     proc type vecType type do return vec16x8i;
     proc type laneType type do return int(16);
 
-    inline proc type set(x: laneType, y: laneType, z: laneType, w: laneType, a: laneType, b: laneType, c: laneType, d: laneType): vecType {
+    inline proc type set(
+      x: laneType, y: laneType, z: laneType, w: laneType,
+      a: laneType, b: laneType, c: laneType, d: laneType
+    ): vecType {
       var result: vecType;
       result = base.splat(x);
       result = base.insert(result, y, 1);
@@ -731,7 +755,8 @@ module IntrinArm64_128 {
     proc type vecType type do return vec32x4i;
     proc type laneType type do return int(32);
 
-    inline proc type set(x: laneType, y: laneType, z: laneType, w: laneType): vecType {
+    inline proc type set(x: laneType, y: laneType,
+                         z: laneType, w: laneType): vecType {
       var result: vecType;
       result = base.splat(x);
       result = base.insert(result, y, 1);
@@ -806,10 +831,14 @@ module IntrinArm64_128 {
       extern proc extractVector64x2i1(x: vecType, y: vecType): vecType;
       return extractVector64x2i1(x, x);
     }
-    inline proc type swapLowHigh(x: vecType): vecType do return base.swapPairs(x);
-    inline proc type reverse(x: vecType): vecType do return base.swapPairs(x);
-    inline proc type rotateLeft(x: vecType): vecType do return base.swapPairs(x);
-    inline proc type rotateRight(x: vecType): vecType do return base.swapPairs(x);
+    inline proc type swapLowHigh(x: vecType): vecType do
+      return base.swapPairs(x);
+    inline proc type reverse(x: vecType): vecType do
+      return base.swapPairs(x);
+    inline proc type rotateLeft(x: vecType): vecType do
+      return base.swapPairs(x);
+    inline proc type rotateRight(x: vecType): vecType do
+      return base.swapPairs(x);
 
     inline proc type div(x: vecType, y: vecType): vecType {
       // cant do x/y becase neon does not have integer division

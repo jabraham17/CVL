@@ -2,6 +2,7 @@
 module IntrinX86_256 {
   use IntrinX86_128;
   use CTypes only c_ptr, c_ptrConst;
+
   import ChplConfig;
   if ChplConfig.CHPL_TARGET_ARCH == "x86_64" {
     require "x86intrin.h";

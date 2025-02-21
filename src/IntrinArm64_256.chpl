@@ -2,8 +2,8 @@
 /* There is no 256 for neon, this emulates it */
 @chplcheck.ignore("PascalCaseModules")
 module IntrinArm64_256 {
+  use IntrinArm64_128 only numBits;
   use CTypes only c_ptr, c_ptrConst;
-  use IntrinArm64_128;
 
   record vecPair {
     type vt; // value type
@@ -148,12 +148,12 @@ module IntrinArm64_256 {
     inline proc type hadd(x: vecType, y: vecType): vecType {
 
       proc vpaddName(type t) param : string {
-        if t == vec32x4r then return "vpaddq_f32";
-        if t == vec64x2r then return "vpaddq_f64";
-        if t == vec8x16i then return "vpaddq_s8";
-        if t == vec16x8i then return "vpaddq_s16";
-        if t == vec32x4i then return "vpaddq_s32";
-        if t == vec64x2i then return "vpaddq_s64";
+        if t == IntrinArm64_128.vec32x4r then return "vpaddq_f32";
+        if t == IntrinArm64_128.vec64x2r then return "vpaddq_f64";
+        if t == IntrinArm64_128.vec8x16i then return "vpaddq_s8";
+        if t == IntrinArm64_128.vec16x8i then return "vpaddq_s16";
+        if t == IntrinArm64_128.vec32x4i then return "vpaddq_s32";
+        if t == IntrinArm64_128.vec64x2i then return "vpaddq_s64";
         compilerError("Unsupported type");
       }
 
@@ -184,17 +184,17 @@ module IntrinArm64_256 {
 
 
   @chplcheck.ignore("CamelCaseFunctions")
-  proc arm64_32x8r type do return generic_wide(arm64_32x4r);
+  proc arm64_32x8r type do return generic_wide(IntrinArm64_128.arm64_32x4r);
   @chplcheck.ignore("CamelCaseFunctions")
-  proc arm64_64x4r type do return generic_wide(arm64_64x2r);
+  proc arm64_64x4r type do return generic_wide(IntrinArm64_128.arm64_64x2r);
   @chplcheck.ignore("CamelCaseFunctions")
-  proc arm64_8x32i type do return generic_wide(arm64_8x16i);
+  proc arm64_8x32i type do return generic_wide(IntrinArm64_128.arm64_8x16i);
   @chplcheck.ignore("CamelCaseFunctions")
-  proc arm64_16x16i type do return generic_wide(arm64_16x8i);
+  proc arm64_16x16i type do return generic_wide(IntrinArm64_128.arm64_16x8i);
   @chplcheck.ignore("CamelCaseFunctions")
-  proc arm64_32x8i type do return generic_wide(arm64_32x4i);
+  proc arm64_32x8i type do return generic_wide(IntrinArm64_128.arm64_32x4i);
   @chplcheck.ignore("CamelCaseFunctions")
-  proc arm64_64x4i type do return generic_wide(arm64_64x2i);
+  proc arm64_64x4i type do return generic_wide(IntrinArm64_128.arm64_64x2i);
 
 
   inline proc type generic_wide.set(

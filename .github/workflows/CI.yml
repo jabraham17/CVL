@@ -6,6 +6,8 @@ on:
       - main
   workflow_dispatch:
 
+# TODO: add a linux-arm runner
+
 jobs:
   mason-test-linux-x86:
     runs-on: ubuntu-latest

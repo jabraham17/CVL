@@ -15,9 +15,9 @@ jobs:
       image: chapel/chapel:latest
     steps:
       - uses: actions/checkout@v4
-      - name: Run `mason test`
+      - name: Run Tests
         run: |
-          mason test --parallel --show
+          ./test.sh
   mason-test-macos-arm:
     runs-on: macos-latest
     steps:
@@ -25,9 +25,9 @@ jobs:
       - name: Install Chapel
         run: |
           brew install chapel
-      - name: Run `mason test`
+      - name: Run Tests
         run: |
-          mason test --parallel --show
+          ./test.sh
   chplcheck:
     runs-on: ubuntu-latest
     container:

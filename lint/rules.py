@@ -163,6 +163,10 @@ def rules(driver):
         if not is_in_lib(node):
             return True
 
+        # we only consider nodes that are at module scope
+        if not isinstance(node.parent(), chapel.Module):
+            return True
+
         # if any of the vis clauses don't have 'only' as the limitation, warn
         return all([vis.limitation_kind() == 'only' for vis in node.visibility_clauses()])
 

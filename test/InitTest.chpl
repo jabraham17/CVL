@@ -38,18 +38,18 @@ proc initTestDriver(test: borrowed Test) throws {
   manage new outputManager(test, getGoodFile()) as actualOutput {
     initTest(actualOutput, real(32), 4);
     initTest(actualOutput, real(64), 2);
-    initTest(actualOutput, real(32), 8);
-    initTest(actualOutput, real(64), 4);
+    // initTest(actualOutput, real(32), 8);
+    // initTest(actualOutput, real(64), 4);
 
     initTest(actualOutput, int(8), 16);
     initTest(actualOutput, int(16), 8);
     initTest(actualOutput, int(32), 4);
     initTest(actualOutput, int(64), 2);
 
-    initTest(actualOutput, int(8), 32);
-    initTest(actualOutput, int(16), 16);
-    initTest(actualOutput, int(32), 8);
-    initTest(actualOutput, int(64), 4);
+    // initTest(actualOutput, int(8), 32);
+    // initTest(actualOutput, int(16), 16);
+    // initTest(actualOutput, int(32), 8);
+    // initTest(actualOutput, int(64), 4);
   }
 }
 

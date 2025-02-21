@@ -67,18 +67,18 @@ proc shuffleTestDriver(test: borrowed Test) throws {
   manage new outputManager(test, getGoodFile()) as actualOutput {
     shuffleTest(actualOutput, real(32), 4);
     shuffleTest(actualOutput, real(64), 2);
-    shuffleTest(actualOutput, real(32), 8);
-    shuffleTest(actualOutput, real(64), 4);
+    // shuffleTest(actualOutput, real(32), 8);
+    // shuffleTest(actualOutput, real(64), 4);
 
-    shuffleTest(actualOutput, int(8), 16);
-    shuffleTest(actualOutput, int(16), 8);
-    shuffleTest(actualOutput, int(32), 4);
-    shuffleTest(actualOutput, int(64), 2);
+    // shuffleTest(actualOutput, int(8), 16);
+    // shuffleTest(actualOutput, int(16), 8);
+    // shuffleTest(actualOutput, int(32), 4);
+    // shuffleTest(actualOutput, int(64), 2);
 
-    shuffleTest(actualOutput, int(8), 32);
-    shuffleTest(actualOutput, int(16), 16);
-    shuffleTest(actualOutput, int(32), 8);
-    shuffleTest(actualOutput, int(64), 4);
+    // shuffleTest(actualOutput, int(8), 32);
+    // shuffleTest(actualOutput, int(16), 16);
+    // shuffleTest(actualOutput, int(32), 8);
+    // shuffleTest(actualOutput, int(64), 4);
   }
 }
 

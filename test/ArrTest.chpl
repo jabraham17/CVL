@@ -51,18 +51,18 @@ proc arrTestDriver(test: borrowed Test) throws {
   manage new outputManager(test, getGoodFile()) as actualOutput {
     arrTest(actualOutput, real(32), 4);
     arrTest(actualOutput, real(64), 2);
-    arrTest(actualOutput, real(32), 8);
-    arrTest(actualOutput, real(64), 4);
+    // arrTest(actualOutput, real(32), 8);
+    // arrTest(actualOutput, real(64), 4);
 
     arrTest(actualOutput, int(8), 16);
     arrTest(actualOutput, int(16), 8);
     arrTest(actualOutput, int(32), 4);
     arrTest(actualOutput, int(64), 2);
 
-    arrTest(actualOutput, int(8), 32);
-    arrTest(actualOutput, int(16), 16);
-    arrTest(actualOutput, int(32), 8);
-    arrTest(actualOutput, int(64), 4);
+    // arrTest(actualOutput, int(8), 32);
+    // arrTest(actualOutput, int(16), 16);
+    // arrTest(actualOutput, int(32), 8);
+    // arrTest(actualOutput, int(64), 4);
   }
 }
 

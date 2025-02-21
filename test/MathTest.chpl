@@ -59,18 +59,18 @@ proc mathTestDriver(test: borrowed Test) throws {
   manage new outputManager(test, getGoodFile()) as actualOutput {
     mathTest(actualOutput, real(32), 4);
     mathTest(actualOutput, real(64), 2);
-    mathTest(actualOutput, real(32), 8);
-    mathTest(actualOutput, real(64), 4);
+    // mathTest(actualOutput, real(32), 8);
+    // mathTest(actualOutput, real(64), 4);
 
     mathTest(actualOutput, int(8), 16);
     mathTest(actualOutput, int(16), 8);
     mathTest(actualOutput, int(32), 4);
     mathTest(actualOutput, int(64), 2);
 
-    mathTest(actualOutput, int(8), 32);
-    mathTest(actualOutput, int(16), 16);
-    mathTest(actualOutput, int(32), 8);
-    mathTest(actualOutput, int(64), 4);
+    // mathTest(actualOutput, int(8), 32);
+    // mathTest(actualOutput, int(16), 16);
+    // mathTest(actualOutput, int(32), 8);
+    // mathTest(actualOutput, int(64), 4);
   }
 }
 

@@ -1,3 +1,4 @@
+@chplcheck.ignore("PascalCaseModules")
 module IntrinArm64_128 {
   use CTypes only c_ptr, c_ptrConst;
   use Reflection only canResolveTypeMethod;
@@ -140,6 +141,7 @@ module IntrinArm64_128 {
     return func(vec);
   }
 
+  @chplcheck.ignore("CamelCaseRecords")
   @lint.typeOnly
   record arm64_NxM {
     type extensionType;
@@ -386,19 +388,26 @@ module IntrinArm64_128 {
   }
 
 
+  @chplcheck.ignore("CamelCaseFunctions")
   proc arm64_32x4r type do return arm64_NxM(arm64_32x4r_extension(
                                     arm64_NxM(arm64_32x4r_extension(nothing))));
+  @chplcheck.ignore("CamelCaseFunctions")
   proc arm64_64x2r type do return arm64_NxM(arm64_64x2r_extension(
                                     arm64_NxM(arm64_64x2r_extension(nothing))));
+  @chplcheck.ignore("CamelCaseFunctions")
   proc arm64_8x16i type do return arm64_NxM(arm64_8x16i_extension(
                                     arm64_NxM(arm64_8x16i_extension(nothing))));
+  @chplcheck.ignore("CamelCaseFunctions")
   proc arm64_16x8i type do return arm64_NxM(arm64_16x8i_extension(
                                     arm64_NxM(arm64_16x8i_extension(nothing))));
+  @chplcheck.ignore("CamelCaseFunctions")
   proc arm64_32x4i type do return arm64_NxM(arm64_32x4i_extension(
                                     arm64_NxM(arm64_32x4i_extension(nothing))));
+  @chplcheck.ignore("CamelCaseFunctions")
   proc arm64_64x2i type do return arm64_NxM(arm64_64x2i_extension(
                                     arm64_NxM(arm64_64x2i_extension(nothing))));
 
+  @chplcheck.ignore("CamelCaseRecords")
   @lint.typeOnly
   record arm64_32x4r_extension {
     type base;
@@ -473,6 +482,7 @@ module IntrinArm64_128 {
     }
   }
 
+  @chplcheck.ignore("CamelCaseRecords")
   @lint.typeOnly
   record arm64_64x2r_extension {
     type base;
@@ -527,6 +537,7 @@ module IntrinArm64_128 {
 
   }
 
+  @chplcheck.ignore("CamelCaseRecords")
   @lint.typeOnly
   record arm64_8x16i_extension {
     type base;
@@ -625,6 +636,7 @@ module IntrinArm64_128 {
 
   }
 
+  @chplcheck.ignore("CamelCaseRecords")
   @lint.typeOnly
   record arm64_16x8i_extension {
     type base;
@@ -712,6 +724,7 @@ module IntrinArm64_128 {
     }
   }
 
+  @chplcheck.ignore("CamelCaseRecords")
   @lint.typeOnly
   record arm64_32x4i_extension {
     type base;
@@ -774,6 +787,7 @@ module IntrinArm64_128 {
     }
   }
 
+  @chplcheck.ignore("CamelCaseRecords")
   @lint.typeOnly
   record arm64_64x2i_extension {
     type base;

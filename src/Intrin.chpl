@@ -71,23 +71,23 @@ module Intrin {
   inline proc storeUnaligned(type eltType, param numElts: int, ptr: c_ptr(eltType), x: vectorType(eltType, numElts)) do
     implType(eltType, numElts).storeu(ptr, x);
 
-  inline proc swapPairs(type eltType, param numElts, x: vectorType(eltType, numElts)): x.type do
+  inline proc swapPairs(type eltType, param numElts: int, x: vectorType(eltType, numElts)): x.type do
     return implType(eltType, numElts).swapPairs(x);
-  inline proc swapLowHigh(type eltType, param numElts, x: vectorType(eltType, numElts)): x.type do
+  inline proc swapLowHigh(type eltType, param numElts: int, x: vectorType(eltType, numElts)): x.type do
     return implType(eltType, numElts).swapLowHigh(x);
-  inline proc reverse(type eltType, param numElts, x: vectorType(eltType, numElts)): x.type do
+  inline proc reverse(type eltType, param numElts: int, x: vectorType(eltType, numElts)): x.type do
     return implType(eltType, numElts).reverse(x);
-  inline proc rotateLeft(type eltType, param numElts, x: vectorType(eltType, numElts)): x.type do
+  inline proc rotateLeft(type eltType, param numElts: int, x: vectorType(eltType, numElts)): x.type do
     return implType(eltType, numElts).rotateLeft(x);
-  inline proc rotateRight(type eltType, param numElts, x: vectorType(eltType, numElts)): x.type do
+  inline proc rotateRight(type eltType, param numElts: int, x: vectorType(eltType, numElts)): x.type do
     return implType(eltType, numElts).rotateRight(x);
-  inline proc interleaveLower(type eltType, param numElts, x: vectorType(eltType, numElts), y: x.type): x.type do
+  inline proc interleaveLower(type eltType, param numElts: int, x: vectorType(eltType, numElts), y: x.type): x.type do
     return implType(eltType, numElts).interleaveLower(x, y);
-  inline proc interleaveUpper(type eltType, param numElts, x: vectorType(eltType, numElts), y: x.type): x.type do
+  inline proc interleaveUpper(type eltType, param numElts: int, x: vectorType(eltType, numElts), y: x.type): x.type do
     return implType(eltType, numElts).interleaveUpper(x, y);
-  inline proc deinterleaveLower(type eltType, param numElts, x: vectorType(eltType, numElts), y: x.type): x.type do
+  inline proc deinterleaveLower(type eltType, param numElts: int, x: vectorType(eltType, numElts), y: x.type): x.type do
     return implType(eltType, numElts).deinterleaveLower(x, y);
-  inline proc deinterleaveUpper(type eltType, param numElts, x: vectorType(eltType, numElts), y: x.type): x.type do
+  inline proc deinterleaveUpper(type eltType, param numElts: int, x: vectorType(eltType, numElts), y: x.type): x.type do
     return implType(eltType, numElts).deinterleaveUpper(x, y);
   inline proc blendLowHigh(type eltType, param numElts: int, x: vectorType(eltType, numElts), y: x.type): x.type do
     return implType(eltType, numElts).blendLowHigh(x, y);

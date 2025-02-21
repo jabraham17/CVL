@@ -1,5 +1,6 @@
 
 /* There is no 256 for neon, this emulates it */
+@chplcheck.ignore("PascalCaseModules")
 module IntrinArm64_256 {
   use CTypes only c_ptr, c_ptrConst;
   use IntrinArm64_128;
@@ -8,13 +9,13 @@ module IntrinArm64_256 {
     type vt; // value type
     var lo: vt;
     var hi: vt;
-    proc init(type vt) do this.vt = vt;
-    proc init(type vt, lo: vt, hi: vt) {
+    inline proc init(type vt) do this.vt = vt;
+    inline proc init(type vt, lo: vt, hi: vt) {
       this.vt = vt;
       this.lo = lo;
       this.hi = hi;
     }
-    proc init(lo: ?t, hi: t) {
+    inline proc init(lo: ?t, hi: t) {
       this.vt = t;
       this.lo = lo;
       this.hi = hi;
@@ -34,6 +35,7 @@ module IntrinArm64_256 {
     return numBits(t.vt) * 2;
 
 
+  @chplcheck.ignore("CamelCaseRecords")
   @lint.typeOnly
   record generic_wide {
     // operations that are generic for all wide types, which use vecPair
@@ -145,7 +147,7 @@ module IntrinArm64_256 {
 
     inline proc type hadd(x: vecType, y: vecType): vecType {
 
-      proc vpaddName(type t) param {
+      proc vpaddName(type t) param : string {
         if t == vec32x4r then return "vpaddq_f32";
         if t == vec64x2r then return "vpaddq_f64";
         if t == vec8x16i then return "vpaddq_s8";
@@ -181,11 +183,17 @@ module IntrinArm64_256 {
   }
 
 
+  @chplcheck.ignore("CamelCaseFunctions")
   proc arm64_32x8r type do return generic_wide(arm64_32x4r);
+  @chplcheck.ignore("CamelCaseFunctions")
   proc arm64_64x4r type do return generic_wide(arm64_64x2r);
+  @chplcheck.ignore("CamelCaseFunctions")
   proc arm64_8x32i type do return generic_wide(arm64_8x16i);
+  @chplcheck.ignore("CamelCaseFunctions")
   proc arm64_16x16i type do return generic_wide(arm64_16x8i);
+  @chplcheck.ignore("CamelCaseFunctions")
   proc arm64_32x8i type do return generic_wide(arm64_32x4i);
+  @chplcheck.ignore("CamelCaseFunctions")
   proc arm64_64x4i type do return generic_wide(arm64_64x2i);
 
 

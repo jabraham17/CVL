@@ -1,7 +1,5 @@
 module CVI {
   config param implementationWarnings = true;
-  use Types;
-  use IO;
   use CTypes only c_ptr, c_ptrConst, c_ptrTo, c_ptrToConst, c_addrOf, c_addrOfConst;
   import Intrin;
 
@@ -17,9 +15,11 @@ module CVI {
   private proc isValidContainer(container: ?, type eltType) param: bool where isHomogeneousTuple(container) {
     return container(0).type == eltType;
   }
+  @chplcheck.ignore("UnusedFormal")
   private proc isValidContainer(container: ?, type eltType) param: bool {
     return false;
   }
+  @chplcheck.ignore("UnusedFormal")
   private proc isDomainOrRange(v: ?t) param: bool do
     return isSubtype(t, domain(?)) || isSubtype(t, range(?));
 
@@ -30,19 +30,19 @@ module CVI {
     var data: Intrin.vectorType(eltType, numElts);
 
     /* type init*/
-    proc init(type eltType, param numElts: int) {
+    inline proc init(type eltType, param numElts: int) {
       this.eltType = eltType;
     this.numElts = numElts;
       this.data = Intrin.splat(eltType, numElts, 0:eltType);
     }
     /* init to single value */
-    proc init(type eltType, param numElts: int, value: eltType) {
+    inline proc init(type eltType, param numElts: int, value: eltType) {
       this.eltType = eltType;
       this.numElts = numElts;
       this.data = Intrin.splat(eltType, numElts, value);
     }
     /* init to single value, infer type */
-    proc init(param numElts: int, value: ?eltType) {
+    inline proc init(param numElts: int, value: ?eltType) {
       this.eltType = eltType;
       this.numElts = numElts;
       this.data = Intrin.splat(eltType, numElts, value);
@@ -51,12 +51,12 @@ module CVI {
     //
     // init from other vector
     //
-    proc init(type eltType, param numElts: int, value: vector(eltType, numElts)) {
+    inline proc init(type eltType, param numElts: int, value: vector(eltType, numElts)) {
       this.eltType = eltType;
       this.numElts = numElts;
       this.data = value.data;
     }
-    proc init=(value: vector(?)) {
+    inline proc init=(value: vector(?)) {
       this.eltType = value.eltType;
       this.numElts = value.numElts;
       this.data = value.data;
@@ -71,12 +71,12 @@ module CVI {
     //
     // init from tuple
     //
-    proc init(values) where isHomogeneousTupleType(values.type) {
+    inline proc init(values) where isHomogeneousTupleType(values.type) {
       this.eltType = values(0).type;
       this.numElts = values.size;
       this.data = Intrin.set(this.eltType, this.numElts, values);
     }
-    proc init=(values) where isHomogeneousTupleType(values.type) {
+    inline proc init=(values) where isHomogeneousTupleType(values.type) {
       this.eltType = values(0).type;
       this.numElts = values.size;
       this.data = Intrin.set(this.eltType, this.numElts, values);
@@ -357,12 +357,12 @@ module CVI {
       return result;
     }
     /* VECTOR == SCALAR */
-    inline operator==(x: vector(?eltType, ?numElts), y: ?scalarType): x.type
+    inline operator==(x: vector(?eltType, ?), y: ?scalarType): x.type
       where isCoercible(scalarType, eltType) {
       return x == (y:x.type);
     }
     /* SCALAR == VECTOR */
-    inline operator==(x: ?scalarType, y: vector(?eltType, ?numElts)): y.type
+    inline operator==(x: ?scalarType, y: vector(?eltType, ?)): y.type
       where isCoercible(scalarType, eltType) {
       return (x:y.type) == y;
     }
@@ -373,12 +373,12 @@ module CVI {
       return result;
     }
     /* VECTOR != SCALAR */
-    inline operator!=(x: vector(?eltType, ?numElts), y: ?scalarType): x.type
+    inline operator!=(x: vector(?eltType, ?), y: ?scalarType): x.type
       where isCoercible(scalarType, eltType) {
       return x != (y:x.type);
     }
     /* SCALAR != VECTOR */
-    inline operator!=(x: ?scalarType, y: vector(?eltType, ?numElts)): y.type
+    inline operator!=(x: ?scalarType, y: vector(?eltType, ?)): y.type
       where isCoercible(scalarType, eltType) {
       return (x:y.type) != y;
     }
@@ -389,12 +389,12 @@ module CVI {
       return result;
     }
     /* VECTOR < SCALAR */
-    inline operator<(x: vector(?eltType, ?numElts), y: ?scalarType): x.type
+    inline operator<(x: vector(?eltType, ?), y: ?scalarType): x.type
       where isCoercible(scalarType, eltType) {
       return x < (y:x.type);
     }
     /* SCALAR < VECTOR */
-    inline operator<(x: ?scalarType, y: vector(?eltType, ?numElts)): y.type
+    inline operator<(x: ?scalarType, y: vector(?eltType, ?)): y.type
       where isCoercible(scalarType, eltType) {
       return (x:y.type) < y;
     }
@@ -405,12 +405,12 @@ module CVI {
       return result;
     }
     /* VECTOR <= SCALAR */
-    inline operator<=(x: vector(?eltType, ?numElts), y: ?scalarType): x.type
+    inline operator<=(x: vector(?eltType, ?), y: ?scalarType): x.type
       where isCoercible(scalarType, eltType) {
       return x <= (y:x.type);
     }
     /* SCALAR <= VECTOR */
-    inline operator<=(x: ?scalarType, y: vector(?eltType, ?numElts)): y.type
+    inline operator<=(x: ?scalarType, y: vector(?eltType, ?)): y.type
       where isCoercible(scalarType, eltType) {
       return (x:y.type) <= y;
     }
@@ -421,12 +421,12 @@ module CVI {
       return result;
     }
     /* VECTOR > SCALAR */
-    inline operator>(x: vector(?eltType, ?numElts), y: ?scalarType): x.type
+    inline operator>(x: vector(?eltType, ?), y: ?scalarType): x.type
       where isCoercible(scalarType, eltType) {
       return x > (y:x.type);
     }
     /* SCALAR > VECTOR */
-    inline operator>(x: ?scalarType, y: vector(?eltType, ?numElts)): y.type
+    inline operator>(x: ?scalarType, y: vector(?eltType, ?)): y.type
       where isCoercible(scalarType, eltType) {
       return (x:y.type) > y;
     }
@@ -437,12 +437,12 @@ module CVI {
       return result;
     }
     /* VECTOR >= SCALAR */
-    inline operator>=(x: vector(?eltType, ?numElts), y: ?scalarType): x.type
+    inline operator>=(x: vector(?eltType, ?), y: ?scalarType): x.type
       where isCoercible(scalarType, eltType) {
       return x >= (y:x.type);
     }
     /* SCALAR >= VECTOR */
-    inline operator>=(x: ?scalarType, y: vector(?eltType, ?numElts)): y.type
+    inline operator>=(x: ?scalarType, y: vector(?eltType, ?)): y.type
       where isCoercible(scalarType, eltType) {
       return (x:y.type) >= y;
     }
@@ -473,6 +473,7 @@ module CVI {
       }
     }
 
+    @chplcheck.ignore("CamelCaseFunctions")
     @chpldoc.nodoc
     inline proc type _computeAddress(ref arr: [] eltType, idx: integral): c_ptr(eltType)
       where isValidContainer(arr, eltType) {
@@ -483,6 +484,7 @@ module CVI {
       const ptr = c_addrOf(arr[idx]);
       return ptr;
     }
+    @chplcheck.ignore("CamelCaseFunctions")
     @chpldoc.nodoc
     inline proc type _computeAddressConst(arr: [] eltType, idx: integral): c_ptrConst(eltType)
       where isValidContainer(arr, eltType) {
@@ -493,6 +495,7 @@ module CVI {
       const ptr = c_addrOfConst(arr[idx]);
       return ptr;
     }
+    @chplcheck.ignore("CamelCaseFunctions")
     @chpldoc.nodoc
     inline proc type _computeAddress(ref tup, idx: integral = 0): c_ptr(eltType)
       where isValidContainer(tup, eltType) {
@@ -504,6 +507,7 @@ module CVI {
       const ptr = c_addrOf(tup(idx));
       return ptr;
     }
+    @chplcheck.ignore("CamelCaseFunctions")
     @chpldoc.nodoc
     inline proc type _computeAddressConst(tup, idx: integral = 0): c_ptrConst(eltType)
       where isValidContainer(tup, eltType) {
@@ -573,61 +577,63 @@ module CVI {
 
 
 
-    inline proc type indicies(rng: ?) where isDomainOrRange(rng) do
+    inline proc type indicies(rng: ?): range(?) where isDomainOrRange(rng) do
       return rng by numElts;
-    inline proc type indicies(container: ?) where isHomogeneousTuple(container) do
+    inline proc type indicies(container: ?): range(?) where isHomogeneousTuple(container) do
       return 0..#container.size by numElts;
-    inline proc type indicies(container: ?) where isArray(container) do
+    inline proc type indicies(container: ?): domain(?) where isArray(container) do
       return container.domain by numElts;
 
     // TODO: how can I avoid the extra load per loop of the array metadata?
 
-    inline iter type vectors(container: ?, param aligned: bool = false)
+    inline iter type vectors(container: ?, param aligned: bool = false): this
       where isValidContainer(container, eltType) {
       for i in indicies(container) {
         yield this.load(container, i, aligned=aligned);
       }
     }
-    inline iter type vectors(param tag: iterKind, container: ?, param aligned: bool = false)
+    inline iter type vectors(param tag: iterKind, container: ?, param aligned: bool = false): this
       where tag == iterKind.standalone && isValidContainer(container, eltType) {
       for i in indicies(container).these(tag=tag) {
         yield this.load(container, i, aligned=aligned);
       }
     }
-    inline iter type vectors(param tag: iterKind, container: ?, param aligned: bool = false)
+    @chplcheck.ignore("UnusedFormal")
+    inline iter type vectors(param tag: iterKind, container: ?, param aligned: bool = false): this
       where tag == iterKind.leader && isValidContainer(container, eltType) {
       for followThis in indicies(container).these(tag=tag) {
         yield followThis;
       }
     }
-    inline iter type vectors(param tag: iterKind, followThis, container: ?, param aligned: bool = false)
+    inline iter type vectors(param tag: iterKind, followThis, container: ?, param aligned: bool = false): this
       where tag == iterKind.follower && isValidContainer(container, eltType) {
       for i in indicies(container).these(tag=tag, followThis=followThis) {
         yield this.load(container, i, aligned=aligned);
       }
     }
 
-    inline iter type vectorsRef(ref container: ?, param aligned: bool = false) ref
+    inline iter type vectorsRef(ref container: ?, param aligned: bool = false) ref : this
       where isValidContainer(container, eltType) {
       for i in indicies(container) {
         var vr = new vectorRef(this, this._computeAddress(container, i), aligned=aligned);
         yield vr;
       }
     }
-    inline iter type vectorsRef(param tag: iterKind, ref container: ?, param aligned: bool = false) ref
+    inline iter type vectorsRef(param tag: iterKind, ref container: ?, param aligned: bool = false) ref : this
       where tag == iterKind.standalone && isValidContainer(container, eltType) {
       for i in indicies(container).these(tag=tag) {
         var vr = new vectorRef(this, this._computeAddress(container, i), aligned=aligned);
         yield vr;
       }
     }
-    inline iter type vectorsRef(param tag: iterKind, ref container: ?, param aligned: bool = false) ref
+    @chplcheck.ignore("UnusedFormal")
+    inline iter type vectorsRef(param tag: iterKind, ref container: ?, param aligned: bool = false) ref : this
       where tag == iterKind.leader && isValidContainer(container, eltType) {
       for followThis in indicies(container).these(tag=tag) {
         yield followThis;
       }
     }
-    inline iter type vectorsRef(param tag: iterKind, followThis, ref container: ?, param aligned: bool = false) ref
+    inline iter type vectorsRef(param tag: iterKind, followThis, ref container: ?, param aligned: bool = false) ref : this
       where tag == iterKind.follower && isValidContainer(container, eltType) {
       for i in indicies(container).these(tag=tag, followThis=followThis) {
         var vr = new vectorRef(this, this._computeAddress(container, i), aligned=aligned);
@@ -656,6 +662,7 @@ module CVI {
     }
 
 
+    @chplcheck.ignore("UnusedFormal")
     proc serialize(writer, ref serializer) throws {
       var s: string;
       var sep = "";
@@ -816,28 +823,29 @@ module CVI {
     var address: c_ptr(vectorType.eltType);
     forwarding vec;
 
-    proc init(type vectorType, param aligned: bool = false) {
+    inline proc init(type vectorType, param aligned: bool = false) {
       this.vectorType = vectorType;
       this.aligned = aligned;
     }
-    proc init(vec: ?vecType, address: c_ptr(vecType.eltType), param aligned: bool = false) {
+    inline proc init(vec: ?vecType, address: c_ptr(vecType.eltType), param aligned: bool = false) {
       this.vectorType = vecType;
       this.aligned = aligned;
       this.vec = vec;
       this.address = address;
     }
-    proc init(type vectorType, address: c_ptr(vectorType.eltType), param aligned: bool = false) {
+    inline proc init(type vectorType, address: c_ptr(vectorType.eltType), param aligned: bool = false) {
       this.vectorType = vectorType;
       this.vec = vectorType.load(address, 0, aligned=aligned);
       this.address = address;
     }
-    proc deinit() {
+    inline proc deinit() {
       this.commitChanges();
     }
     inline proc commitChanges() {
       this.vec.store(this.address, 0, aligned=this.aligned);
     }
 
+    @chplcheck.ignore("UnusedFormal")
     proc serialize(writer, ref serializer) throws {
       writer.write(vec);
     }

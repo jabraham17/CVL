@@ -1,3 +1,4 @@
+@chplcheck.ignore("PascalCaseModules")
 module IntrinX86_256 {
   use IntrinX86_128;
   use CTypes only c_ptr, c_ptrConst;
@@ -14,17 +15,20 @@ module IntrinX86_256 {
   extern "__m128" type vec128;
   extern "__m128d" type vec128d;
 
+  @chplcheck.ignore("UnusedFormal")
   inline operator:(x: vec256d, type t: vec256) {
     pragma "fn synchronization free"
     extern proc _mm256_castpd_ps(x: vec256d): vec256;
     return _mm256_castpd_ps(x);
   }
+  @chplcheck.ignore("UnusedFormal")
   inline operator:(x: vec256, type t: vec256d) {
     pragma "fn synchronization free"
     extern proc _mm256_castps_pd(x: vec256): vec256d;
     return _mm256_castps_pd(x);
   }
 
+  @chplcheck.ignore("CamelCaseRecords")
   @lint.typeOnly
   record x8664_32x8r {
     proc type vecType type do return vec256;
@@ -197,6 +201,7 @@ module IntrinX86_256 {
     }
   }
 
+  @chplcheck.ignore("CamelCaseRecords")
   @lint.typeOnly
   record x8664_64x4r {
     proc type vecType type do return vec256d;

@@ -1,3 +1,4 @@
+@chplcheck.ignore("PascalCaseModules")
 module IntrinX86_128 {
   use CTypes only c_ptr, c_ptrConst, c_int;
   import ChplConfig;
@@ -109,6 +110,7 @@ module IntrinX86_128 {
   //   return _mm_castps_pd(x);
   // }
 
+  @chplcheck.ignore("CamelCaseRecords")
   @lint.typeOnly
   record x8664_NxM {
     type extensionType;
@@ -367,6 +369,7 @@ module IntrinX86_128 {
 
 
 
+  @chplcheck.ignore("CamelCaseRecords")
   @lint.typeOnly
   record x8664_32x4r {
     proc type vecType type do return vec32x4r;
@@ -529,6 +532,7 @@ module IntrinX86_128 {
     }
   }
 
+  @chplcheck.ignore("CamelCaseRecords")
   @lint.typeOnly
   record x8664_64x2r {
     proc type vecType type do return vec64x2r;

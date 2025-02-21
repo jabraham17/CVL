@@ -102,8 +102,11 @@ module IntrinX86_128 {
                          type returnType, xs): returnType where isTuple(xs) {
     param externName = op + typeToSuffix(returnType);
 
+    // workaround for https://github.com/chapel-lang/chapel/issues/26759
+    param nArgs = xs.size;
+
     pragma "fn synchronization free"
-    extern externName proc func(args...): returnType;
+    extern externName proc func(args...nArgs): returnType;
 
     return func((...xs));
   }
@@ -379,7 +382,10 @@ module IntrinX86_128 {
         return doSimpleOp("_mm_abs_", x);
     }
     inline proc type hadd(x: vecType, y: vecType): vecType do
-      return doSimpleOp("hadd", x, y);
+      if canResolveTypeMethod(extensionType, "hadd", x, y) then
+        return extensionType.hadd(x, y);
+      else
+        return doSimpleOp("_mm_hadd_", x, y);
 
     inline proc type sqrt(x: vecType): vecType {
       if canResolveTypeMethod(extensionType, "sqrt", x) then
@@ -436,6 +442,9 @@ module IntrinX86_128 {
     type base;
     proc type vecType type do return vec32x4r;
     proc type laneType type do return real(32);
+
+    inline proc type hadd(x: vecType, y: vecType): vecType do
+      return doSimpleOp("hadd", x, y);
   }
 
   @chplcheck.ignore("CamelCaseRecords")
@@ -461,6 +470,35 @@ module IntrinX86_128 {
     type base;
     proc type vecType type do return vec8x16i;
     proc type laneType type do return int(8);
+
+    inline proc type mul(x: vecType, y: vecType): vecType {
+      // TODO: theres no mul_epi8 instruction, we can emulate with mullo_epi16
+      // the loop here is painfully slow
+      var res: vecType;
+      for param i in 0..<base.numLanes {
+        res = base.insert(res, base.extract(x, i) * base.extract(y, i), i);
+      }
+      return res;
+    }
+    inline proc type div(x: vecType, y: vecType): vecType {
+      // TODO: theres no div_epi8 instruction,
+      // but surely we can do better than this
+      var res: vecType;
+      for param i in 0..<base.numLanes {
+        res = base.insert(res, base.extract(x, i) / base.extract(y, i), i);
+      }
+      return res;
+    }
+    inline proc type hadd(x: vecType, y: vecType): vecType {
+      // TODO: theres no hadd_epi8 instruction,
+      // but surely we can do better than this
+      var res: vecType;
+      for param i in 0..#base.numLanes by 2 {
+        res = base.insert(res, base.extract(x, i) + base.extract(x, i+1), i);
+        res = base.insert(res, base.extract(y, i) + base.extract(y, i+1), i+1);
+      }
+      return res;
+    }
   }
 
   @chplcheck.ignore("CamelCaseRecords")

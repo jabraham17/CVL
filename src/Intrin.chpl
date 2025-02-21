@@ -47,94 +47,194 @@ module Intrin {
   /*
     idx 0 is the least significant element
   */
-  inline proc extract(type eltType, param numElts: int, x: vectorType(eltType, numElts), param idx: int): eltType do
+  inline proc extract(type eltType,
+                      param numElts: int,
+                      x: vectorType(eltType, numElts),
+                      param idx: int): eltType do
     return implType(eltType, numElts).extract(x, idx);
   /*
     idx 0 is the least significant element
   */
-  inline proc insert(type eltType, param numElts: int, x: vectorType(eltType, numElts), y: eltType, param idx: int): x.type do
+  inline proc insert(type eltType,
+                     param numElts: int,
+                     x: vectorType(eltType, numElts),
+                     y: eltType,
+                     param idx: int): x.type do
     return implType(eltType, numElts).insert(x, y, idx);
-  inline proc splat(type eltType, param numElts: int, x: eltType): vectorType(eltType, numElts) do
+  inline proc splat(type eltType,
+                    param numElts: int,
+                    x: eltType): vectorType(eltType, numElts) do
     return implType(eltType, numElts).splat(x);
 
   /*
     values(0) is the least significant element
   */
-  inline proc set(type eltType, param numElts: int, values: numElts*eltType): vectorType(eltType, numElts) do
+  inline proc set(type eltType,
+                  param numElts: int,
+                  values: numElts*eltType): vectorType(eltType, numElts) do
     return implType(eltType, numElts).set((...values));
-  inline proc loadAligned(type eltType, param numElts: int, ptr: c_ptrConst(eltType)): vectorType(eltType, numElts) do
+  inline proc loadAligned(
+    type eltType,
+    param numElts: int,
+    ptr: c_ptrConst(eltType)
+  ): vectorType(eltType, numElts) do
     return implType(eltType, numElts).loada(ptr);
-  inline proc loadUnaligned(type eltType, param numElts: int, ptr: c_ptrConst(eltType)): vectorType(eltType, numElts) do
+  inline proc loadUnaligned(
+    type eltType,
+    param numElts: int,
+    ptr: c_ptrConst(eltType)
+  ): vectorType(eltType, numElts) do
     return implType(eltType, numElts).loadu(ptr);
-  inline proc storeAligned(type eltType, param numElts: int, ptr: c_ptr(eltType), x: vectorType(eltType, numElts)) do
+  inline proc storeAligned(type eltType,
+                           param numElts: int,
+                           ptr: c_ptr(eltType),
+                           x: vectorType(eltType, numElts)) do
     implType(eltType, numElts).storea(ptr, x);
-  inline proc storeUnaligned(type eltType, param numElts: int, ptr: c_ptr(eltType), x: vectorType(eltType, numElts)) do
+  inline proc storeUnaligned(type eltType,
+                             param numElts: int,
+                             ptr: c_ptr(eltType),
+                             x: vectorType(eltType, numElts)) do
     implType(eltType, numElts).storeu(ptr, x);
 
-  inline proc swapPairs(type eltType, param numElts: int, x: vectorType(eltType, numElts)): x.type do
+  inline proc swapPairs(type eltType,
+                        param numElts: int,
+                        x: vectorType(eltType, numElts)): x.type do
     return implType(eltType, numElts).swapPairs(x);
-  inline proc swapLowHigh(type eltType, param numElts: int, x: vectorType(eltType, numElts)): x.type do
+  inline proc swapLowHigh(type eltType,
+                          param numElts: int,
+                          x: vectorType(eltType, numElts)): x.type do
     return implType(eltType, numElts).swapLowHigh(x);
-  inline proc reverse(type eltType, param numElts: int, x: vectorType(eltType, numElts)): x.type do
+  inline proc reverse(type eltType,
+                      param numElts: int,
+                      x: vectorType(eltType, numElts)): x.type do
     return implType(eltType, numElts).reverse(x);
-  inline proc rotateLeft(type eltType, param numElts: int, x: vectorType(eltType, numElts)): x.type do
+  inline proc rotateLeft(type eltType,
+                         param numElts: int,
+                         x: vectorType(eltType, numElts)): x.type do
     return implType(eltType, numElts).rotateLeft(x);
-  inline proc rotateRight(type eltType, param numElts: int, x: vectorType(eltType, numElts)): x.type do
+  inline proc rotateRight(type eltType,
+                          param numElts: int,
+                          x: vectorType(eltType, numElts)): x.type do
     return implType(eltType, numElts).rotateRight(x);
-  inline proc interleaveLower(type eltType, param numElts: int, x: vectorType(eltType, numElts), y: x.type): x.type do
+  inline proc interleaveLower(type eltType,
+                              param numElts: int,
+                              x: vectorType(eltType, numElts),
+                              y: x.type): x.type do
     return implType(eltType, numElts).interleaveLower(x, y);
-  inline proc interleaveUpper(type eltType, param numElts: int, x: vectorType(eltType, numElts), y: x.type): x.type do
+  inline proc interleaveUpper(type eltType,
+                              param numElts: int,
+                              x: vectorType(eltType, numElts),
+                              y: x.type): x.type do
     return implType(eltType, numElts).interleaveUpper(x, y);
-  inline proc deinterleaveLower(type eltType, param numElts: int, x: vectorType(eltType, numElts), y: x.type): x.type do
+  inline proc deinterleaveLower(type eltType,
+                                param numElts: int,
+                                x: vectorType(eltType, numElts),
+                                y: x.type): x.type do
     return implType(eltType, numElts).deinterleaveLower(x, y);
-  inline proc deinterleaveUpper(type eltType, param numElts: int, x: vectorType(eltType, numElts), y: x.type): x.type do
+  inline proc deinterleaveUpper(type eltType,
+                                param numElts: int,
+                                x: vectorType(eltType, numElts),
+                                y: x.type): x.type do
     return implType(eltType, numElts).deinterleaveUpper(x, y);
-  inline proc blendLowHigh(type eltType, param numElts: int, x: vectorType(eltType, numElts), y: x.type): x.type do
+  inline proc blendLowHigh(type eltType,
+                           param numElts: int,
+                           x: vectorType(eltType, numElts),
+                           y: x.type): x.type do
     return implType(eltType, numElts).blendLowHigh(x, y);
 
 
-  inline proc add(type eltType, param numElts: int, x: vectorType(eltType, numElts), y: x.type): x.type do
+  inline proc add(type eltType,
+                  param numElts: int,
+                  x: vectorType(eltType, numElts),
+                  y: x.type): x.type do
     return implType(eltType, numElts).add(x, y);
-  inline proc sub(type eltType, param numElts: int, x: vectorType(eltType, numElts), y: x.type): x.type do
+  inline proc sub(type eltType,
+                  param numElts: int,
+                  x: vectorType(eltType, numElts),
+                  y: x.type): x.type do
     return implType(eltType, numElts).sub(x, y);
-  inline proc mul(type eltType, param numElts: int, x: vectorType(eltType, numElts), y: x.type): x.type {
+  inline proc mul(type eltType,
+                  param numElts: int,
+                  x: vectorType(eltType, numElts),
+                  y: x.type): x.type {
     if eltType == int(64) then compilerError("mul not supported for int64");
     else                  return implType(eltType, numElts).mul(x, y);
   }
   // TODO: right now we emulate div on ints by converting to float and back
   //       is this a good idea? Should it be an error like sqrt/rsqrt on ints?
-  inline proc div(type eltType, param numElts: int, x: vectorType(eltType, numElts), y: x.type): x.type {
+  inline proc div(type eltType,
+                  param numElts: int,
+                  x: vectorType(eltType, numElts),
+                  y: x.type): x.type {
     import CVI;
     if isIntegralType(eltType) then
-      if CVI.implementationWarnings then compilerWarning("div on ints is emulated by converting to float and back");
+      if CVI.implementationWarnings then
+        compilerWarning(
+          "div on ints is emulated by converting to float and back"
+        );
     return implType(eltType, numElts).div(x, y);
   }
-  inline proc neg(type eltType, param numElts: int, x: vectorType(eltType, numElts)): x.type do
+  inline proc neg(type eltType,
+                  param numElts: int,
+                  x: vectorType(eltType, numElts)): x.type do
     return implType(eltType, numElts).neg(x);
 
 
-  inline proc and(type eltType, param numElts: int, x: vectorType(eltType, numElts), y: x.type): x.type do
+  inline proc and(type eltType,
+                  param numElts: int,
+                  x: vectorType(eltType, numElts),
+                  y: x.type): x.type do
     return implType(eltType, numElts).and(x, y);
-  inline proc or(type eltType, param numElts: int, x: vectorType(eltType, numElts), y: x.type): x.type do
+  inline proc or(type eltType,
+                 param numElts: int,
+                 x: vectorType(eltType, numElts),
+                 y: x.type): x.type do
     return implType(eltType, numElts).or(x, y);
-  inline proc xor(type eltType, param numElts: int, x: vectorType(eltType, numElts), y: x.type): x.type do
+  inline proc xor(type eltType,
+                  param numElts: int,
+                  x: vectorType(eltType, numElts),
+                  y: x.type): x.type do
     return implType(eltType, numElts).xor(x, y);
-  inline proc not(type eltType, param numElts: int, x: vectorType(eltType, numElts)): x.type do
+  inline proc not(type eltType,
+                  param numElts: int,
+                  x: vectorType(eltType, numElts)):
+                  x.type do
     return implType(eltType, numElts).not(x);
-  inline proc andNot(type eltType, param numElts: int, x: vectorType(eltType, numElts), y: x.type): x.type do
+  inline proc andNot(type eltType,
+                     param numElts: int,
+                     x: vectorType(eltType, numElts),
+                     y: x.type): x.type do
     return implType(eltType, numElts).andNot(x, y);
 
-  inline proc cmpEq(type eltType, param numElts: int, x: vectorType(eltType, numElts), y: x.type): x.type do
+  inline proc cmpEq(type eltType,
+                    param numElts: int,
+                    x: vectorType(eltType, numElts),
+                    y: x.type): x.type do
     return implType(eltType, numElts).cmpEq(x, y);
-  inline proc cmpNe(type eltType, param numElts: int, x: vectorType(eltType, numElts), y: x.type): x.type do
+  inline proc cmpNe(type eltType,
+                    param numElts: int,
+                    x: vectorType(eltType, numElts),
+                    y: x.type): x.type do
     return implType(eltType, numElts).cmpNe(x, y);
-  inline proc cmpLt(type eltType, param numElts: int, x: vectorType(eltType, numElts), y: x.type): x.type do
+  inline proc cmpLt(type eltType,
+                    param numElts: int,
+                    x: vectorType(eltType, numElts),
+                    y: x.type): x.type do
     return implType(eltType, numElts).cmpLt(x, y);
-  inline proc cmpLe(type eltType, param numElts: int, x: vectorType(eltType, numElts), y: x.type): x.type do
+  inline proc cmpLe(type eltType,
+                    param numElts: int,
+                    x: vectorType(eltType, numElts),
+                    y: x.type): x.type do
     return implType(eltType, numElts).cmpLe(x, y);
-  inline proc cmpGt(type eltType, param numElts: int, x: vectorType(eltType, numElts), y: x.type): x.type do
+  inline proc cmpGt(type eltType,
+                    param numElts: int,
+                    x: vectorType(eltType, numElts),
+                    y: x.type): x.type do
     return implType(eltType, numElts).cmpGt(x, y);
-  inline proc cmpGe(type eltType, param numElts: int, x: vectorType(eltType, numElts), y: x.type): x.type do
+  inline proc cmpGe(type eltType,
+                    param numElts: int,
+                    x: vectorType(eltType, numElts),
+                    y: x.type): x.type do
     return implType(eltType, numElts).cmpGe(x, y);
 
   /*
@@ -185,8 +285,11 @@ module Intrin {
   inline proc max(type eltType, param numElts: int,
                   x: vectorType(eltType, numElts), y: x.type): x.type do
     return implType(eltType, numElts).max(x, y);
-  inline proc bitSelect(type eltType, param numElts: int,
-                        mask: ?, x: vectorType(eltType, numElts), y: x.type): x.type {
+  inline proc bitSelect(type eltType,
+                        param numElts: int,
+                        mask: ?,
+                        x: vectorType(eltType, numElts),
+                        y: x.type): x.type {
     return implType(eltType, numElts).bitSelect(mask, x, y);
   }
   inline proc abs(type eltType, param numElts: int,

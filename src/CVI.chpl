@@ -36,7 +36,7 @@ module CVI {
     /* type init*/
     inline proc init(type eltType, param numElts: int) {
       this.eltType = eltType;
-    this.numElts = numElts;
+      this.numElts = numElts;
       this.data = Intrin.splat(eltType, numElts, 0:eltType);
     }
     /* init to single value */

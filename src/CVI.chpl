@@ -1,18 +1,22 @@
 module CVI {
   config param implementationWarnings = true;
-  use CTypes only c_ptr, c_ptrConst, c_ptrTo, c_ptrToConst, c_addrOf, c_addrOfConst;
+  use CTypes only c_ptr, c_ptrConst,
+                  c_ptrTo, c_ptrToConst,
+                  c_addrOf, c_addrOfConst;
   import Intrin;
 
   proc numBits(type t) param: int where isSubtype(t, vector) do
     return numBits(t.eltType) * t.numElts;
 
-  private proc isValidContainer(container: ?, type eltType) param: bool where isArray(container) {
+  private proc isValidContainer(container: ?, type eltType) param: bool
+  where isArray(container) {
     return container.rank == 1 &&
            container.isRectangular() &&
            container._value.isDefaultRectangular() &&
            container.eltType == eltType;
   }
-  private proc isValidContainer(container: ?, type eltType) param: bool where isHomogeneousTuple(container) {
+  private proc isValidContainer(container: ?, type eltType) param: bool
+  where isHomogeneousTuple(container) {
     return container(0).type == eltType;
   }
   @chplcheck.ignore("UnusedFormal")
@@ -51,7 +55,9 @@ module CVI {
     //
     // init from other vector
     //
-    inline proc init(type eltType, param numElts: int, value: vector(eltType, numElts)) {
+    inline proc init(type eltType,
+                     param numElts: int,
+                     value: vector(eltType, numElts)) {
       this.eltType = eltType;
       this.numElts = numElts;
       this.data = value.data;
@@ -81,16 +87,17 @@ module CVI {
       this.numElts = values.size;
       this.data = Intrin.set(this.eltType, this.numElts, values);
     }
-    inline operator=(ref lhs, rhs) where isSubtype(lhs.type, vector) &&
-                                         isHomogeneousTupleType(rhs.type) &&
-                                         isCoercible(rhs(0).type, lhs.eltType) &&
-                                         lhs.numElts == rhs.size {
+    inline operator=(ref lhs, rhs)
+    where isSubtype(lhs.type, vector) &&
+          isHomogeneousTupleType(rhs.type) &&
+          isCoercible(rhs(0).type, lhs.eltType) &&
+          lhs.numElts == rhs.size {
       lhs.set(rhs);
     }
     inline operator:(x: ?tupType, type t: vector(?))
-      where isHomogeneousTupleType(tupType) &&
-            isCoercible(x(0).type, t.eltType) &&
-            x.size == t.numElts {
+    where isHomogeneousTupleType(tupType) &&
+          isCoercible(x(0).type, t.eltType) &&
+          x.size == t.numElts {
 
       var result: t;
       result.set(x);
@@ -101,7 +108,7 @@ module CVI {
     // init from scalar
     //
     inline operator:(x: ?eltType, type t: vector(?))
-      where isCoercible(eltType, t.eltType) {
+    where isCoercible(eltType, t.eltType) {
       var result: t;
       result.set(x);
       return result;
@@ -111,9 +118,9 @@ module CVI {
     // cast to tuple
     //
     inline operator:(x: vector(?eltType, ?numElts), type tupType)
-      where isHomogeneousTupleType(tupType) &&
-            isCoercible(eltType, tupType(0)) &&
-            tupType.size == numElts {
+    where isHomogeneousTupleType(tupType) &&
+          isCoercible(eltType, tupType(0)) &&
+          tupType.size == numElts {
       type resEltType = tupType(0);
       var result: tupType;
       for param i in 0..#numElts {
@@ -146,7 +153,7 @@ module CVI {
 
     /* SCALAR + VECTOR */
     inline operator+(x: ?scalarType, y: vector(?eltType, ?numElts)): y.type
-      where isCoercible(scalarType, eltType) {
+    where isCoercible(scalarType, eltType) {
       var result: y.type;
       result.data = Intrin.add(eltType, numElts,
                       Intrin.splat(eltType, numElts, x), y.data);
@@ -164,20 +171,20 @@ module CVI {
 
     /* VECTOR - SCALAR */
     inline operator-(x: vector(?eltType, ?numElts), y: ?scalarType): x.type
-      where isCoercible(scalarType, eltType) {
+    where isCoercible(scalarType, eltType) {
       var result: x.type;
       result.data = Intrin.sub(eltType, numElts, x.data,
                       Intrin.splat(eltType, numElts, y));
       return result;
     }
     inline operator-=(ref x: vector(?eltType, ?numElts), y: ?scalarType)
-      where isCoercible(scalarType, eltType) do
+    where isCoercible(scalarType, eltType) do
       x.data = Intrin.sub(eltType, numElts, x.data,
                       Intrin.splat(eltType, numElts, y));
 
     /* SCALAR - VECTOR */
     inline operator-(x: ?scalarType, y: vector(?eltType, ?numElts)): y.type
-      where isCoercible(scalarType, eltType) {
+    where isCoercible(scalarType, eltType) {
       var result: y.type;
       result.data = Intrin.sub(eltType, numElts,
                       Intrin.splat(eltType, numElts, x), y.data);
@@ -201,20 +208,20 @@ module CVI {
 
     /* VECTOR * SCALAR */
     inline operator*(x: vector(?eltType, ?numElts), y: ?scalarType): x.type
-      where isCoercible(scalarType, eltType) {
+    where isCoercible(scalarType, eltType) {
       var result: x.type;
       result.data = Intrin.mul(eltType, numElts, x.data,
                       Intrin.splat(eltType, numElts, y));
       return result;
     }
     inline operator*=(ref x: vector(?eltType, ?numElts), y: ?scalarType)
-      where isCoercible(scalarType, eltType) do
+    where isCoercible(scalarType, eltType) do
       x.data = Intrin.mul(eltType, numElts, x.data,
                       Intrin.splat(eltType, numElts, y));
 
     /* SCALAR * VECTOR */
     inline operator*(x: ?scalarType, y: vector(?eltType, ?numElts)): y.type
-      where isCoercible(scalarType, eltType) {
+    where isCoercible(scalarType, eltType) {
       var result: y.type;
       result.data = Intrin.mul(eltType, numElts,
                       Intrin.splat(eltType, numElts, x), y.data);
@@ -232,20 +239,20 @@ module CVI {
 
     /* VECTOR / SCALAR */
     inline operator/(x: vector(?eltType, ?numElts), y: ?scalarType): x.type
-      where isCoercible(scalarType, eltType) {
+    where isCoercible(scalarType, eltType) {
       var result: x.type;
       result.data = Intrin.div(eltType, numElts, x.data,
                       Intrin.splat(eltType, numElts, y));
       return result;
     }
     inline operator/=(ref x: vector(?eltType, ?numElts), y: ?scalarType)
-      where isCoercible(scalarType, eltType) do
+    where isCoercible(scalarType, eltType) do
       x.data = Intrin.div(eltType, numElts, x.data,
                       Intrin.splat(eltType, numElts, y));
 
     /* SCALAR / VECTOR */
     inline operator/(x: ?scalarType, y: vector(?eltType, ?numElts)): y.type
-      where isCoercible(scalarType, eltType) {
+    where isCoercible(scalarType, eltType) {
       var result: y.type;
       result.data = Intrin.div(eltType, numElts,
                       Intrin.splat(eltType, numElts, x), y.data);
@@ -263,19 +270,19 @@ module CVI {
       x.data = Intrin.and(eltType, numElts, x.data, y.data);
     /* VECTOR & SCALAR */
     inline operator&(x: vector(?eltType, ?numElts), y: ?scalarType): x.type
-      where isCoercible(scalarType, eltType) {
+    where isCoercible(scalarType, eltType) {
       var result: x.type;
       result.data = Intrin.and(eltType, numElts, x.data,
                       Intrin.splat(eltType, numElts, y));
       return result;
     }
     inline operator&=(ref x: vector(?eltType, ?numElts), y: ?scalarType)
-      where isCoercible(scalarType, eltType) do
+    where isCoercible(scalarType, eltType) do
       x.data = Intrin.and(eltType, numElts, x.data,
                       Intrin.splat(eltType, numElts, y));
     /* SCALAR & VECTOR */
     inline operator&(x: ?scalarType, y: vector(?eltType, ?numElts)): y.type
-      where isCoercible(scalarType, eltType) {
+    where isCoercible(scalarType, eltType) {
       var result: y.type;
       result.data = Intrin.and(eltType, numElts,
                       Intrin.splat(eltType, numElts, x), y.data);
@@ -292,19 +299,19 @@ module CVI {
       x.data = Intrin.or(eltType, numElts, x.data, y.data);
     /* VECTOR | SCALAR */
     inline operator|(x: vector(?eltType, ?numElts), y: ?scalarType): x.type
-      where isCoercible(scalarType, eltType) {
+    where isCoercible(scalarType, eltType) {
       var result: x.type;
       result.data = Intrin.or(eltType, numElts, x.data,
                       Intrin.splat(eltType, numElts, y));
       return result;
     }
     inline operator|=(ref x: vector(?eltType, ?numElts), y: ?scalarType)
-      where isCoercible(scalarType, eltType) do
+    where isCoercible(scalarType, eltType) do
       x.data = Intrin.or(eltType, numElts, x.data,
                       Intrin.splat(eltType, numElts, y));
     /* SCALAR | VECTOR */
     inline operator|(x: ?scalarType, y: vector(?eltType, ?numElts)): y.type
-      where isCoercible(scalarType, eltType) {
+    where isCoercible(scalarType, eltType) {
       var result: y.type;
       result.data = Intrin.or(eltType, numElts,
                       Intrin.splat(eltType, numElts, x), y.data);
@@ -321,19 +328,19 @@ module CVI {
       x.data = Intrin.xor(eltType, numElts, x.data, y.data);
     /* VECTOR ^ SCALAR */
     inline operator^(x: vector(?eltType, ?numElts), y: ?scalarType): x.type
-      where isCoercible(scalarType, eltType) {
+    where isCoercible(scalarType, eltType) {
       var result: x.type;
       result.data = Intrin.xor(eltType, numElts, x.data,
                       Intrin.splat(eltType, numElts, y));
       return result;
     }
     inline operator^=(ref x: vector(?eltType, ?numElts), y: ?scalarType)
-      where isCoercible(scalarType, eltType) do
+    where isCoercible(scalarType, eltType) do
       x.data = Intrin.xor(eltType, numElts, x.data,
                       Intrin.splat(eltType, numElts, y));
     /* SCALAR ^ VECTOR */
     inline operator^(x: ?scalarType, y: vector(?eltType, ?numElts)): y.type
-      where isCoercible(scalarType, eltType) {
+    where isCoercible(scalarType, eltType) {
       var result: y.type;
       result.data = Intrin.xor(eltType, numElts,
                       Intrin.splat(eltType, numElts, x), y.data);
@@ -358,12 +365,12 @@ module CVI {
     }
     /* VECTOR == SCALAR */
     inline operator==(x: vector(?eltType, ?), y: ?scalarType): x.type
-      where isCoercible(scalarType, eltType) {
+    where isCoercible(scalarType, eltType) {
       return x == (y:x.type);
     }
     /* SCALAR == VECTOR */
     inline operator==(x: ?scalarType, y: vector(?eltType, ?)): y.type
-      where isCoercible(scalarType, eltType) {
+    where isCoercible(scalarType, eltType) {
       return (x:y.type) == y;
     }
     /* VECTOR != VECTOR */
@@ -374,12 +381,12 @@ module CVI {
     }
     /* VECTOR != SCALAR */
     inline operator!=(x: vector(?eltType, ?), y: ?scalarType): x.type
-      where isCoercible(scalarType, eltType) {
+    where isCoercible(scalarType, eltType) {
       return x != (y:x.type);
     }
     /* SCALAR != VECTOR */
     inline operator!=(x: ?scalarType, y: vector(?eltType, ?)): y.type
-      where isCoercible(scalarType, eltType) {
+    where isCoercible(scalarType, eltType) {
       return (x:y.type) != y;
     }
     /* VECTOR < VECTOR */
@@ -390,12 +397,12 @@ module CVI {
     }
     /* VECTOR < SCALAR */
     inline operator<(x: vector(?eltType, ?), y: ?scalarType): x.type
-      where isCoercible(scalarType, eltType) {
+    where isCoercible(scalarType, eltType) {
       return x < (y:x.type);
     }
     /* SCALAR < VECTOR */
     inline operator<(x: ?scalarType, y: vector(?eltType, ?)): y.type
-      where isCoercible(scalarType, eltType) {
+    where isCoercible(scalarType, eltType) {
       return (x:y.type) < y;
     }
     /* VECTOR <= VECTOR */
@@ -406,12 +413,12 @@ module CVI {
     }
     /* VECTOR <= SCALAR */
     inline operator<=(x: vector(?eltType, ?), y: ?scalarType): x.type
-      where isCoercible(scalarType, eltType) {
+    where isCoercible(scalarType, eltType) {
       return x <= (y:x.type);
     }
     /* SCALAR <= VECTOR */
     inline operator<=(x: ?scalarType, y: vector(?eltType, ?)): y.type
-      where isCoercible(scalarType, eltType) {
+    where isCoercible(scalarType, eltType) {
       return (x:y.type) <= y;
     }
     /* VECTOR > VECTOR */
@@ -422,12 +429,12 @@ module CVI {
     }
     /* VECTOR > SCALAR */
     inline operator>(x: vector(?eltType, ?), y: ?scalarType): x.type
-      where isCoercible(scalarType, eltType) {
+    where isCoercible(scalarType, eltType) {
       return x > (y:x.type);
     }
     /* SCALAR > VECTOR */
     inline operator>(x: ?scalarType, y: vector(?eltType, ?)): y.type
-      where isCoercible(scalarType, eltType) {
+    where isCoercible(scalarType, eltType) {
       return (x:y.type) > y;
     }
     /* VECTOR >= VECTOR */
@@ -438,12 +445,12 @@ module CVI {
     }
     /* VECTOR >= SCALAR */
     inline operator>=(x: vector(?eltType, ?), y: ?scalarType): x.type
-      where isCoercible(scalarType, eltType) {
+    where isCoercible(scalarType, eltType) {
       return x >= (y:x.type);
     }
     /* SCALAR >= VECTOR */
     inline operator>=(x: ?scalarType, y: vector(?eltType, ?)): y.type
-      where isCoercible(scalarType, eltType) {
+    where isCoercible(scalarType, eltType) {
       return (x:y.type) >= y;
     }
 
@@ -451,11 +458,13 @@ module CVI {
 
 
 
-    inline proc ref set(value) where isCoercible(value.type, eltType) do
+    inline proc ref set(value)
+    where isCoercible(value.type, eltType) do
       data = Intrin.splat(eltType, numElts, value:eltType);
-    inline proc ref set(values) where isHomogeneousTupleType(values.type) &&
-                                      isCoercible(values(0).type, eltType) &&
-                                      values.size == numElts {
+    inline proc ref set(values)
+    where isHomogeneousTupleType(values.type) &&
+          isCoercible(values(0).type, eltType) &&
+          values.size == numElts {
       var values_: numElts*eltType;
       for param i in 0..<numElts do
         values_[i] = values[i]:eltType;
@@ -475,8 +484,9 @@ module CVI {
 
     @chplcheck.ignore("CamelCaseFunctions")
     @chpldoc.nodoc
-    inline proc type _computeAddress(ref arr: [] eltType, idx: integral): c_ptr(eltType)
-      where isValidContainer(arr, eltType) {
+    inline proc type _computeAddress(ref arr: [] eltType,
+                                     idx: integral): c_ptr(eltType)
+    where isValidContainer(arr, eltType) {
       if boundsChecking {
         // reuse array slice bounds checking
         arr[idx.. by arr.domain.stride # numElts];
@@ -486,8 +496,9 @@ module CVI {
     }
     @chplcheck.ignore("CamelCaseFunctions")
     @chpldoc.nodoc
-    inline proc type _computeAddressConst(arr: [] eltType, idx: integral): c_ptrConst(eltType)
-      where isValidContainer(arr, eltType) {
+    inline proc type _computeAddressConst(arr: [] eltType,
+                                          idx: integral): c_ptrConst(eltType)
+    where isValidContainer(arr, eltType) {
       if boundsChecking {
         // reuse array slice bounds checking
         arr[idx.. by arr.domain.stride # numElts];
@@ -497,8 +508,9 @@ module CVI {
     }
     @chplcheck.ignore("CamelCaseFunctions")
     @chpldoc.nodoc
-    inline proc type _computeAddress(ref tup, idx: integral = 0): c_ptr(eltType)
-      where isValidContainer(tup, eltType) {
+    inline proc type _computeAddress(ref tup,
+                                     idx: integral = 0): c_ptr(eltType)
+    where isValidContainer(tup, eltType) {
       if boundsChecking {
         if idx+numElts-1 >= tup.size {
           halt("out of bounds load");
@@ -509,8 +521,11 @@ module CVI {
     }
     @chplcheck.ignore("CamelCaseFunctions")
     @chpldoc.nodoc
-    inline proc type _computeAddressConst(tup, idx: integral = 0): c_ptrConst(eltType)
-      where isValidContainer(tup, eltType) {
+    inline proc type _computeAddressConst(
+      tup,
+      idx: integral = 0
+    ): c_ptrConst(eltType)
+    where isValidContainer(tup, eltType) {
       if boundsChecking {
         if idx+numElts-1 >= tup.size {
           halt("out of bounds load");
@@ -533,11 +548,11 @@ module CVI {
     inline proc ref load(arr: [] eltType,
                          idx: integral = 0,
                          param aligned: bool = false)
-      where isValidContainer(arr, eltType) do
+    where isValidContainer(arr, eltType) do
       load(this.type._computeAddressConst(arr, idx), idx=0, aligned=aligned);
 
     inline proc ref load(tup, idx: integral = 0, param aligned: bool = false)
-      where isValidContainer(tup, eltType) && isHomogeneousTuple(tup) do
+    where isValidContainer(tup, eltType) && isHomogeneousTuple(tup) do
       load(this.type._computeAddressConst(tup, idx), idx=0, aligned=aligned);
 
     inline proc store(ptr: c_ptr(eltType),
@@ -552,11 +567,11 @@ module CVI {
     inline proc store(ref arr: [] eltType,
                           idx: integral = 0,
                           param aligned: bool = false)
-      where isValidContainer(arr, eltType) do
+    where isValidContainer(arr, eltType) do
       store(this.type._computeAddress(arr, idx), idx=0, aligned=aligned);
 
     inline proc store(ref tup, idx: integral = 0, param aligned: bool = false)
-      where isValidContainer(tup, eltType) && isHomogeneousTuple(tup) {
+    where isValidContainer(tup, eltType) && isHomogeneousTuple(tup) {
       if boundsChecking {
         if idx+numElts-1 >= tup.size {
           halt("out of bounds store");
@@ -579,9 +594,11 @@ module CVI {
 
     inline proc type indicies(rng: ?): range(?) where isDomainOrRange(rng) do
       return rng by numElts;
-    inline proc type indicies(container: ?): range(?) where isHomogeneousTuple(container) do
+    inline proc type indicies(container: ?): range(?)
+    where isHomogeneousTuple(container) do
       return 0..#container.size by numElts;
-    inline proc type indicies(container: ?): domain(?) where isArray(container) do
+    inline proc type indicies(container: ?): domain(?)
+    where isArray(container) do
       return container.domain by numElts;
 
     // TODO: how can I avoid the extra load per loop of the array metadata?
@@ -592,51 +609,69 @@ module CVI {
         yield this.load(container, i, aligned=aligned);
       }
     }
-    inline iter type vectors(param tag: iterKind, container: ?, param aligned: bool = false): this
-      where tag == iterKind.standalone && isValidContainer(container, eltType) {
+    inline iter type vectors(param tag: iterKind,
+                             container: ?,
+                             param aligned: bool = false): this
+    where tag == iterKind.standalone && isValidContainer(container, eltType) {
       for i in indicies(container).these(tag=tag) {
         yield this.load(container, i, aligned=aligned);
       }
     }
     @chplcheck.ignore("UnusedFormal")
-    inline iter type vectors(param tag: iterKind, container: ?, param aligned: bool = false): this
-      where tag == iterKind.leader && isValidContainer(container, eltType) {
+    inline iter type vectors(param tag: iterKind,
+                             container: ?,
+                             param aligned: bool = false): this
+    where tag == iterKind.leader && isValidContainer(container, eltType) {
       for followThis in indicies(container).these(tag=tag) {
         yield followThis;
       }
     }
-    inline iter type vectors(param tag: iterKind, followThis, container: ?, param aligned: bool = false): this
-      where tag == iterKind.follower && isValidContainer(container, eltType) {
+    inline iter type vectors(param tag: iterKind,
+                             followThis,
+                             container: ?,
+                             param aligned: bool = false): this
+    where tag == iterKind.follower && isValidContainer(container, eltType) {
       for i in indicies(container).these(tag=tag, followThis=followThis) {
         yield this.load(container, i, aligned=aligned);
       }
     }
 
-    inline iter type vectorsRef(ref container: ?, param aligned: bool = false) ref : this
-      where isValidContainer(container, eltType) {
+    inline iter type vectorsRef(ref container: ?,
+                                param aligned: bool = false) ref : this
+    where isValidContainer(container, eltType) {
       for i in indicies(container) {
-        var vr = new vectorRef(this, this._computeAddress(container, i), aligned=aligned);
+        const addr = this._computeAddress(container, i);
+        var vr = new vectorRef(this, addr, aligned=aligned);
         yield vr;
       }
     }
-    inline iter type vectorsRef(param tag: iterKind, ref container: ?, param aligned: bool = false) ref : this
-      where tag == iterKind.standalone && isValidContainer(container, eltType) {
+    inline iter type vectorsRef(param tag: iterKind,
+                                ref container: ?,
+                                param aligned: bool = false) ref : this
+    where tag == iterKind.standalone && isValidContainer(container, eltType) {
       for i in indicies(container).these(tag=tag) {
-        var vr = new vectorRef(this, this._computeAddress(container, i), aligned=aligned);
+        const addr = this._computeAddress(container, i);
+        var vr = new vectorRef(this, addr, aligned=aligned);
         yield vr;
       }
     }
     @chplcheck.ignore("UnusedFormal")
-    inline iter type vectorsRef(param tag: iterKind, ref container: ?, param aligned: bool = false) ref : this
+    inline iter type vectorsRef(param tag: iterKind,
+                                ref container: ?,
+                                param aligned: bool = false) ref : this
       where tag == iterKind.leader && isValidContainer(container, eltType) {
       for followThis in indicies(container).these(tag=tag) {
         yield followThis;
       }
     }
-    inline iter type vectorsRef(param tag: iterKind, followThis, ref container: ?, param aligned: bool = false) ref : this
-      where tag == iterKind.follower && isValidContainer(container, eltType) {
+    inline iter type vectorsRef(param tag: iterKind,
+                                followThis,
+                                ref container: ?,
+                                param aligned: bool = false) ref : this
+    where tag == iterKind.follower && isValidContainer(container, eltType) {
       for i in indicies(container).these(tag=tag, followThis=followThis) {
-        var vr = new vectorRef(this, this._computeAddress(container, i), aligned=aligned);
+        const addr = this._computeAddress(container, i);
+        var vr = new vectorRef(this, addr, aligned=aligned);
         yield vr;
       }
     }
@@ -644,7 +679,9 @@ module CVI {
 
 
     // TODO: is it really worth having this?
-    inline iter type vectorsJagged(arr: ?, pad: eltType = 0, param aligned: bool = false): this {
+    inline iter type vectorsJagged(arr: ?,
+                                   pad: eltType = 0,
+                                   param aligned: bool = false): this {
       // TODO: is this really the most efficient way to do this?
       // this should iterate over a range, and pad the extra with 'pad'
       // so that the last iteration is a full vector
@@ -700,22 +737,26 @@ module CVI {
     result.data = Intrin.rotateRight(eltType, numElts, x.data);
     return result;
   }
-  inline proc interleaveLower(x: vector(?eltType, ?numElts), y: x.type): x.type {
+  inline proc interleaveLower(x: vector(?eltType, ?numElts),
+                              y: x.type): x.type {
     var result: x.type;
     result.data = Intrin.interleaveLower(eltType, numElts, x.data, y.data);
     return result;
   }
-  inline proc interleaveUpper(x: vector(?eltType, ?numElts), y: x.type): x.type {
+  inline proc interleaveUpper(x: vector(?eltType, ?numElts),
+                              y: x.type): x.type {
     var result: x.type;
     result.data = Intrin.interleaveUpper(eltType, numElts, x.data, y.data);
     return result;
   }
-  inline proc deinterleaveLower(x: vector(?eltType, ?numElts), y: x.type): x.type {
+  inline proc deinterleaveLower(x: vector(?eltType, ?numElts),
+                                y: x.type): x.type {
     var result: x.type;
     result.data = Intrin.deinterleaveLower(eltType, numElts, x.data, y.data);
     return result;
   }
-  inline proc deinterleaveUpper(x: vector(?eltType, ?numElts), y: x.type): x.type {
+  inline proc deinterleaveUpper(x: vector(?eltType, ?numElts),
+                                y: x.type): x.type {
     var result: x.type;
     result.data = Intrin.deinterleaveUpper(eltType, numElts, x.data, y.data);
     return result;
@@ -771,7 +812,10 @@ module CVI {
     return result;
   }
 
-  inline proc bitSelect(mask: vector(?), x: vector(?eltType, ?numElts), y: x.type): x.type where numBits(mask.type) == numBits(x.type) {
+  inline proc bitSelect(mask: vector(?),
+                        x: vector(?eltType, ?numElts),
+                        y: x.type): x.type
+  where numBits(mask.type) == numBits(x.type) {
     var result: x.type;
     result.data = Intrin.bitSelect(eltType, numElts, mask.data, x.data, y.data);
     return result;
@@ -782,13 +826,17 @@ module CVI {
     result.data = Intrin.andNot(eltType, numElts, x.data, y.data);
     return result;
   }
-  inline proc andNot(x: vector(?eltType, ?numElts), y: ?scalarType): x.type where isCoercible(scalarType, eltType) {
+  inline proc andNot(x: vector(?eltType, ?numElts),
+                     y: ?scalarType): x.type
+  where isCoercible(scalarType, eltType) {
     var result: x.type;
     result.data = Intrin.andNot(eltType, numElts, x.data,
                                 Intrin.splat(eltType, numElts, y));
     return result;
   }
-  inline proc andNot(x: ?scalarType, y: vector(?eltType, ?numElts)): y.type where isCoercible(scalarType, eltType) {
+  inline proc andNot(x: ?scalarType,
+                     y: vector(?eltType, ?numElts)): y.type
+  where isCoercible(scalarType, eltType) {
     var result: y.type;
     result.data = Intrin.andNot(eltType, numElts,
                                 Intrin.splat(eltType, numElts, x), y.data);
@@ -827,13 +875,17 @@ module CVI {
       this.vectorType = vectorType;
       this.aligned = aligned;
     }
-    inline proc init(vec: ?vecType, address: c_ptr(vecType.eltType), param aligned: bool = false) {
+    inline proc init(vec: ?vecType,
+                     address: c_ptr(vecType.eltType),
+                     param aligned: bool = false) {
       this.vectorType = vecType;
       this.aligned = aligned;
       this.vec = vec;
       this.address = address;
     }
-    inline proc init(type vectorType, address: c_ptr(vectorType.eltType), param aligned: bool = false) {
+    inline proc init(type vectorType,
+                     address: c_ptr(vectorType.eltType),
+                     param aligned: bool = false) {
       this.vectorType = vectorType;
       this.vec = vectorType.load(address, 0, aligned=aligned);
       this.address = address;
@@ -855,31 +907,35 @@ module CVI {
     // TODO: handle all the rest of the operators
 
     //
-    // Forwarding doesn't work for operators, so we need to manually implement them
+    // Forwarding doesn't work for operators, so we need to manually implement
     //
-    inline operator+(lhs: ?lhsType, rhs: ?rhsType): returnTypeForOperatorTypes(lhsType, rhsType)
-      where returnTypeForOperatorTypes(lhsType, rhsType) != nothing do
+    inline operator+(lhs: ?lhsType,
+                     rhs: ?rhsType): returnTypeForOpTypes(lhsType, rhsType)
+    where returnTypeForOpTypes(lhsType, rhsType) != nothing do
       return getValue(lhs) + getValue(rhs);
     inline operator+=(ref lhs: vectorRef(?), rhs: ?rhsType)
       where validEqOperatorTypes(lhs.type, rhsType) do
       getRef(lhs) += getValue(rhs);
 
-    inline operator-(lhs: ?lhsType, rhs: ?rhsType): returnTypeForOperatorTypes(lhsType, rhsType)
-      where returnTypeForOperatorTypes(lhsType, rhsType) != nothing do
+    inline operator-(lhs: ?lhsType,
+                     rhs: ?rhsType): returnTypeForOpTypes(lhsType, rhsType)
+    where returnTypeForOpTypes(lhsType, rhsType) != nothing do
       return getValue(lhs) + getValue(rhs);
     inline operator-=(ref lhs: vectorRef(?), rhs: ?rhsType)
       where validEqOperatorTypes(lhs.type, rhsType) do
       getRef(lhs) -= getValue(rhs);
 
-    inline operator*(lhs: ?lhsType, rhs: ?rhsType): returnTypeForOperatorTypes(lhsType, rhsType)
-      where returnTypeForOperatorTypes(lhsType, rhsType) != nothing do
+    inline operator*(lhs: ?lhsType,
+                     rhs: ?rhsType): returnTypeForOpTypes(lhsType, rhsType)
+    where returnTypeForOpTypes(lhsType, rhsType) != nothing do
       return getValue(lhs) * getValue(rhs);
     inline operator*=(ref lhs: vectorRef(?), rhs: ?rhsType)
-      where validEqOperatorTypes(lhs.type, rhsType) do
+    where validEqOperatorTypes(lhs.type, rhsType) do
       getRef(lhs) *= getValue(rhs);
 
-    // inline operator/(lhs: ?lhsType, rhs: ?rhsType): returnTypeForOperatorTypes(lhsType, rhsType)
-    //   where returnTypeForOperatorTypes(lhsType, rhsType) != nothing do
+    // inline operator/(lhs: ?lhsType,
+    //                  rhs: ?rhsType): returnTypeForOpTypes(lhsType, rhsType)
+    //   where returnTypeForOpTypes(lhsType, rhsType) != nothing do
     //   return getValue(lhs) / getValue(rhs);
     // inline operator/=(ref lhs: vectorRef(?), rhs: ?rhsType)
     //   where validEqOperatorTypes(lhs.type, rhsType) do
@@ -887,26 +943,34 @@ module CVI {
 
     // more strict checking is technically needed to do assignment
     // this is done by the vector type already
-    // TODO: we also need init= from vector, init= from vectorRef, and init= from tuple
+    // TODO: we also need init= from vector, init= from vectorRef, and
+    //  init= from tuple
+    // 
     // operator=(ref lhs: ?lhsType, rhs: ?rhsType)
     //   where isVectorType(lhsType) &&
     //        (isVectorType(rhsType) || isHomogeneousTupleType(rhsType)) do
     //   getRef(lhs) = getValue(rhs);
   }
-  private proc isVectorType(type T) param: bool do return isSubtype(T, vector) || isSubtype(T, vectorRef);
-  private proc getEltType(type T) type where isSubtype(T, vector) do return T.eltType;
-  private proc getEltType(type T) type where isSubtype(T, vectorRef) do return T.vectorType.eltType;
-  private proc getNumElts(type T) param: int where isSubtype(T, vector) do return T.numElts;
-  private proc getNumElts(type T) param: int where isSubtype(T, vectorRef) do return T.vectorType.numElts;
+  private proc isVectorType(type T) param: bool do
+    return isSubtype(T, vector) || isSubtype(T, vectorRef);
+  private proc getEltType(type T) type where isSubtype(T, vector) do
+    return T.eltType;
+  private proc getEltType(type T) type where isSubtype(T, vectorRef) do
+    return T.vectorType.eltType;
+  private proc getNumElts(type T) param: int where isSubtype(T, vector) do
+    return T.numElts;
+  private proc getNumElts(type T) param: int where isSubtype(T, vectorRef) do
+    return T.vectorType.numElts;
 
   private inline proc getValue(x: vector(?)): x.type do return x;
   private inline proc getValue(x: vectorRef(?)): x.vectorType do return x.vec;
   private inline proc getValue(x: ?t): t do return x;
   private inline proc getRef(ref x: vector(?)) ref: x.type do return x;
-  private inline proc getRef(ref x: vectorRef(?)) ref: x.vectorType do return x.vec;
+  private inline proc getRef(ref x: vectorRef(?)) ref: x.vectorType do
+    return x.vec;
   private inline proc getRef(ref x: ?t) ref: t do return x;
 
-  private proc returnTypeForOperatorTypes(type lhsType, type rhsType) type {
+  private proc returnTypeForOpTypes(type lhsType, type rhsType) type {
     // one of the types can be scalar, but not both
     if !isVectorType(lhsType) && isVectorType(rhsType) {
       return vector(getEltType(rhsType), getNumElts(rhsType));
@@ -922,7 +986,7 @@ module CVI {
   }
   // must be a valid operator and the lhs must be a vector
   proc validEqOperatorTypes(type lhsType, type rhsType) param: bool {
-    if returnTypeForOperatorTypes(lhsType, rhsType) == nothing {
+    if returnTypeForOpTypes(lhsType, rhsType) == nothing {
       return false;
     }
     if !isVectorType(lhsType) {

@@ -199,7 +199,12 @@ def rules(driver):
                     this = nd.this_formal()
                     assert isinstance(this, chapel.Formal)
                     if this.intent() not in ("type", "param"):
-                        yield nd
+                        type_fixit = Fixit.build(Edit.build(nd.name_location(), "type {}".format(nd.name())))
+                        type_fixit.description = "Make this a type method"
+                        param_fixit = Fixit.build(Edit.build(nd.name_location(), "param {}".format(nd.name())))
+                        param_fixit.description = "Make this a param method"
+                        fixits = [type_fixit, param_fixit]
+                        yield AdvancedRuleResult(nd, anchor=nd, fixits=fixits)
                 if isinstance(nd, chapel.Variable):
                     assert nd.is_field()
                     if nd.intent() not in ("type", "param"):

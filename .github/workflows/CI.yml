@@ -15,6 +15,10 @@ jobs:
       image: chapel/chapel:latest
     steps:
       - uses: actions/checkout@v4
+      - name: Install dependencies
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y python3
       - name: Run Tests
         run: |
           ./test.sh

@@ -43,7 +43,8 @@ module IntrinArm64_256 {
     type implVecType;
     proc type vecType type do return vecPair(implVecType.vecType);
     proc type laneType type do return implVecType.laneType;
-    proc type offset param: int do return numBits(implVecType.vecType) / numBits(laneType);
+    proc type offset param: int do
+      return numBits(implVecType.vecType) / numBits(laneType);
 
     inline proc type extract(x: vecType, param idx: int): laneType {
       if idx < offset then return implVecType.extract(x.lo, idx);
@@ -72,75 +73,100 @@ module IntrinArm64_256 {
       this.storea(x, y);
 
     inline proc type swapPairs(x: vecType): vecType do
-      return new vecType(implVecType.swapPairs(x.lo), implVecType.swapPairs(x.hi));
+      return new vecType(implVecType.swapPairs(x.lo),
+                         implVecType.swapPairs(x.hi));
     inline proc type swapLowHigh(x: vecType): vecType do
       return new vecType(x.hi, x.lo);
     inline proc type reverse(x: vecType): vecType do
       return new vecType(implVecType.reverse(x.hi), implVecType.reverse(x.lo));
     inline proc type rotateLeft(x: vecType): vecType {
       import CVI;
-      if CVI.implementationWarnings then compilerWarning("rotateLeft not implemented");
+      if CVI.implementationWarnings then
+        compilerWarning("rotateLeft not implemented");
       return x; // TODO
     }
     inline proc type rotateRight(x: vecType): vecType {
       import CVI;
-      if CVI.implementationWarnings then compilerWarning("rotateRight not implemented");
+      if CVI.implementationWarnings then
+        compilerWarning("rotateRight not implemented");
       return x; // TODO
     }
     inline proc type interleaveLower(x: vecType, y: vecType): vecType do
-      return new vecType(implVecType.interleaveLower(x.lo, y.lo), implVecType.interleaveUpper(x.lo, y.lo));
+      return new vecType(implVecType.interleaveLower(x.lo, y.lo),
+                         implVecType.interleaveUpper(x.lo, y.lo));
     inline proc type interleaveUpper(x: vecType, y: vecType): vecType do
-      return new vecType(implVecType.interleaveLower(x.hi, y.hi), implVecType.interleaveUpper(x.hi, y.hi));
+      return new vecType(implVecType.interleaveLower(x.hi, y.hi),
+                         implVecType.interleaveUpper(x.hi, y.hi));
     inline proc type deinterleaveLower(x: vecType, y: vecType): vecType do
-      return new vecType(implVecType.deinterleaveLower(x.lo, x.hi), implVecType.deinterleaveLower(y.lo, y.hi));
+      return new vecType(implVecType.deinterleaveLower(x.lo, x.hi),
+                         implVecType.deinterleaveLower(y.lo, y.hi));
     inline proc type deinterleaveUpper(x: vecType, y: vecType): vecType do
-      return new vecType(implVecType.deinterleaveUpper(x.lo, x.hi), implVecType.deinterleaveUpper(y.lo, y.hi));
+      return new vecType(implVecType.deinterleaveUpper(x.lo, x.hi),
+                         implVecType.deinterleaveUpper(y.lo, y.hi));
     inline proc type blendLowHigh(x: vecType, y: vecType): vecType do
       return new vecType(x.lo, y.hi);
 
     inline proc type add(x: vecType, y: vecType): vecType do
-      return new vecType(implVecType.add(x.lo, y.lo), implVecType.add(x.hi, y.hi));
+      return new vecType(implVecType.add(x.lo, y.lo),
+                         implVecType.add(x.hi, y.hi));
     inline proc type sub(x: vecType, y: vecType): vecType do
-      return new vecType(implVecType.sub(x.lo, y.lo), implVecType.sub(x.hi, y.hi));
+      return new vecType(implVecType.sub(x.lo, y.lo),
+                         implVecType.sub(x.hi, y.hi));
     inline proc type mul(x: vecType, y: vecType): vecType do
-      return new vecType(implVecType.mul(x.lo, y.lo), implVecType.mul(x.hi, y.hi));
+      return new vecType(implVecType.mul(x.lo, y.lo),
+                         implVecType.mul(x.hi, y.hi));
     inline proc type div(x: vecType, y: vecType): vecType do
-      return new vecType(implVecType.div(x.lo, y.lo), implVecType.div(x.hi, y.hi));
+      return new vecType(implVecType.div(x.lo, y.lo),
+                         implVecType.div(x.hi, y.hi));
     inline proc type neg(x: vecType): vecType do
       return new vecType(implVecType.neg(x.lo), implVecType.neg(x.hi));
 
     inline proc type and(x: vecType, y: vecType): vecType do
-      return new vecType(implVecType.and(x.lo, y.lo), implVecType.and(x.hi, y.hi));
+      return new vecType(implVecType.and(x.lo, y.lo),
+                         implVecType.and(x.hi, y.hi));
     inline proc type or(x: vecType, y: vecType): vecType do
-      return new vecType(implVecType.or(x.lo, y.lo), implVecType.or(x.hi, y.hi));
+      return new vecType(implVecType.or(x.lo, y.lo),
+                         implVecType.or(x.hi, y.hi));
     inline proc type xor(x: vecType, y: vecType): vecType do
-      return new vecType(implVecType.xor(x.lo, y.lo), implVecType.xor(x.hi, y.hi));
+      return new vecType(implVecType.xor(x.lo, y.lo),
+                         implVecType.xor(x.hi, y.hi));
     inline proc type not(x: vecType): vecType do
       return new vecType(implVecType.not(x.lo), implVecType.not(x.hi));
     inline proc type andNot(x: vecType, y: vecType): vecType do
-      return new vecType(implVecType.andNot(x.lo, y.lo), implVecType.andNot(x.hi, y.hi));
+      return new vecType(implVecType.andNot(x.lo, y.lo),
+                         implVecType.andNot(x.hi, y.hi));
 
     inline proc type cmpEq(x: vecType, y: vecType): vecType do
-      return new vecType(implVecType.cmpEq(x.lo, y.lo), implVecType.cmpEq(x.hi, y.hi));
+      return new vecType(implVecType.cmpEq(x.lo, y.lo),
+                         implVecType.cmpEq(x.hi, y.hi));
     inline proc type cmpNe(x: vecType, y: vecType): vecType do
-      return new vecType(implVecType.cmpNe(x.lo, y.lo), implVecType.cmpNe(x.hi, y.hi));
+      return new vecType(implVecType.cmpNe(x.lo, y.lo),
+                         implVecType.cmpNe(x.hi, y.hi));
     inline proc type cmpLt(x: vecType, y: vecType): vecType do
-      return new vecType(implVecType.cmpLt(x.lo, y.lo), implVecType.cmpLt(x.hi, y.hi));
+      return new vecType(implVecType.cmpLt(x.lo, y.lo),
+                         implVecType.cmpLt(x.hi, y.hi));
     inline proc type cmpLe(x: vecType, y: vecType): vecType do
-      return new vecType(implVecType.cmpLe(x.lo, y.lo), implVecType.cmpLe(x.hi, y.hi));
+      return new vecType(implVecType.cmpLe(x.lo, y.lo),
+                         implVecType.cmpLe(x.hi, y.hi));
     inline proc type cmpGt(x: vecType, y: vecType): vecType do
-      return new vecType(implVecType.cmpGt(x.lo, y.lo), implVecType.cmpGt(x.hi, y.hi));
+      return new vecType(implVecType.cmpGt(x.lo, y.lo),
+                         implVecType.cmpGt(x.hi, y.hi));
     inline proc type cmpGe(x: vecType, y: vecType): vecType do
-      return new vecType(implVecType.cmpGe(x.lo, y.lo), implVecType.cmpGe(x.hi, y.hi));
-    inline proc type bitSelect(mask: vecPair(?), x: vecType, y: vecType): vecType
-      where numBits(mask.type) == numBits(vecType) do
+      return new vecType(implVecType.cmpGe(x.lo, y.lo),
+                         implVecType.cmpGe(x.hi, y.hi));
+    inline proc type bitSelect(mask: vecPair(?),
+                               x: vecType,
+                               y: vecType): vecType
+    where numBits(mask.type) == numBits(vecType) do
       return new vecType(implVecType.bitSelect(mask.lo, x.lo, y.lo),
                          implVecType.bitSelect(mask.hi, x.hi, y.hi));
 
     inline proc type min(x: vecType, y: vecType): vecType do
-      return new vecType(implVecType.min(x.lo, y.lo), implVecType.min(x.hi, y.hi));
+      return new vecType(implVecType.min(x.lo, y.lo),
+                         implVecType.min(x.hi, y.hi));
     inline proc type max(x: vecType, y: vecType): vecType do
-      return new vecType(implVecType.max(x.lo, y.lo), implVecType.max(x.hi, y.hi));
+      return new vecType(implVecType.max(x.lo, y.lo),
+                         implVecType.max(x.hi, y.hi));
 
     inline proc type abs(x: vecType): vecType do
       return new vecType(implVecType.abs(x.lo), implVecType.abs(x.hi));

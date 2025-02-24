@@ -192,7 +192,8 @@ module IntrinArm64_128 {
       extern externName proc store(x: c_ptr(laneType), y: vecType): void;
       store(x, y);
     }
-    inline proc type storeu(x: c_ptr(laneType), y: vecType): void do storea(x, y);
+    inline proc type storeu(x: c_ptr(laneType), y: vecType): void do
+      storea(x, y);
 
     // bit cast int to float or float to int
     // TODO im not happy with this api
@@ -283,17 +284,19 @@ module IntrinArm64_128 {
       else
         return doSimpleOp("vbicq", y, x);
     }
-    // inline proc type shiftRightArith(x: vecType, param offset: int): vecType {
+    // inline proc type shiftRightArith(x: vecType, param offset: int): vecType{
     //   if canResolveTypeMethod(extensionType, "shiftRightArith", x) then
     //     return extensionType.shiftRightArith(x);
     //   else
-    //     return doSimpleOp("vshrq_n", x, offset); // TODO this is not going to work because of macros/const int issues
+    //     return doSimpleOp("vshrq_n", x, offset);
+    // TODO this is not going to work because of macros/const int issues
     // }
     // inline proc type shiftLeft(x: vecType, param offset: int): vecType {
     //   if canResolveTypeMethod(extensionType, "shiftLeft", x) then
     //     return extensionType.shiftLeft(x);
     //   else
-    //     return doSimpleOp("vshlq_n", x, offset); // TODO this is not going to work because of macros/const int issues
+    //     return doSimpleOp("vshlq_n", x, offset);
+    // TODO this is not going to work because of macros/const int issues
     // }
 
     inline proc type cmpEq(x: vecType, y: vecType): vecType {

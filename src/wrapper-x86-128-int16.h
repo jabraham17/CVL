@@ -26,6 +26,19 @@ static inline __m128i swapLowHigh_epi16(__m128i x) {
   return _mm_shuffle_epi32(x, 0b01001110);
 }
 
+static inline __m128i reverse_epi16(__m128i x) {
+  return _mm_shuffle_epi32(x, 0b00011011);
+}
+static inline __m128i rotateLeft_epi16(__m128i x) {
+  return _mm_shuffle_epi32(x, 0b00111001);
+}
+static inline __m128i rotateRight_epi16(__m128i x) {
+  return _mm_shuffle_epi32(x, 0b10010011);
+}
+static inline __m128i blendLowHigh_epi16(__m128i x, __m128i y) {
+  return _mm_blend_epi16(x, y, 0b1100);
+}
+
 static inline __m128i hadd_epi16(__m128i x, __m128i y) {
   // x = a b c d e f g h
   // y = i j k l m n o p

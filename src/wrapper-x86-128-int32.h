@@ -20,6 +20,26 @@ LANES(SET_LANE_32x4i)
 #undef SET_LANE_32x4i
 
 
+static inline __m128i swapPairs_epi32(__m128i x) {
+  return _mm_shuffle_epi32(x, 0b10110001);
+}
+static inline __m128i swapLowHigh_epi32(__m128i x) {
+  return _mm_shuffle_epi32(x, 0b01001110);
+}
+static inline __m128i reverse_epi32(__m128i x) {
+  return _mm_shuffle_epi32(x, 0b00011011);
+}
+static inline __m128i rotateLeft_epi32(__m128i x) {
+  return _mm_shuffle_epi32(x, 0b00111001);
+}
+static inline __m128i rotateRight_epi32(__m128i x) {
+  return _mm_shuffle_epi32(x, 0b10010011);
+}
+static inline __m128i blendLowHigh_epi32(__m128i x, __m128i y) {
+  return _mm_blend_epi32(x, y, 0b1100);
+}
+
+
 static inline __m128i hadd_epi32(__m128i x, __m128i y) {
   // x = a b c d
   // y = e f g h

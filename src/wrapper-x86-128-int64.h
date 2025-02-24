@@ -19,6 +19,13 @@ LANES(GET_LANE_64x2i)
 LANES(SET_LANE_64x2i)
 #undef SET_LANE_64x2i
 
+static inline __m128i swapPairs_epi64(__m128i x) {
+  return _mm_shuffle_epi32(x, 0b01001110);
+}
+static inline __m128i blendLowHigh_epi64(__m128i x, __m128i y) {
+  return _mm_blend_epi32(x, y, 0b1100);
+}
+
 #undef LANES
 
 #endif

@@ -236,52 +236,99 @@ module IntrinX86_128 {
     inline proc type swapPairs(x: vecType): vecType {
       if canResolveTypeMethod(extensionType, "swapPairs", x) then
         return extensionType.swapPairs(x);
-      else
-        return doSimpleOp("swapPairs_", x);
+      else {
+        if vecType.numBits == 128 {
+          return doSimpleOp("swapPairs_", x);
+        } else {
+          return doSimpleOp("swapPairs_" + vecType.numBits:string, x);
+        }
+      }
     }
     inline proc type swapLowHigh(x: vecType): vecType {
       if canResolveTypeMethod(extensionType, "swapLowHigh", x) then
         return extensionType.swapLowHigh(x);
-      else
-        return doSimpleOp("swapLowHigh_", x);
+      else {
+        if vecType.numBits == 128 {
+          return doSimpleOp("swapLowHigh_", x);
+        } else {
+          return doSimpleOp("swapLowHigh_" + vecType.numBits:string, x);
+        }
+      }
     }
     inline proc type reverse(x: vecType): vecType {
       if canResolveTypeMethod(extensionType, "reverse", x) then
         return extensionType.reverse(x);
-      else
-        return doSimpleOp("reverse_", x);
+      else {
+        if vecType.numBits == 128 {
+          return doSimpleOp("reverse_", x);
+        } else {
+          return doSimpleOp("reverse_" + vecType.numBits:string, x);
+        }
+      }
     }
     inline proc type rotateLeft(x: vecType): vecType {
       if canResolveTypeMethod(extensionType, "rotateLeft", x) then
         return extensionType.rotateLeft(x);
-      else
-        return doSimpleOp("rotateLeft_", x);
+      else {
+        if vecType.numBits == 128 {
+          return doSimpleOp("rotateLeft_", x);
+        } else {
+          return doSimpleOp("rotateLeft_" + vecType.numBits:string, x);
+        }
+      }
     }
     inline proc type rotateRight(x: vecType): vecType {
       if canResolveTypeMethod(extensionType, "rotateRight", x) then
         return extensionType.rotateRight(x);
-      else
-        return doSimpleOp("rotateRight_", x);
+      else {
+        if vecType.numBits == 128 {
+          return doSimpleOp("rotateRight_", x);
+        } else {
+          return doSimpleOp("rotateRight_" + vecType.numBits:string, x);
+        }
+      }
     }
-    inline proc type interleaveLower(x: vecType, y: vecType): vecType do
-      return doSimpleOp(mmPrefix+"_unpacklo_", x, y);
-    inline proc type interleaveUpper(x: vecType, y: vecType): vecType do
-      return doSimpleOp(mmPrefix+"_unpackhi_", x, y);
-    inline proc type deinterleaveLower(x: vecType, y: vecType): vecType do
-      return this.interleaveLower(
-        this.interleaveLower(x, y),
-        this.interleaveUpper(x, y));
+    inline proc type interleaveLower(x: vecType, y: vecType): vecType {
+      if canResolveTypeMethod(extensionType, "interleaveLower", x, y) then
+        return extensionType.interleaveLower(x, y);
+      else
+        return doSimpleOp(mmPrefix+"_unpacklo_", x, y);
+    }
+    inline proc type interleaveUpper(x: vecType, y: vecType): vecType {
+      if canResolveTypeMethod(extensionType, "interleaveUpper", x, y) then
+        return extensionType.interleaveUpper(x, y);
+      else
+        return doSimpleOp(mmPrefix+"_unpackhi_", x, y);
+    }
+      
+    inline proc type deinterleaveLower(x: vecType, y: vecType): vecType {
+      if canResolveTypeMethod(extensionType, "deinterleaveLower", x, y) then
+        return extensionType.deinterleaveLower(x, y);
+      else
+        return this.interleaveLower(
+          this.interleaveLower(x, y),
+          this.interleaveUpper(x, y));
+    }
 
-    inline proc type deinterleaveUpper(x: vecType, y: vecType): vecType do
-      return this.interleaveUpper(
-        this.interleaveLower(x, y),
-        this.interleaveUpper(x, y));
+    inline proc type deinterleaveUpper(x: vecType, y: vecType): vecType {
+      if canResolveTypeMethod(extensionType, "deinterleaveUpper", x, y) then
+        return extensionType.deinterleaveUpper(x, y);
+      else
+        return this.interleaveUpper(
+          this.interleaveLower(x, y),
+          this.interleaveUpper(x, y));
+    }
 
     inline proc type blendLowHigh(x: vecType, y: vecType): vecType {
       if canResolveTypeMethod(extensionType, "blendLowHigh", x, y) then
         return extensionType.blendLowHigh(x, y);
-      else
-        return doSimpleOp("blendLowHigh_", x, y);
+      else {
+        if vecType.numBits == 128 {
+          return doSimpleOp("blendLowHigh_", x, y);
+        } else {
+          return doSimpleOp("blendLowHigh_" + vecType.numBits:string, x, y);
+        }
+      }
     }
 
     inline proc type add(x: vecType, y: vecType): vecType {
@@ -357,11 +404,11 @@ module IntrinX86_128 {
       if canResolveTypeMethod(extensionType, "andNot", x, y) then
         return extensionType.andNot(x, y);
       else {
-        if numBits(vecType) == 128 {
+          if vecType.numBits == 128 {
           pragma "fn synchronization free"
           extern proc _mm_andnot_si128(x: vecType, y: vecType): vecType;
           return _mm_andnot_si128(x, y);
-        } else if numBits(vecType) == 256 {
+        } else if vecType.numBits == 256 {
           pragma "fn synchronization free"
           extern proc _mm256_andnot_si256(x: vecType, y: vecType): vecType;
           return _mm256_andnot_si256(x, y);
@@ -545,6 +592,11 @@ module IntrinX86_128 {
     inline proc type rotateRight(x: vecType): vecType do
       return base.swapPairs(x);
 
+    inline proc type deinterleaveLower(x: vecType, y: vecType): vecType do
+      return base.interleaveLower(x, y);
+    inline proc type deinterleaveUpper(x: vecType, y: vecType): vecType do
+      return base.interleaveUpper(x, y);
+
     inline proc type rsqrt(x: vecType): vecType {
       pragma "fn synchronization free"
       extern proc _mm_cvtpd_ps(x: vecType): x8664_32x4r.vecType;
@@ -718,6 +770,21 @@ module IntrinX86_128 {
       extern proc _mm_set_epi64x(x: int(64), y: int(64)): vec64x2i;
       return _mm_set_epi64x(xs(1), xs(0));
     }
+
+    inline proc type swapLowHigh(x: vecType): vecType do
+      return base.swapPairs(x);
+    inline proc type reverse(x: vecType): vecType do
+      return base.swapPairs(x);
+    inline proc type rotateLeft(x: vecType): vecType do
+      return base.swapPairs(x);
+    inline proc type rotateRight(x: vecType): vecType do
+      return base.swapPairs(x);
+
+    inline proc type deinterleaveLower(x: vecType, y: vecType): vecType do
+      return base.interleaveLower(x, y);
+    inline proc type deinterleaveUpper(x: vecType, y: vecType): vecType do
+      return base.interleaveUpper(x, y);
+
     inline proc type div(x: vecType, y: vecType): vecType {
       import CVI;
       if CVI.implementationWarnings then

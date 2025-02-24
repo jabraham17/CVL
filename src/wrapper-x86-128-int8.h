@@ -21,6 +21,27 @@ LANES(GET_LANE_8x16i)
 LANES(SET_LANE_8x16i)
 #undef SET_LANE_8x16i
 
+static inline __m128i swapPairs_epi8(__m128i x) {
+  return x; // TODO
+}
+static inline __m128i swapLowHigh_epi8(__m128i x) {
+  return x; // TODO
+}
+
+static inline __m128i reverse_epi8(__m128i x) {
+  return x; // TODO
+}
+static inline __m128i rotateLeft_epi8(__m128i x) {
+  return x; // TODO
+}
+static inline __m128i rotateRight_epi8(__m128i x) {
+  return x; // TODO
+}
+static inline __m128i blendLowHigh_epi8(__m128i x, __m128i y) {
+  return x; // TODO
+}
+
+
 #undef LANES
 
 #endif

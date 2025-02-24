@@ -3,4 +3,7 @@
 FILE_DIR=$(cd $(dirname $0); pwd)
 
 (cd $FILE_DIR && set -x && \
-  mason test --show -- $@ $(./compile.py --arch-compopts))
+  mason test --show -- \
+    $@ \
+    $(./compile.py --arch-compopts) \
+)

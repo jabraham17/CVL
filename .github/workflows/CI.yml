@@ -18,9 +18,16 @@ jobs:
           apt-get update -y
           apt-get install -y python3 python3-venv python3-pip
           apt-get install -y build-essential procps curl file git
+
       - name: Install linuxbrew
         run: |
           /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+          # setup shell
+        test -d ~/.linuxbrew && eval "$(~/.linuxbrew/bin/brew shellenv)"
+          test -d /home/linuxbrew/.linuxbrew && eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+          echo "eval \"\$($(brew --prefix)/bin/brew shellenv)\"" >> ~/.bashrc
+
       - name: Install Chapel
         run: |
           brew install chapel

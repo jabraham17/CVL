@@ -357,9 +357,17 @@ module IntrinX86_128 {
       if canResolveTypeMethod(extensionType, "andNot", x, y) then
         return extensionType.andNot(x, y);
       else {
-        pragma "fn synchronization free"
-        extern proc _mm_andnot_si128(x: vecType, y: vecType): vecType;
-        return _mm_andnot_si128(x, y);
+        if numBits(vecType) == 128 {
+          pragma "fn synchronization free"
+          extern proc _mm_andnot_si128(x: vecType, y: vecType): vecType;
+          return _mm_andnot_si128(x, y);
+        } else if numBits(vecType) == 256 {
+          pragma "fn synchronization free"
+          extern proc _mm256_andnot_si256(x: vecType, y: vecType): vecType;
+          return _mm256_andnot_si256(x, y);
+        } else {
+          compilerError("unsupported vector size");
+        }
       }
     }
     // inline proc type shiftRightArith(x: vecType, param offset: int): vecType{
@@ -515,8 +523,9 @@ module IntrinX86_128 {
       return doSimpleOp("hadd_", x, y);
 
     inline proc type abs(x: vecType): vecType {
-      var mask = base.splat(0x7FFFFFFF:laneType);
-      return doSimpleOp(base.mmPrefix+"_and_", x, mask);
+      var mask = base.splat(-0.0:laneType);
+      var cast = doSimpleOp(base.mmPrefix+"_castsi128_", vecType, mask);
+      return base.andNot(cast, x);
     }
   }
 
@@ -558,8 +567,9 @@ module IntrinX86_128 {
       return res;
     }
     inline proc type abs(x: vecType): vecType {
-      var mask = base.splat(0x7FFFFFFFFFFFFFFF:laneType);
-      return doSimpleOp(base.mmPrefix+"_and_", x, mask);
+      var mask = base.splat(-0.0:laneType);
+      var cast = doSimpleOp(base.mmPrefix+"_castsi128_", vecType, mask);
+      return base.andNot(cast, x);
     }
   }
 

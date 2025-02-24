@@ -19,6 +19,10 @@ jobs:
         run: |
           apt-get update -y
           apt-get install -y python3 python3-venv python3-pip
+      - name: Setup newer Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
       - name: Run Tests
         run: |
           ./test.sh

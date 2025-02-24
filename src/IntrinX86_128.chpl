@@ -430,13 +430,13 @@ module IntrinX86_128 {
       if canResolveTypeMethod(extensionType, "min", x, y) then
         return extensionType.min(x, y);
       else
-        return doSimpleOp(mmPrefix+"_max_", x, y);
+        return doSimpleOp(mmPrefix+"_min_", x, y);
     }
     inline proc type max(x: vecType, y: vecType): vecType {
       if canResolveTypeMethod(extensionType, "max", x, y) then
         return extensionType.max(x, y);
       else
-        return doSimpleOp(mmPrefix+"_min_", x, y);
+        return doSimpleOp(mmPrefix+"_max_", x, y);
     }
     inline proc type abs(x: vecType): vecType {
       if canResolveTypeMethod(extensionType, "abs", x) then

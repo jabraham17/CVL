@@ -20,23 +20,31 @@ LANES(SET_LANE_16x8i)
 #undef SET_LANE_16x8i
 
 static inline __m128i swapPairs_epi16(__m128i x) {
-  return _mm_shuffle_epi32(x, 0b10110001);
+  __m128i mask = _mm_set_epi8(13, 12, 15, 14, 9, 8, 11, 10,
+                               5, 4, 7, 6, 1, 0, 3, 2);
+  return _mm_shuffle_epi8(x, mask);
 }
 static inline __m128i swapLowHigh_epi16(__m128i x) {
   return _mm_shuffle_epi32(x, 0b01001110);
 }
 
 static inline __m128i reverse_epi16(__m128i x) {
-  return _mm_shuffle_epi32(x, 0b00011011);
+  __m128i mask = _mm_set_epi8(1, 0, 3, 2, 5, 4, 7, 6,
+                              9, 8, 11, 10, 13, 12, 15, 14);
+  return _mm_shuffle_epi8(x, mask);
 }
 static inline __m128i rotateLeft_epi16(__m128i x) {
-  return _mm_shuffle_epi32(x, 0b00111001);
+  __m128i mask = _mm_set_epi8(1, 0, 15, 14, 13, 12, 11, 10,
+                              9, 8, 7, 6, 5, 4, 3, 2);
+  return _mm_shuffle_epi8(x, mask);
 }
 static inline __m128i rotateRight_epi16(__m128i x) {
-  return _mm_shuffle_epi32(x, 0b10010011);
+  __m128i mask = _mm_set_epi8(13, 12, 11, 10, 9, 8, 7, 6,
+                               5, 4, 3, 2, 1, 0, 15, 14);
+  return _mm_shuffle_epi8(x, mask);
 }
 static inline __m128i blendLowHigh_epi16(__m128i x, __m128i y) {
-  return _mm_blend_epi16(x, y, 0b1100);
+  return _mm_blend_epi32(x, y, 0b1100);
 }
 
 static inline __m128i hadd_epi16(__m128i x, __m128i y) {

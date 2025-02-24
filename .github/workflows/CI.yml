@@ -21,12 +21,12 @@ jobs:
 
       - name: Install linuxbrew
         run: |
-          /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+          sudo bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
           # setup shell
-          test -d ~/.linuxbrew && eval "$(~/.linuxbrew/bin/brew shellenv)"
-          test -d /home/linuxbrew/.linuxbrew && eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
-          echo "eval \"\$($(brew --prefix)/bin/brew shellenv)\"" >> ~/.bashrc
+          echo >> /home/$USER/.bashrc
+          echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >> /home/$USER/.bashrc
+          eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 
       - name: Install Chapel
         run: |

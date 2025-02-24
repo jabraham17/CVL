@@ -8,6 +8,7 @@ use PrecisionSerializer only precisionSerializer;
 //
 
 config const verbosePrint = false;
+config const dumpActual = false;
 config const precision = 2;
 config const padding = 5;
 var vecSerializer = new precisionSerializer(precision=precision, padding=padding);
@@ -40,10 +41,13 @@ proc compareOutput(test: borrowed Test, goodFile: IO.fileReader(?), actualOutput
     }
     writeln("========================================");
   }
+  if dumpActual {
+    for l in actualOutputLines {
+      writeln(l);
+    }
+  }
 
   test.assertEqual(goodFileContents.size, actualOutputLines.size);
-
-
   for (good, actual) in zip(goodFileContents, actualOutputLines) {
     test.assertEqual(good, actual);
   }

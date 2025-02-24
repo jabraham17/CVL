@@ -1,6 +1,6 @@
 @chplcheck.ignore("PascalCaseModules")
 module IntrinX86_128 {
-  use CTypes only c_ptr, c_ptrConst, c_int;
+  use CTypes only c_ptr, c_ptrConst;
   use Reflection only canResolveTypeMethod;
   import ChplConfig;
   if ChplConfig.CHPL_TARGET_ARCH == "x86_64" {
@@ -9,7 +9,7 @@ module IntrinX86_128 {
     // require "wrapper-x86-128.c";
   }
 
-  extern "__m128" type vec32x4r;
+  extern "__m128"  type vec32x4r;
   extern "__m128d" type vec64x2r;
   extern "__m128i" type vec8x16i;
   extern "__m128i" type vec16x8i;
@@ -25,6 +25,16 @@ module IntrinX86_128 {
           t == vec8x16i || t == vec16x8i || t == vec32x4i || t == vec64x2i ||
           t == vec8x16u || t == vec16x8u || t == vec32x4u || t == vec64x2u
     do return 128;
+  proc type vec32x4r.numBits param : int do return 128;
+  proc type vec64x2r.numBits param : int do return 128;
+  proc type vec8x16i.numBits param : int do return 128;
+  proc type vec16x8i.numBits param : int do return 128;
+  proc type vec32x4i.numBits param : int do return 128;
+  proc type vec64x2i.numBits param : int do return 128;
+  proc type vec8x16u.numBits param : int do return 128;
+  proc type vec16x8u.numBits param : int do return 128;
+  proc type vec32x4u.numBits param : int do return 128;
+  proc type vec64x2u.numBits param : int do return 128;
 
   proc typeToSuffix(type t) param : string {
          if t == real(32) || t == vec32x4r then return "ps";
@@ -37,8 +47,18 @@ module IntrinX86_128 {
     else if t == uint(16) || t == vec16x8u then return "epu16";
     else if t == uint(32) || t == vec32x4u then return "epu32";
     else if t == uint(64) || t == vec64x2u then return "epu64";
-    else compilerError("Unknown type: ", t);
+    else compilerError("Unknown type: " + t:string);
   }
+  proc type vec32x4r.typeSuffix param : string do return typeToSuffix(this);
+  proc type vec64x2r.typeSuffix param : string do return typeToSuffix(this);
+  proc type vec8x16i.typeSuffix param : string do return typeToSuffix(this);
+  proc type vec16x8i.typeSuffix param : string do return typeToSuffix(this);
+  proc type vec32x4i.typeSuffix param : string do return typeToSuffix(this);
+  proc type vec64x2i.typeSuffix param : string do return typeToSuffix(this);
+  proc type vec8x16u.typeSuffix param : string do return typeToSuffix(this);
+  proc type vec16x8u.typeSuffix param : string do return typeToSuffix(this);
+  proc type vec32x4u.typeSuffix param : string do return typeToSuffix(this);
+  proc type vec64x2u.typeSuffix param : string do return typeToSuffix(this);
   proc vecTypeStr(type t) param : string {
          if t == vec32x4r then return "32x4r";
     else if t == vec64x2r then return "64x2r";
@@ -50,14 +70,24 @@ module IntrinX86_128 {
     else if t == vec16x8u then return "16x8u";
     else if t == vec32x4u then return "32x4u";
     else if t == vec64x2u then return "64x2u";
-    else compilerError("Unknown type: ", t);
+    else compilerError("Unknown type: " + t:string);
   }
+  proc type vec32x4r.typeStr param : string do return vecTypeStr(this);
+  proc type vec64x2r.typeStr param : string do return vecTypeStr(this);
+  proc type vec8x16i.typeStr param : string do return vecTypeStr(this);
+  proc type vec16x8i.typeStr param : string do return vecTypeStr(this);
+  proc type vec32x4i.typeStr param : string do return vecTypeStr(this);
+  proc type vec64x2i.typeStr param : string do return vecTypeStr(this);
+  proc type vec8x16u.typeStr param : string do return vecTypeStr(this);
+  proc type vec16x8u.typeStr param : string do return vecTypeStr(this);
+  proc type vec32x4u.typeStr param : string do return vecTypeStr(this);
+  proc type vec64x2u.typeStr param : string do return vecTypeStr(this);
 
   /*
     Call a simple op on a vector type
     x must be a vector type and also specifies the return type
   */
-   inline proc doSimpleOp(param op: string, x: ?t): t do
+  inline proc doSimpleOp(param op: string, x: ?t): t do
     return doSimpleOp(op, t, x);
   inline proc doSimpleOp(param op: string, x: ?t, y: ?): t do
     return doSimpleOp(op, t, x, y);
@@ -70,7 +100,7 @@ module IntrinX86_128 {
     returnType specifies the return type
   */
   inline proc doSimpleOp(param op: string, type returnType, x: ?t): returnType {
-    param externName = op + typeToSuffix(returnType);
+    param externName = op + returnType.typeSuffix;
 
     pragma "fn synchronization free"
     extern externName proc func(externX: t): returnType;
@@ -80,7 +110,7 @@ module IntrinX86_128 {
   inline proc doSimpleOp(param op: string,
                          type returnType,
                          x: ?t1, y: ?t2): returnType {
-    param externName = op + typeToSuffix(returnType);
+    param externName = op + returnType.typeSuffix;
 
     pragma "fn synchronization free"
     extern externName proc func(externX: t1, externY: t2): returnType;
@@ -90,7 +120,7 @@ module IntrinX86_128 {
   inline proc doSimpleOp(param op: string,
                          type returnType,
                          x: ?t1, y: ?t2, z: ?t3): returnType {
-    param externName = op + typeToSuffix(returnType);
+    param externName = op + returnType.typeSuffix;
 
     pragma "fn synchronization free"
     extern externName
@@ -100,7 +130,7 @@ module IntrinX86_128 {
   }
   inline proc doSimpleOp(param op: string,
                          type returnType, xs): returnType where isTuple(xs) {
-    param externName = op + typeToSuffix(returnType);
+    param externName = op + returnType.typeSuffix;
 
     // workaround for https://github.com/chapel-lang/chapel/issues/26759
     param nArgs = xs.size;
@@ -110,7 +140,6 @@ module IntrinX86_128 {
 
     return func((...xs));
   }
-
 
 
   // inline operator:(x: vec128d, type t: vec128) {
@@ -131,41 +160,71 @@ module IntrinX86_128 {
     proc type vecType type do return extensionType.vecType;
     proc type laneType type do return extensionType.laneType;
     proc type numLanes param: int do
-      return numBits(vecType) / numBits(laneType);
+      return vecType.numBits / numBits(laneType);
+    proc type mmPrefix param : string {
+      if canResolveTypeMethod(extensionType, "mmPrefix") then
+        return extensionType.mmPrefix;
+      else
+        return "_mm";
+    }
 
     inline proc type extract(x: vecType, param idx: int): laneType {
-      if idx < 0 || idx >= numLanes then compilerError("invalid index");
-      param externName = "get_lane_" + vecTypeStr(vecType) + idx:string;
+      // TODO: only check if we can resolve a type method with no args, 
+      // canResolveTypeMethod does not preserve the paramness of the args, so
+      // `idx` is non-param,
+      // and `canResolveTypeMethod(extensionType, "extract", x, idx)`
+      // doesn't work
+      if canResolveTypeMethod(extensionType, "extract") then
+        return extensionType.extract(x, idx);
+      else {
+        if idx < 0 || idx >= numLanes then compilerError("invalid index");
+        param externName = "get_lane_" + vecType.typeStr + idx:string;
 
-      pragma "fn synchronization free"
-      extern externName proc getLane(x: vecType): laneType;
-      return getLane(x);
+        pragma "fn synchronization free"
+        extern externName proc getLane(x: vecType): laneType;
+        return getLane(x);
+      }
     }
     inline proc type insert(x: vecType, y: laneType, param idx: int): vecType {
-      if idx < 0 || idx >= numLanes then compilerError("invalid index");
-      param externName = "set_lane_" + vecTypeStr(vecType) + idx:string;
+      // TODO: same problem as extract
+      if canResolveTypeMethod(extensionType, "insert") then
+        return extensionType.insert(x, y, idx);
+      else {
+        if idx < 0 || idx >= numLanes then compilerError("invalid index");
+        param externName = "set_lane_" + vecType.typeStr + idx:string;
 
-      pragma "fn synchronization free"
-      extern externName proc setLane(x: vecType, y: laneType): vecType;
-      return setLane(x, y);
+        pragma "fn synchronization free"
+        extern externName proc setLane(x: vecType, y: laneType): vecType;
+        return setLane(x, y);
+      }
     }
-    inline proc type splat(x: laneType): vecType do
-      return doSimpleOp("_mm_set1_", vecType, x);
-    inline proc type set(xs...): vecType do
-      return doSimpleOp("_mm_setr_", vecType, xs);
+    inline proc type splat(x: laneType): vecType {
+      if canResolveTypeMethod(extensionType, "splat", x) then
+        return extensionType.splat(x);
+      else {
+        return doSimpleOp(mmPrefix+"_set1_", vecType, x);
+      }
+    }
+    inline proc type set(xs...): vecType {
+      if canResolveTypeMethod(extensionType, "set", (...xs)) then
+        return extensionType.set((...xs));
+      else {
+        return doSimpleOp(mmPrefix+"_setr_", vecType, xs);
+      }
+    }
 
     inline proc type loada(x: c_ptrConst(laneType)): vecType do
-      return doSimpleOp("_mm_load_", vecType, x);
+      return doSimpleOp(mmPrefix+"_load_", vecType, x);
     inline proc type loadu(x: c_ptrConst(laneType)): vecType do
-      return doSimpleOp("_mm_loadu_", vecType, x);
+      return doSimpleOp(mmPrefix+"_loadu_", vecType, x);
     inline proc type storea(x: c_ptr(laneType), y: vecType): void {
-      param externName = "_mm_store_" + typeToSuffix(vecType);
+      param externName = mmPrefix+"_store_" + vecType.typeSuffix;
       pragma "fn synchronization free"
       extern externName proc store(x: c_ptr(laneType), y: vecType): void;
       store(x, y);
     }
     inline proc type storeu(x: c_ptr(laneType), y: vecType): void {
-      param externName = "_mm_storeu_" + typeToSuffix(vecType);
+      param externName = mmPrefix+"_storeu_" + vecType.typeSuffix;
       pragma "fn synchronization free"
       extern externName proc store(x: c_ptr(laneType), y: vecType): void;
       store(x, y);
@@ -206,9 +265,9 @@ module IntrinX86_128 {
         return doSimpleOp("rotateRight_", x);
     }
     inline proc type interleaveLower(x: vecType, y: vecType): vecType do
-      return doSimpleOp("_mm_unpacklo_", x, y);
+      return doSimpleOp(mmPrefix+"_unpacklo_", x, y);
     inline proc type interleaveUpper(x: vecType, y: vecType): vecType do
-      return doSimpleOp("_mm_unpackhi_", x, y);
+      return doSimpleOp(mmPrefix+"_unpackhi_", x, y);
     inline proc type deinterleaveLower(x: vecType, y: vecType): vecType do
       return this.interleaveLower(
         this.interleaveLower(x, y),
@@ -230,25 +289,25 @@ module IntrinX86_128 {
       if canResolveTypeMethod(extensionType, "add", x, y) then
         return extensionType.add(x, y);
       else
-        return doSimpleOp("_mm_add_", x, y);
+        return doSimpleOp(mmPrefix+"_add_", x, y);
     }
     inline proc type sub(x: vecType, y: vecType): vecType {
       if canResolveTypeMethod(extensionType, "sub", x, y) then
         return extensionType.sub(x, y);
       else
-        return doSimpleOp("_mm_sub_", x, y);
+        return doSimpleOp(mmPrefix+"_sub_", x, y);
     }
     inline proc type mul(x: vecType, y: vecType): vecType {
       if canResolveTypeMethod(extensionType, "mul", x, y) then
         return extensionType.mul(x, y);
       else
-        return doSimpleOp("_mm_mul_", x, y);
+        return doSimpleOp(mmPrefix+"_mul_", x, y);
     }
     inline proc type div(x: vecType, y: vecType): vecType {
       if canResolveTypeMethod(extensionType, "div", x, y) then
         return extensionType.div(x, y);
       else
-        return doSimpleOp("_mm_div_", x, y);
+        return doSimpleOp(mmPrefix+"_div_", x, y);
     }
     inline proc type neg(x: vecType): vecType {
       if canResolveTypeMethod(extensionType, "neg", x) then
@@ -321,37 +380,37 @@ module IntrinX86_128 {
       if canResolveTypeMethod(extensionType, "cmpEq", x, y) then
         return extensionType.cmpEq(x, y);
       else
-        return doSimpleOp("_mm_cmpeq_", x, y);
+        return doSimpleOp(mmPrefix+"_cmpeq_", x, y);
     }
     inline proc type cmpNe(x: vecType, y: vecType): vecType {
       if canResolveTypeMethod(extensionType, "cmpNe", x, y) then
         return extensionType.cmpNe(x, y);
       else
-        return doSimpleOp("_mm_cmpne_", x, y);
+        return doSimpleOp(mmPrefix+"_cmpne_", x, y);
     }
     inline proc type cmpLt(x: vecType, y: vecType): vecType {
       if canResolveTypeMethod(extensionType, "cmpLt", x, y) then
         return extensionType.cmpLt(x, y);
       else
-        return doSimpleOp("_mm_cmplt_", x, y);
+        return doSimpleOp(mmPrefix+"_cmplt_", x, y);
     }
     inline proc type cmpLe(x: vecType, y: vecType): vecType {
       if canResolveTypeMethod(extensionType, "cmpLe", x, y) then
         return extensionType.cmpLe(x, y);
       else
-        return doSimpleOp("_mm_cmple_", x, y);
+        return doSimpleOp(mmPrefix+"_cmple_", x, y);
     }
     inline proc type cmpGt(x: vecType, y: vecType): vecType {
       if canResolveTypeMethod(extensionType, "cmpGt", x, y) then
         return extensionType.cmpGt(x, y);
       else
-        return doSimpleOp("_mm_cmpgt_", x, y);
+        return doSimpleOp(mmPrefix+"_cmpgt_", x, y);
     }
     inline proc type cmpGe(x: vecType, y: vecType): vecType {
       if canResolveTypeMethod(extensionType, "cmpGe", x, y) then
         return extensionType.cmpGe(x, y);
       else
-        return doSimpleOp("_mm_cmpge_", x, y);
+        return doSimpleOp(mmPrefix+"_cmpge_", x, y);
     }
     inline proc type bitSelect(mask: ?, x: vecType, y: vecType): vecType
       where numBits(mask.type) == numBits(vecType) {
@@ -370,50 +429,50 @@ module IntrinX86_128 {
       if canResolveTypeMethod(extensionType, "min", x, y) then
         return extensionType.min(x, y);
       else
-        return doSimpleOp("_mm_max_", x, y);
+        return doSimpleOp(mmPrefix+"_max_", x, y);
     }
     inline proc type max(x: vecType, y: vecType): vecType {
       if canResolveTypeMethod(extensionType, "max", x, y) then
         return extensionType.max(x, y);
       else
-        return doSimpleOp("_mm_min_", x, y);
+        return doSimpleOp(mmPrefix+"_min_", x, y);
     }
     inline proc type abs(x: vecType): vecType {
       if canResolveTypeMethod(extensionType, "abs", x) then
         return extensionType.abs(x);
       else
-        return doSimpleOp("_mm_abs_", x);
+        return doSimpleOp(mmPrefix+"_abs_", x);
     }
     inline proc type hadd(x: vecType, y: vecType): vecType do
       if canResolveTypeMethod(extensionType, "hadd", x, y) then
         return extensionType.hadd(x, y);
       else
-        return doSimpleOp("_mm_hadd_", x, y);
+        return doSimpleOp(mmPrefix+"_hadd_", x, y);
 
     inline proc type sqrt(x: vecType): vecType {
       if canResolveTypeMethod(extensionType, "sqrt", x) then
         return extensionType.sqrt(x);
       else
-        return doSimpleOp("_mm_sqrt_", x);
+        return doSimpleOp(mmPrefix+"_sqrt_", x);
     }
     inline proc type rsqrt(x: vecType): vecType {
       if canResolveTypeMethod(extensionType, "rsqrt", x) then
         return extensionType.rsqrt(x);
       else
-        return doSimpleOp("_mm_rsqrt_", x);
+        return doSimpleOp(mmPrefix+"_rsqrt_", x);
     }
 
     inline proc type fmadd(x: vecType, y: vecType, z: vecType): vecType {
       if canResolveTypeMethod(extensionType, "fmadd", x, y, z) then
         return extensionType.fmadd(x, y, z);
       else
-        return doSimpleOp("_mm_fmadd_", x, y, z);
+        return doSimpleOp(mmPrefix+"_fmadd_", x, y, z);
     }
     inline proc type fmsub(x: vecType, y: vecType, z: vecType): vecType {
       if canResolveTypeMethod(extensionType, "fmsub", x, y, z) then
         return extensionType.fmsub(x, y, z);
       else
-        return doSimpleOp("_mm_fmsub_", x, y, z);
+        return doSimpleOp(mmPrefix+"_fmsub_", x, y, z);
     }
   }
 
@@ -456,7 +515,7 @@ module IntrinX86_128 {
 
     inline proc type abs(x: vecType): vecType {
       var mask = base.splat(0x7FFFFFFF:laneType);
-      return doSimpleOp("_mm_and_", x, mask);
+      return doSimpleOp(base.mmPrefix+"_and_", x, mask);
     }
   }
 
@@ -499,7 +558,7 @@ module IntrinX86_128 {
     }
     inline proc type abs(x: vecType): vecType {
       var mask = base.splat(0x7FFFFFFFFFFFFFFF:laneType);
-      return doSimpleOp("_mm_and_", x, mask);
+      return doSimpleOp(base.mmPrefix+"_and_", x, mask);
     }
   }
 
@@ -623,6 +682,11 @@ module IntrinX86_128 {
     proc type vecType type do return vec64x2i;
     proc type laneType type do return int(64);
 
+    inline proc type set(xs...): vecType {
+      pragma "fn synchronization free"
+      extern proc _mm_set_epi64x(x: int(64), y: int(64)): vec64x2i;
+      return _mm_set_epi64x(xs(1), xs(0));
+    }
     inline proc type div(x: vecType, y: vecType): vecType {
       import CVI;
       if CVI.implementationWarnings then

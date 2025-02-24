@@ -1,39 +1,22 @@
 #include <x86intrin.h>
 
-__m128 extract128x2f0(__m256 x);
-__m128 extract128x2f1(__m256 x);
+#include "wrapper-x86-256-int8.h"
+#include "wrapper-x86-256-int16.h"
+#include "wrapper-x86-256-int32.h"
+#include "wrapper-x86-256-int64.h"
+#include "wrapper-x86-256-real32.h"
+#include "wrapper-x86-256-real64.h"
 
-__m256 insert128x2f0(__m256 x, __m128 y);
-__m256 insert128x2f1(__m256 x, __m128 y);
+static inline __m128i extract128x2i0(__m256i x) {
+  return _mm256_extractf128_si256(x, 0);
+}
+static inline __m128i extract128x2i1(__m256i x) {
+  return _mm256_extractf128_si256(x, 1);
+}
 
-__m256 swapPairs32x8r(__m256 x);
-__m256 swapLowHigh32x8r(__m256 x);
-__m256 reverse32x8r(__m256 x);
-__m256 rotateLeft32x8r(__m256 x);
-__m256 rotateRight32x8r(__m256 x);
-__m256 interleaveLower32x8r(__m256 x, __m256 y);
-__m256 interleaveUpper32x8r(__m256 x, __m256 y);
-__m256 deinterleaveLower32x8r(__m256 x, __m256 y);
-__m256 deinterleaveUpper32x8r(__m256 x, __m256 y);
-__m256 blendLowHigh32x8r(__m256 x, __m256 y);
-
-__m256 hadd32x8r(__m256 x, __m256 y);
-
-
-__m128d extract128x2d0(__m256d x);
-__m128d extract128x2d1(__m256d x);
-
-__m256d insert128x2d0(__m256d x, __m128d y);
-__m256d insert128x2d1(__m256d x, __m128d y);
-
-
-__m256d swapPairs64x4r(__m256d x);
-__m256d swapLowHigh64x4r(__m256d x);
-__m256d reverse64x4r(__m256d x);
-__m256d rotateLeft64x4r(__m256d x);
-__m256d rotateRight64x4r(__m256d x);
-__m256d interleaveLower64x4r(__m256d x, __m256d y);
-__m256d interleaveUpper64x4r(__m256d x, __m256d y);
-__m256d deinterleaveLower64x4r(__m256d x, __m256d y);
-__m256d deinterleaveUpper64x4r(__m256d x, __m256d y);
-__m256d blendLowHigh64x4r(__m256d x, __m256d y);
+static inline __m256i insert128x2i0(__m256i x, __m128i y) {
+  return _mm256_insertf128_si256(x, y, 0);
+}
+static inline __m256i insert128x2i1(__m256i x, __m128i y) {
+  return _mm256_insertf128_si256(x, y, 1);
+}

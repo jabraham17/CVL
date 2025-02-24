@@ -18,7 +18,7 @@ LANES(GET_LANE_32x4r)
 #define SET_LANE_32x4r(LANE) \
   static inline __m128 set_lane_32x4r##LANE(__m128 x, float y) { \
     __m128 temp = _mm_set_ss(y); \
-    return _mm_insert_ps(x, temp, LANE<<16); \
+    return _mm_insert_ps(x, temp, LANE<<4); \
   }
 LANES(SET_LANE_32x4r)
 #undef SET_LANE_32x4r

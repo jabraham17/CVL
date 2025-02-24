@@ -22,6 +22,10 @@ module Intrin {
       use IntrinX86_256;
       if eltType == real(32)      then return x8664_32x8r;
       else if eltType == real(64) then return x8664_64x4r;
+      else if eltType == int(8)   then return x8664_8x32i;
+      else if eltType == int(16)  then return x8664_16x16i;
+      else if eltType == int(32)  then return x8664_32x8i;
+      else if eltType == int(64)  then return x8664_64x4i;
       else compilerError("Unsupported vector type");
 
     } else if isArm64() && numBits(eltType) * numElts == 128 {

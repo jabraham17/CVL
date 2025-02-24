@@ -19,6 +19,23 @@ LANES(GET_LANE_16x8i)
 LANES(SET_LANE_16x8i)
 #undef SET_LANE_16x8i
 
+static inline __m128i swapPairs_epi16(__m128i x) {
+  return _mm_shuffle_epi32(x, 0b10110001);
+}
+static inline __m128i swapLowHigh_epi16(__m128i x) {
+  return _mm_shuffle_epi32(x, 0b01001110);
+}
+
+static inline __m128i hadd_epi16(__m128i x, __m128i y) {
+  // x = a b c d e f g h
+  // y = i j k l m n o p
+  // t0 =
+  __m128i t0 = _mm_hadd_epi16(x, y); // a+b c+d e+f g+h i+j k+l m+n o+p
+  __m128i t1 = swapLowHigh_epi16(t0); // i+j k+l m+n o+p a+b c+d e+f g+h
+  return _mm_unpacklo_epi16(t0, t1);
+}
+
+
 #undef LANES
 
 #endif

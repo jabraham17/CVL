@@ -43,7 +43,7 @@ static inline __m128 blendLowHigh_ps(__m128 x, __m128 y) {
   return _mm_blend_ps(x, y, 0b1100);
 }
 
-static inline __m128 haddps(__m128 x, __m128 y) {
+static inline __m128 hadd_ps(__m128 x, __m128 y) {
   __m128 t0 = _mm_hadd_ps(x, y);
   return _mm_shuffle_ps(t0, t0, 0b11011000);
 }

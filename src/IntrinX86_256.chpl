@@ -212,6 +212,14 @@ module IntrinX86_256 {
     inline proc type insert() {} // dummy for canResolve
     inline proc type insert(x: vecType, y: laneType, param idx: int): vecType do
       return generic256Insert(x, y, idx, x8664_32x4r);
+
+    inline proc type hadd(x: vecType, y: vecType): vecType do
+      return doSimpleOp("hadd_256", x, y);
+
+    inline proc type abs(x: vecType): vecType {
+      var mask = base.splat(0x7FFFFFFF:laneType);
+      return doSimpleOp(base.mmPrefix+"_and_", x, mask);
+    }
   }
 
   @chplcheck.ignore("CamelCaseRecords")
@@ -235,8 +243,8 @@ module IntrinX86_256 {
       pragma "fn synchronization free"
       extern proc _mm256_cvtps_pd(x: x8664_32x4r.vecType): vecType;
 
-      var three = this.splat(3.0);
-      var half = this.splat(0.5);
+      var three = base.splat(3.0);
+      var half = base.splat(0.5);
 
       var x_ps = _mm256_cvtpd_ps(x);
       // do rsqrt at 32-bit precision
@@ -245,10 +253,15 @@ module IntrinX86_256 {
       // TODO: would an FMA version be faster?
       // Newton-Raphson iteration
       // q = 0.5 * x * (3 - x * res * res)
-      var muls = this.mul(this.mul(x, res), res);
-      res = this.mul(this.mul(half, res), this.sub(three, muls));
+      var muls = base.mul(base.mul(x, res), res);
+      res = base.mul(base.mul(half, res), base.sub(three, muls));
 
       return res;
+    }
+
+    inline proc type abs(x: vecType): vecType {
+      var mask = base.splat(0x7FFFFFFFFFFFFFFF:laneType);
+      return doSimpleOp(base.mmPrefix+"_and_", x, mask);
     }
   }
 
@@ -266,6 +279,49 @@ module IntrinX86_256 {
     inline proc type insert() {} // dummy for canResolve
     inline proc type insert(x: vecType, y: laneType, param idx: int): vecType do
       return generic256Insert(x, y, idx, x8664_8x16i);
+
+    inline proc type mul(x: vecType, y: vecType): vecType {
+      import CVI;
+      if CVI.implementationWarnings then
+        compilerWarning("'mul' on int(8) is implemented as scalar operations");
+      // TODO: theres no mul_epi8 instruction, we can emulate with mullo_epi16
+      // the loop here is painfully slow
+      var res: vecType;
+      for param i in 0..<base.numLanes {
+        res = base.insert(res, base.extract(x, i) * base.extract(y, i), i);
+      }
+      return res;
+    }
+    inline proc type div(x: vecType, y: vecType): vecType {
+      import CVI;
+      if CVI.implementationWarnings then
+        compilerWarning("'div' on int(8) is implemented as scalar operations");
+      // TODO: theres no div_epi8 instruction,
+      // but surely we can do better than this
+      var res: vecType;
+      for param i in 0..<base.numLanes {
+        res = base.insert(res, base.extract(x, i) / base.extract(y, i), i);
+      }
+      return res;
+    }
+    inline proc type hadd(x: vecType, y: vecType): vecType {
+      import CVI;
+      if CVI.implementationWarnings then
+        compilerWarning("'hadd' on int(8) is implemented as scalar operations");
+      // TODO: theres no hadd_epi8 instruction,
+      // but surely we can do better than this
+      var res: vecType;
+      for param i in 0..#base.numLanes by 2 {
+        res = base.insert(res, base.extract(x, i) + base.extract(x, i+1), i);
+        res = base.insert(res, base.extract(y, i) + base.extract(y, i+1), i+1);
+      }
+      return res;
+    }
+
+    inline proc type fmadd(x: vecType, y: vecType, z: vecType): vecType do
+      return base.add(base.mul(x, y), z);
+    inline proc type fmsub(x: vecType, y: vecType, z: vecType): vecType do
+      return base.sub(base.mul(x, y), z);
   }
 
   @chplcheck.ignore("CamelCaseRecords")
@@ -282,6 +338,39 @@ module IntrinX86_256 {
     inline proc type insert() {} // dummy for canResolve
     inline proc type insert(x: vecType, y: laneType, param idx: int): vecType do
       return generic256Insert(x, y, idx, x8664_16x8i);
+  
+    inline proc type mul(x: vecType, y: vecType): vecType {
+      import CVI;
+      if CVI.implementationWarnings then
+        compilerWarning("'mul' on int(16) is implemented as scalar operations");
+      // TODO: theres no mul_epi16 instruction, we can emulate with mullo_epi16
+      // the loop here is painfully slow
+      var res: vecType;
+      for param i in 0..<base.numLanes {
+        res = base.insert(res, base.extract(x, i) * base.extract(y, i), i);
+      }
+      return res;
+    }
+    inline proc type div(x: vecType, y: vecType): vecType {
+      import CVI;
+      if CVI.implementationWarnings then
+        compilerWarning("'div' on int(16) is implemented as scalar operations");
+      // TODO: theres no div_epi16 instruction,
+      // but surely we can do better than this
+      var res: vecType;
+      for param i in 0..<base.numLanes {
+        res = base.insert(res, base.extract(x, i) / base.extract(y, i), i);
+      }
+      return res;
+    }
+
+    inline proc type hadd(x: vecType, y: vecType): vecType do
+      return doSimpleOp("hadd_256", x, y);
+      
+    inline proc type fmadd(x: vecType, y: vecType, z: vecType): vecType do
+      return base.add(base.mul(x, y), z);
+    inline proc type fmsub(x: vecType, y: vecType, z: vecType): vecType do
+      return base.sub(base.mul(x, y), z);
   }
 
   @chplcheck.ignore("CamelCaseRecords")
@@ -298,6 +387,38 @@ module IntrinX86_256 {
     inline proc type insert() {} // dummy for canResolve
     inline proc type insert(x: vecType, y: laneType, param idx: int): vecType do
       return generic256Insert(x, y, idx, x8664_32x4i);
+
+    inline proc type mul(x: vecType, y: vecType): vecType {
+      import CVI;
+      if CVI.implementationWarnings then
+        compilerWarning("'mul' on int(32) is implemented as scalar operations");
+      // TODO: we could do somthing with mul_epi32 and mulhi_epi32
+      var res: vecType;
+      for param i in 0..<base.numLanes {
+        res = base.insert(res, base.extract(x, i) * base.extract(y, i), i);
+      }
+      return res;
+    }
+    inline proc type div(x: vecType, y: vecType): vecType {
+      import CVI;
+      if CVI.implementationWarnings then
+        compilerWarning("'div' on int(32) is implemented as scalar operations");
+      // TODO: theres no div_epi32 instruction,
+      // but surely we can do better than this
+      var res: vecType;
+      for param i in 0..<base.numLanes {
+        res = base.insert(res, base.extract(x, i) / base.extract(y, i), i);
+      }
+      return res;
+    }
+
+    inline proc type hadd(x: vecType, y: vecType): vecType do
+      return doSimpleOp("hadd_256", x, y);
+
+    inline proc type fmadd(x: vecType, y: vecType, z: vecType): vecType do
+      return base.add(base.mul(x, y), z);
+    inline proc type fmsub(x: vecType, y: vecType, z: vecType): vecType do
+      return base.sub(base.mul(x, y), z);
   }
 
   @chplcheck.ignore("CamelCaseRecords")
@@ -315,7 +436,6 @@ module IntrinX86_256 {
     inline proc type insert(x: vecType, y: laneType, param idx: int): vecType do
       return generic256Insert(x, y, idx, x8664_64x2i);
 
-
     inline proc type splat(x: laneType): vecType {
       pragma "fn synchronization free"
       extern proc _mm256_set1_epi64x(x: laneType): vecType;
@@ -326,6 +446,39 @@ module IntrinX86_256 {
       extern proc _mm256_setr_epi64x(args...): vecType;
       return _mm256_setr_epi64x((...xs));
     }
+
+    inline proc type div(x: vecType, y: vecType): vecType {
+      import CVI;
+      if CVI.implementationWarnings then
+        compilerWarning("'div' on int(64) is implemented as scalar operations");
+      // TODO: theres no div_epi32 instruction,
+      // but surely we can do better than this
+      var res: vecType;
+      for param i in 0..<base.numLanes {
+        res = base.insert(res, base.extract(x, i) / base.extract(y, i), i);
+      }
+      return res;
+    }
+    inline proc type hadd(x: vecType, y: vecType): vecType {
+      import CVI;
+      if CVI.implementationWarnings then
+        compilerWarning("'hadd' on int(64) is " + 
+                        "implemented as scalar operations");
+      // TODO: theres no hadd_epi8 instruction,
+      // but surely we can do better than this
+      var res: vecType;
+      for param i in 0..#base.numLanes by 2 {
+        res = base.insert(res, base.extract(x, i) + base.extract(x, i+1), i);
+        res = base.insert(res, base.extract(y, i) + base.extract(y, i+1), i+1);
+      }
+      return res;
+    }
+
+
+    inline proc type fmadd(x: vecType, y: vecType, z: vecType): vecType do
+      return base.add(base.mul(x, y), z);
+    inline proc type fmsub(x: vecType, y: vecType, z: vecType): vecType do
+      return base.sub(base.mul(x, y), z);
   }
 
 

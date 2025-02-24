@@ -19,6 +19,16 @@ LANES(GET_LANE_32x4i)
 LANES(SET_LANE_32x4i)
 #undef SET_LANE_32x4i
 
+
+static inline __m128i hadd_epi32(__m128i x, __m128i y) {
+  // x = a b c d
+  // y = e f g h
+  // t0 = a+b c+d e+f g+h
+  __m128i t0 = _mm_hadd_epi32(x, y);
+  // swap the center two elements
+  return _mm_shuffle_epi32(t0, 0b11011000);
+}
+
 #undef LANES
 
 #endif

@@ -512,7 +512,7 @@ module IntrinX86_128 {
     proc type laneType type do return real(32);
 
     inline proc type hadd(x: vecType, y: vecType): vecType do
-      return doSimpleOp("hadd", x, y);
+      return doSimpleOp("hadd_", x, y);
 
     inline proc type abs(x: vecType): vecType {
       var mask = base.splat(0x7FFFFFFF:laneType);
@@ -645,6 +645,10 @@ module IntrinX86_128 {
       }
       return res;
     }
+
+    inline proc type hadd(x: vecType, y: vecType): vecType do
+      return doSimpleOp("hadd_", x, y);
+
     inline proc type fmadd(x: vecType, y: vecType, z: vecType): vecType do
       return base.add(base.mul(x, y), z);
     inline proc type fmsub(x: vecType, y: vecType, z: vecType): vecType do
@@ -662,7 +666,7 @@ module IntrinX86_128 {
       import CVI;
       if CVI.implementationWarnings then
         compilerWarning("'div' on int(32) is implemented as scalar operations");
-      // TODO: theres no div_epi16 instruction,
+      // TODO: theres no div_epi32 instruction,
       // but surely we can do better than this
       var res: vecType;
       for param i in 0..<base.numLanes {
@@ -670,6 +674,22 @@ module IntrinX86_128 {
       }
       return res;
     }
+
+    inline proc type mul(x: vecType, y: vecType): vecType {
+      import CVI;
+      if CVI.implementationWarnings then
+        compilerWarning("'mul' on int(32) is implemented as scalar operations");
+      // TODO: we could do somthing with mul_epi32 and mulhi_epi32
+      var res: vecType;
+      for param i in 0..<base.numLanes {
+        res = base.insert(res, base.extract(x, i) * base.extract(y, i), i);
+      }
+      return res;
+    }
+
+    inline proc type hadd(x: vecType, y: vecType): vecType do
+      return doSimpleOp("hadd_", x, y);
+
     inline proc type fmadd(x: vecType, y: vecType, z: vecType): vecType do
       return base.add(base.mul(x, y), z);
     inline proc type fmsub(x: vecType, y: vecType, z: vecType): vecType do

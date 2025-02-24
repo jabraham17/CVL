@@ -61,7 +61,7 @@ static inline __m256 blendLowHigh_256ps(__m256 x, __m256 y) {
   return _mm256_blend_ps(x, y, 0xf0);
 }
 
-static inline __m256 hadd256ps(__m256 x, __m256 y) {
+static inline __m256 hadd_256ps(__m256 x, __m256 y) {
   __m256 t0 = _mm256_hadd_ps(x, y);
   return _mm256_permute_ps(t0, 0b11011000);
 }

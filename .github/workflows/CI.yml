@@ -13,11 +13,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Install dependencies
-        run: |
-          sudo apt-get update -y
-          sudo apt-get install -y python3 python3-venv python3-pip
-          sudo apt-get install -y build-essential procps curl file git
+      - name: Set up Homebrew
+        uses: Homebrew/actions/setup-homebrew@master
       - name: Install Chapel
         run: |
           brew install chapel

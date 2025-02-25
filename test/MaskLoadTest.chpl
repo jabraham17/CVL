@@ -12,27 +12,24 @@ proc getGoodFile() {
 proc maskLoadTest(of, type eltType, param numElts: int) {
   of.writeln("maskLoadTest for ", eltType:string, " ", numElts);
 
-  var arr: [1..#(numElts*4)] eltType;
+  // create a jagged array with 1 less element
+  var arr: [0..#(numElts*4+numElts-1)] eltType;
   arr = [i in arr.domain] i:eltType;
 
   of.withSerializer(vecSerializer).writeln("  arr: ", arr);
 
   var a: vector(eltType, numElts);
-
-  var mask: vector(int, numBits(a.type)/numBits(int));
-  mask.set(max(int)); // all ones
-  mask.set(mask.numElts-1, 0); // last lane is zero
+  var mask = new vector(int(numBits(eltType)), numElts, 0);
+  mask = ~mask;
+  mask.set(mask.numElts-1, 0:mask.eltType); // last lane is zero
+  of.withSerializer(vecSerializer).writeln("  mask: ", mask);
 
   for i in a.type.indicies(arr.domain) {
-    of.withSerializer(vecSerializer).writeln("  mask: ", mask);
-
     a.loadWithMask(mask, arr, i);
     of.withSerializer(vecSerializer).writeln("  vec at ", i, ": ", a);
 
-    of.withSerializer(vecSerializer).writeln("  ~mask: ", ~mask);
-    var b = a.type.loadWithMask(~mask, arr, i);
+    var b = a.type.loadWithMask(mask, arr, i);
     of.withSerializer(vecSerializer).writeln("  vec at ", i, ": ", b);
-    
   }
 }
 
@@ -52,13 +49,13 @@ proc maskLoadTestDriver(test: borrowed Test) throws {
     maskLoadTest(actualOutput, real(32), 8);
     maskLoadTest(actualOutput, real(64), 4);
 
-    maskLoadTest(actualOutput, int(8), 16);
-    maskLoadTest(actualOutput, int(16), 8);
+    // maskLoadTest(actualOutput, int(8), 16); // UNSUPPORTED
+    // maskLoadTest(actualOutput, int(16), 8); // UNSUPPORTED
     maskLoadTest(actualOutput, int(32), 4);
     maskLoadTest(actualOutput, int(64), 2);
 
-    maskLoadTest(actualOutput, int(8), 32);
-    maskLoadTest(actualOutput, int(16), 16);
+    // maskLoadTest(actualOutput, int(8), 32); // UNSUPPORTED
+    // maskLoadTest(actualOutput, int(16), 16); // UNSUPPORTED
     maskLoadTest(actualOutput, int(32), 8);
     maskLoadTest(actualOutput, int(64), 4);
   }

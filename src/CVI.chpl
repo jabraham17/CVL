@@ -481,9 +481,10 @@ module CVI {
     @chplcheck.ignore("CamelCaseFunctions")
     @chpldoc.nodoc
     inline proc type _computeAddress(ref arr: [] eltType,
-                                     idx: integral): c_ptr(eltType)
+                                     idx: integral,
+                                     param checkBounds = true): c_ptr(eltType)
     where isValidContainer(arr, eltType) {
-      if boundsChecking {
+      if checkBounds && boundsChecking {
         // reuse array slice bounds checking
         arr[idx.. by arr.domain.stride # numElts];
       }
@@ -492,10 +493,13 @@ module CVI {
     }
     @chplcheck.ignore("CamelCaseFunctions")
     @chpldoc.nodoc
-    inline proc type _computeAddressConst(arr: [] eltType,
-                                          idx: integral): c_ptrConst(eltType)
+    inline proc type _computeAddressConst(
+      arr: [] eltType,
+      idx: integral,
+      param checkBounds = true
+    ): c_ptrConst(eltType)
     where isValidContainer(arr, eltType) {
-      if boundsChecking {
+      if checkBounds && boundsChecking {
         // reuse array slice bounds checking
         arr[idx.. by arr.domain.stride # numElts];
       }
@@ -505,9 +509,10 @@ module CVI {
     @chplcheck.ignore("CamelCaseFunctions")
     @chpldoc.nodoc
     inline proc type _computeAddress(ref tup,
-                                     idx: integral = 0): c_ptr(eltType)
+                                     idx: integral,
+                                     param checkBounds = true): c_ptr(eltType)
     where isValidContainer(tup, eltType) {
-      if boundsChecking {
+      if checkBounds && boundsChecking {
         if idx+numElts-1 >= tup.size {
           halt("out of bounds load");
         }
@@ -519,10 +524,11 @@ module CVI {
     @chpldoc.nodoc
     inline proc type _computeAddressConst(
       tup,
-      idx: integral = 0
+      idx: integral,
+      param checkBounds = true
     ): c_ptrConst(eltType)
     where isValidContainer(tup, eltType) {
-      if boundsChecking {
+      if checkBounds && boundsChecking {
         if idx+numElts-1 >= tup.size {
           halt("out of bounds load");
         }
@@ -590,6 +596,7 @@ module CVI {
              numBits(maskType) == numBits(this) &&
              isIntegralType(maskType.eltType);
     }
+    /* loadWithMask is not bounds checked */
     inline proc type loadWithMask(mask: vector(?),
                                   container: ?,
                                   idx: integral = 0): this {
@@ -598,27 +605,32 @@ module CVI {
       return result;
     }
 
+    /* loadWithMask is not bounds checked */
     inline proc ref loadWithMask(mask: vector(?),
                                  ptr: c_ptrConst(eltType),
                                  idx: integral = 0)
     where this.type.isValidLoadMask(mask.type) {
       var ptr_ = ptr + idx;
-      Intrin.loadWithMask(eltType, numElts, ptr_, mask.data);
+      data = Intrin.loadWithMask(eltType, numElts, ptr_, mask.data);
     }
+    /* loadWithMask is not bounds checked */
     inline proc ref loadWithMask(mask: vector(?),
                                  arr: [] eltType,
                                  idx: integral = 0)
     where this.type.isValidLoadMask(mask.type) &&
           isValidContainer(arr, eltType)
-      do loadWithMask(mask, this.type._computeAddressConst(arr, idx), idx=0);
+      do loadWithMask(mask,
+          this.type._computeAddressConst(arr, idx, checkBounds=false), idx=0);
 
+    /* loadWithMask is not bounds checked */
     inline proc ref loadWithMask(mask: vector(?),
                                  tup,
                                  idx: integral = 0)
     where this.type.isValidLoadMask(mask.type) &&
           isValidContainer(tup, eltType) &&
           isHomogeneousTuple(tup)
-      do loadWithMask(mask, this.type._computeAddressConst(tup, idx), idx=0);
+      do loadWithMask(mask,
+          this.type._computeAddressConst(tup, idx, checkBounds=false), idx=0);
 
 
     // TODO: transmute (bitcast)
@@ -981,7 +993,7 @@ module CVI {
     // this is done by the vector type already
     // TODO: we also need init= from vector, init= from vectorRef, and
     //  init= from tuple
-    // 
+    //
     // operator=(ref lhs: ?lhsType, rhs: ?rhsType)
     //   where isVectorType(lhsType) &&
     //        (isVectorType(rhsType) || isHomogeneousTupleType(rhsType)) do

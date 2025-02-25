@@ -168,7 +168,7 @@ module IntrinX86_128 {
     }
 
     inline proc type extract(x: vecType, param idx: int): laneType {
-      // TODO: only check if we can resolve a type method with no args, 
+      // TODO: only check if we can resolve a type method with no args,
       // canResolveTypeMethod does not preserve the paramness of the args, so
       // `idx` is non-param,
       // and `canResolveTypeMethod(extensionType, "extract", x, idx)`
@@ -234,7 +234,13 @@ module IntrinX86_128 {
       if canResolveTypeMethod(extensionType, "loadWithMask", x, mask) then
         return extensionType.loadWithMask(x, mask);
       else {
-        return doSimpleOp(mmPrefix+"_maskload_", vecType, x);
+        if laneType == int(8) || laneType == int(16) {
+          compilerError("loadWithMask is not supported with " +
+                        laneType:string +
+                        " on this platform");
+        } else {
+          return doSimpleOp(mmPrefix+"_maskload_", vecType, x, mask);
+        }
       }
     }
 
@@ -309,7 +315,7 @@ module IntrinX86_128 {
       else
         return doSimpleOp(mmPrefix+"_unpackhi_", x, y);
     }
-      
+
     inline proc type deinterleaveLower(x: vecType, y: vecType): vecType {
       if canResolveTypeMethod(extensionType, "deinterleaveLower", x, y) then
         return extensionType.deinterleaveLower(x, y);
@@ -376,6 +382,7 @@ module IntrinX86_128 {
       if canResolveTypeMethod(extensionType, "and", x, y) then
         return extensionType.and(x, y);
       else {
+        // TODO: use proper xor for ps, pd, and si128, and si256
         pragma "fn synchronization free"
         extern proc _mm_and_si128(x: vecType, y: vecType): vecType;
         return _mm_and_si128(x, y);
@@ -385,6 +392,7 @@ module IntrinX86_128 {
       if canResolveTypeMethod(extensionType, "or", x, y) then
         return extensionType.or(x, y);
       else {
+        // // TODO: use proper xor for ps, pd, and si128, and si256
         pragma "fn synchronization free"
         extern proc _mm_or_si128(x: vecType, y: vecType): vecType;
         return _mm_or_si128(x, y);
@@ -394,9 +402,14 @@ module IntrinX86_128 {
       if canResolveTypeMethod(extensionType, "xor", x, y) then
         return extensionType.xor(x, y);
       else {
-        pragma "fn synchronization free"
-        extern proc _mm_xor_si128(x: vecType, y: vecType): vecType;
-        return _mm_xor_si128(x, y);
+        if isIntegralType(laneType) {
+          param name = mmPrefix + "_xor_si" + vecType.numBits:string;
+          pragma "fn synchronization free"
+          extern name proc mmXor(x: vecType, y: vecType): vecType;
+          return mmXor(x, y);
+        } else {
+          return doSimpleOp(mmPrefix+"_xor_", x, y);
+        }
       }
     }
     inline proc type not(x: vecType): vecType {
@@ -413,7 +426,7 @@ module IntrinX86_128 {
       if canResolveTypeMethod(extensionType, "andNot", x, y) then
         return extensionType.andNot(x, y);
       else {
-          if vecType.numBits == 128 {
+        if vecType.numBits == 128 {
           pragma "fn synchronization free"
           extern proc _mm_andnot_si128(x: vecType, y: vecType): vecType;
           return _mm_andnot_si128(x, y);
@@ -809,7 +822,7 @@ module IntrinX86_128 {
     inline proc type hadd(x: vecType, y: vecType): vecType {
       import CVI;
       if CVI.implementationWarnings then
-        compilerWarning("'hadd' on int(64) is " + 
+        compilerWarning("'hadd' on int(64) is " +
                         "implemented as scalar operations");
       // TODO: theres no hadd_epi8 instruction,
       // but surely we can do better than this

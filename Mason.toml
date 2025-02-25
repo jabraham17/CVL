@@ -15,6 +15,7 @@ tests = [
   "ArrTest.chpl",
   "FmaTest.chpl",
   "InitTest.chpl",
+  "MaskLoadTest.chpl",
   "MathFuncs.chpl",
   "MathTest.chpl",
   "ShuffleTest.chpl",

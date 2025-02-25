@@ -213,6 +213,15 @@ module IntrinX86_256 {
     inline proc type insert(x: vecType, y: laneType, param idx: int): vecType do
       return generic256Insert(x, y, idx, x8664_32x4r);
 
+    inline proc type interleaveLower(x: vecType, y: vecType): vecType do
+      return doSimpleOp("interleaveLower_256", x, y);
+    inline proc type interleaveUpper(x: vecType, y: vecType): vecType do
+      return doSimpleOp("interleaveUpper_256", x, y);
+    inline proc type deinterleaveLower(x: vecType, y: vecType): vecType do
+      return doSimpleOp("deinterleaveLower_256", x, y);
+    inline proc type deinterleaveUpper(x: vecType, y: vecType): vecType do
+      return doSimpleOp("deinterleaveUpper_256", x, y);
+
     inline proc type hadd(x: vecType, y: vecType): vecType do
       return doSimpleOp("hadd_256", x, y);
 
@@ -237,6 +246,11 @@ module IntrinX86_256 {
     inline proc type insert() {} // dummy for canResolve
     inline proc type insert(x: vecType, y: laneType, param idx: int): vecType do
       return generic256Insert(x, y, idx, x8664_64x2r);
+
+    inline proc type interleaveLower(x: vecType, y: vecType): vecType do
+      return doSimpleOp("interleaveLower_256", x, y);
+    inline proc type interleaveUpper(x: vecType, y: vecType): vecType do
+      return doSimpleOp("interleaveUpper_256", x, y);
 
     inline proc type rsqrt(x: vecType): vecType {
       pragma "fn synchronization free"
@@ -282,6 +296,11 @@ module IntrinX86_256 {
     inline proc type insert(x: vecType, y: laneType, param idx: int): vecType do
       return generic256Insert(x, y, idx, x8664_8x16i);
 
+    inline proc type interleaveLower(x: vecType, y: vecType): vecType do
+      return doSimpleOp("interleaveLower_256", x, y);
+    inline proc type interleaveUpper(x: vecType, y: vecType): vecType do
+      return doSimpleOp("interleaveUpper_256", x, y);
+      
     inline proc type mul(x: vecType, y: vecType): vecType {
       import CVI;
       if CVI.implementationWarnings then
@@ -341,6 +360,11 @@ module IntrinX86_256 {
     inline proc type insert(x: vecType, y: laneType, param idx: int): vecType do
       return generic256Insert(x, y, idx, x8664_16x8i);
   
+    inline proc type interleaveLower(x: vecType, y: vecType): vecType do
+      return doSimpleOp("interleaveLower_256", x, y);
+    inline proc type interleaveUpper(x: vecType, y: vecType): vecType do
+      return doSimpleOp("interleaveUpper_256", x, y);
+
     inline proc type mul(x: vecType, y: vecType): vecType {
       import CVI;
       if CVI.implementationWarnings then
@@ -390,6 +414,15 @@ module IntrinX86_256 {
     inline proc type insert(x: vecType, y: laneType, param idx: int): vecType do
       return generic256Insert(x, y, idx, x8664_32x4i);
 
+    inline proc type interleaveLower(x: vecType, y: vecType): vecType do
+      return doSimpleOp("interleaveLower_256", x, y);
+    inline proc type interleaveUpper(x: vecType, y: vecType): vecType do
+      return doSimpleOp("interleaveUpper_256", x, y);
+    inline proc type deinterleaveLower(x: vecType, y: vecType): vecType do
+      return doSimpleOp("deinterleaveLower_256", x, y);
+    inline proc type deinterleaveUpper(x: vecType, y: vecType): vecType do
+      return doSimpleOp("deinterleaveUpper_256", x, y);
+
     inline proc type mul(x: vecType, y: vecType): vecType {
       import CVI;
       if CVI.implementationWarnings then
@@ -437,6 +470,11 @@ module IntrinX86_256 {
     inline proc type insert() {} // dummy for canResolve
     inline proc type insert(x: vecType, y: laneType, param idx: int): vecType do
       return generic256Insert(x, y, idx, x8664_64x2i);
+
+    inline proc type interleaveLower(x: vecType, y: vecType): vecType do
+      return doSimpleOp("interleaveLower_256", x, y);
+    inline proc type interleaveUpper(x: vecType, y: vecType): vecType do
+      return doSimpleOp("interleaveUpper_256", x, y);
 
     inline proc type splat(x: laneType): vecType {
       pragma "fn synchronization free"

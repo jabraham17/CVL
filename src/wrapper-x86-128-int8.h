@@ -22,23 +22,31 @@ LANES(SET_LANE_8x16i)
 #undef SET_LANE_8x16i
 
 static inline __m128i swapPairs_epi8(__m128i x) {
-  return x; // TODO
+  __m128i mask = _mm_set_epi8(14, 15, 12, 13, 10, 11, 8, 9,
+                              6, 7, 4, 5, 2, 3, 0, 1);
+  return _mm_shuffle_epi8(x, mask);
 }
 static inline __m128i swapLowHigh_epi8(__m128i x) {
-  return x; // TODO
+  return _mm_shuffle_epi32(x, 0b01001110);
 }
 
 static inline __m128i reverse_epi8(__m128i x) {
-  return x; // TODO
+  __m128i mask = _mm_set_epi8(0, 1, 2, 3, 4, 5, 6, 7,
+                              8, 9, 10, 11, 12, 13, 14, 15);
+return _mm_shuffle_epi8(x, mask);
 }
 static inline __m128i rotateLeft_epi8(__m128i x) {
-  return x; // TODO
+  __m128i mask = _mm_set_epi8(0, 15, 14, 13, 12, 11, 10, 9,
+                              8, 7, 6, 5, 4, 3, 2, 1);
+  return _mm_shuffle_epi8(x, mask);
 }
 static inline __m128i rotateRight_epi8(__m128i x) {
-  return x; // TODO
+  __m128i mask = _mm_set_epi8(14, 13, 12, 11, 10, 9, 8, 7,
+                               6, 5, 4, 3, 2, 1, 0, 15);
+  return _mm_shuffle_epi8(x, mask);
 }
 static inline __m128i blendLowHigh_epi8(__m128i x, __m128i y) {
-  return x; // TODO
+  return _mm_blend_epi32(x, y, 0b1100);
 }
 
 

@@ -72,6 +72,13 @@ module IntrinArm64_256 {
     inline proc type storeu(x: c_ptr(laneType), y: vecType): void do
       this.storea(x, y);
 
+    @chplcheck.ignore("UnusedFormal")
+    inline proc type loadWithMask(x: c_ptrConst(laneType), mask: ?): vecType {
+      compilerError("loadWithMask is not supported with " +
+                    laneType:string +
+                    " on this platform");
+    }
+
     inline proc type swapPairs(x: vecType): vecType do
       return new vecType(implVecType.swapPairs(x.lo),
                          implVecType.swapPairs(x.hi));

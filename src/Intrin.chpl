@@ -104,6 +104,17 @@ module Intrin {
                              x: vectorType(eltType, numElts)) do
     implType(eltType, numElts).storeu(ptr, x);
 
+  /*
+    Load with a mask
+    masked out elements are zeroed out
+    only the most significant bit in each vector lane is considered for the mask
+  */
+  inline proc loadWithMask(type eltType,
+                           param numElts: int,
+                           ptr: c_ptrConst(eltType),
+                           mask: ?): vectorType(eltType, numElts) do
+    return implType(eltType, numElts).loadWithMask(ptr, mask);
+
   inline proc swapPairs(type eltType,
                         param numElts: int,
                         x: vectorType(eltType, numElts)): x.type do

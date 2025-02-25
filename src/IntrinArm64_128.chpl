@@ -195,6 +195,13 @@ module IntrinArm64_128 {
     inline proc type storeu(x: c_ptr(laneType), y: vecType): void do
       storea(x, y);
 
+    @chplcheck.ignore("UnusedFormal")
+    inline proc type loadWithMask(x: c_ptrConst(laneType), mask: ?): vecType {
+      compilerError("loadWithMask is not supported with " +
+                    laneType:string +
+                    " on this platform");
+    }
+
     // bit cast int to float or float to int
     // TODO im not happy with this api
     // inline proc type bitcast(x: vecType, type otherVecType): otherVecType

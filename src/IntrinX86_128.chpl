@@ -229,6 +229,15 @@ module IntrinX86_128 {
       store(x, y);
     }
 
+    @chplcheck.ignore("UnusedFormal")
+    inline proc type loadWithMask(x: c_ptrConst(laneType), mask: ?): vecType {
+      if canResolveTypeMethod(extensionType, "loadWithMask", x, mask) then
+        return extensionType.loadWithMask(x, mask);
+      else {
+        return doSimpleOp(mmPrefix+"_maskload_", vecType, x);
+      }
+    }
+
     // bit cast int to float or float to int
     // TODO im not happy with this api
     // inline proc type bitcast(x: vecType, type otherVecType): otherVecType

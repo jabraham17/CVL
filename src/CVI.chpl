@@ -23,10 +23,6 @@ module CVI {
   private proc isValidContainer(container: ?, type eltType) param: bool {
     return false;
   }
-  @chplcheck.ignore("UnusedFormal")
-  private proc isDomainOrRange(v: ?t) param: bool do
-    return isSubtype(t, domain(?)) || isSubtype(t, range(?));
-
 
   record vector: writeSerializable {
     type eltType;
@@ -587,13 +583,53 @@ module CVI {
       return result;
     }
 
+
+    @chpldoc.nodoc
+    proc type isValidLoadMask(type maskType) param : bool {
+      return isSubtype(maskType, vector) &&
+             numBits(maskType) == numBits(this) &&
+             isIntegralType(maskType.eltType);
+    }
+    inline proc type loadWithMask(mask: vector(?),
+                                  container: ?,
+                                  idx: integral = 0): this {
+      var result: this;
+      result.loadWithMask(mask, container, idx=idx);
+      return result;
+    }
+
+    inline proc ref loadWithMask(mask: vector(?),
+                                 ptr: c_ptrConst(eltType),
+                                 idx: integral = 0)
+    where this.type.isValidLoadMask(mask.type) {
+      var ptr_ = ptr + idx;
+      Intrin.loadWithMask(eltType, numElts, ptr_, mask.data);
+    }
+    inline proc ref loadWithMask(mask: vector(?),
+                                 arr: [] eltType,
+                                 idx: integral = 0)
+    where this.type.isValidLoadMask(mask.type) &&
+          isValidContainer(arr, eltType)
+      do loadWithMask(mask, this.type._computeAddressConst(arr, idx), idx=0);
+
+    inline proc ref loadWithMask(mask: vector(?),
+                                 tup,
+                                 idx: integral = 0)
+    where this.type.isValidLoadMask(mask.type) &&
+          isValidContainer(tup, eltType) &&
+          isHomogeneousTuple(tup)
+      do loadWithMask(mask, this.type._computeAddressConst(tup, idx), idx=0);
+
+
     // TODO: transmute (bitcast)
     // TODO: typecast
 
 
 
-    inline proc type indicies(rng: ?): range(?) where isDomainOrRange(rng) do
+    inline proc type indicies(rng: range(?)): range(?) do
       return rng by numElts;
+    inline proc type indicies(dom: domain(?)): domain(?) do
+      return dom by numElts;
     inline proc type indicies(container: ?): range(?)
     where isHomogeneousTuple(container) do
       return 0..#container.size by numElts;

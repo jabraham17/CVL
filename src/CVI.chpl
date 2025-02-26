@@ -635,7 +635,7 @@ module CVI {
     @chpldoc.nodoc
     proc type indexVectorType type {
       type idxEltType = int(32);
-      return vector(idxEltType, numBits(this)/numBits(idxEltType));
+      return vector(idxEltType, ?);
     }
     /* gather is not bounds checked */
     inline proc type gather(

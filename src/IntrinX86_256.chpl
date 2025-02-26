@@ -172,7 +172,7 @@ module IntrinX86_256 {
     if idx < 0 || idx >= numLanes(vecType, laneType) then
       compilerError("invalid index");
     type HV = halfVectorHW(vecType);
-    
+
     pragma "fn synchronization free"
     extern getGenericInsertExtractName("insert", laneType, 0)
     proc insert0(x: vecType, y: HV): vecType;
@@ -240,9 +240,6 @@ module IntrinX86_256 {
     proc type laneType type do return real(64);
     proc type mmPrefix param : string do return "_mm256";
 
-    inline proc type extract() {} // dummy for canResolve
-    inline proc type extract(x: vecType, param idx: int): laneType do
-      return generic256Extract(laneType, x, idx, x8664_64x2r);
     inline proc type insert() {} // dummy for canResolve
     inline proc type insert(x: vecType, y: laneType, param idx: int): vecType do
       return generic256Insert(x, y, idx, x8664_64x2r);
@@ -300,7 +297,7 @@ module IntrinX86_256 {
       return doSimpleOp("interleaveLower_256", x, y);
     inline proc type interleaveUpper(x: vecType, y: vecType): vecType do
       return doSimpleOp("interleaveUpper_256", x, y);
-      
+
     inline proc type mul(x: vecType, y: vecType): vecType {
       import CVI;
       if CVI.implementationWarnings then
@@ -359,7 +356,7 @@ module IntrinX86_256 {
     inline proc type insert() {} // dummy for canResolve
     inline proc type insert(x: vecType, y: laneType, param idx: int): vecType do
       return generic256Insert(x, y, idx, x8664_16x8i);
-  
+
     inline proc type interleaveLower(x: vecType, y: vecType): vecType do
       return doSimpleOp("interleaveLower_256", x, y);
     inline proc type interleaveUpper(x: vecType, y: vecType): vecType do
@@ -392,7 +389,7 @@ module IntrinX86_256 {
 
     inline proc type hadd(x: vecType, y: vecType): vecType do
       return doSimpleOp("hadd_256", x, y);
-      
+
     inline proc type fmadd(x: vecType, y: vecType, z: vecType): vecType do
       return base.add(base.mul(x, y), z);
     inline proc type fmsub(x: vecType, y: vecType, z: vecType): vecType do
@@ -502,7 +499,7 @@ module IntrinX86_256 {
     inline proc type hadd(x: vecType, y: vecType): vecType {
       import CVI;
       if CVI.implementationWarnings then
-        compilerWarning("'hadd' on int(64) is " + 
+        compilerWarning("'hadd' on int(64) is " +
                         "implemented as scalar operations");
       // TODO: theres no hadd_epi8 instruction,
       // but surely we can do better than this

@@ -10,6 +10,23 @@ static inline __m128d extract128x2d1(__m256d x) {
   return _mm256_extractf128_pd(x, 1);
 }
 
+static inline double get_lane_64x4r0(__m256d x) {
+  return _mm256_cvtsd_f64(x);
+}
+static inline double get_lane_64x4r1(__m256d x) {
+  __m256d temp = _mm256_unpackhi_pd(x, x);
+  return _mm256_cvtsd_f64(temp);
+}
+static inline double get_lane_64x4r2(__m256d x) {
+  __m128d temp = extract128x2d1(x);
+  return _mm_cvtsd_f64(temp);
+}
+static inline double get_lane_64x4r3(__m256d x) {
+  __m128d temp = extract128x2d1(x);
+  __m128d temp2 = _mm_unpackhi_pd(temp, temp);
+  return _mm_cvtsd_f64(temp2);
+}
+
 static inline __m256d insert128x2d0(__m256d x, __m128d y) {
   return _mm256_insertf128_pd(x, y, 0);
 }

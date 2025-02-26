@@ -57,6 +57,7 @@ proc mathTest(of, type eltType, param numElts: int) {
 
 proc mathTestDriver(test: borrowed Test) throws {
 
+  import ChplConfig;
   if ChplConfig.CHPL_TARGET_ARCH == "x86_64" {
     test.skip("pairAdd doesn't work fully yet on x86_64");
     return;

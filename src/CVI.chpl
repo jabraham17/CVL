@@ -452,8 +452,6 @@ module CVI {
 
 
 
-
-
     inline proc ref set(value)
     where isCoercible(value.type, eltType) do
       data = Intrin.splat(eltType, numElts, value:eltType);
@@ -591,46 +589,119 @@ module CVI {
 
 
     @chpldoc.nodoc
-    proc type isValidLoadMask(type maskType) param : bool {
+    proc type isValidLoadMask(type maskType,
+                              param onlyInts: bool = true) param : bool {
       return isSubtype(maskType, vector) &&
              numBits(maskType) == numBits(this) &&
-             isIntegralType(maskType.eltType);
+             (!onlyInts || isIntegralType(maskType.eltType));
     }
-    /* loadWithMask is not bounds checked */
-    inline proc type loadWithMask(mask: vector(?),
+    /* loadMasked is not bounds checked */
+    inline proc type loadMasked(mask: vector(?),
                                   container: ?,
                                   idx: integral = 0): this {
       var result: this;
-      result.loadWithMask(mask, container, idx=idx);
+      result.loadMasked(mask, container, idx=idx);
       return result;
     }
-
-    /* loadWithMask is not bounds checked */
-    inline proc ref loadWithMask(mask: vector(?),
+    /* loadMasked is not bounds checked */
+    inline proc ref loadMasked(mask: vector(?),
                                  ptr: c_ptrConst(eltType),
                                  idx: integral = 0)
     where this.type.isValidLoadMask(mask.type) {
       var ptr_ = ptr + idx;
-      data = Intrin.loadWithMask(eltType, numElts, ptr_, mask.data);
+      data = Intrin.loadMasked(eltType, numElts, ptr_, mask.data);
     }
-    /* loadWithMask is not bounds checked */
-    inline proc ref loadWithMask(mask: vector(?),
+    /* loadMasked is not bounds checked */
+    inline proc ref loadMasked(mask: vector(?),
                                  arr: [] eltType,
                                  idx: integral = 0)
     where this.type.isValidLoadMask(mask.type) &&
           isValidContainer(arr, eltType)
-      do loadWithMask(mask,
+      do loadMasked(mask,
           this.type._computeAddressConst(arr, idx, checkBounds=false), idx=0);
-
-    /* loadWithMask is not bounds checked */
-    inline proc ref loadWithMask(mask: vector(?),
+    /* loadMasked is not bounds checked */
+    inline proc ref loadMasked(mask: vector(?),
                                  tup,
                                  idx: integral = 0)
     where this.type.isValidLoadMask(mask.type) &&
           isValidContainer(tup, eltType) &&
           isHomogeneousTuple(tup)
-      do loadWithMask(mask,
+      do loadMasked(mask,
           this.type._computeAddressConst(tup, idx, checkBounds=false), idx=0);
+
+    // TODO: store mask
+
+    // TODO: for simplicity, gather requires an index vector of type int(32)
+    @chpldoc.nodoc
+    proc type indexVectorType type {
+      type idxEltType = int(32);
+      return vector(idxEltType, numBits(this)/numBits(idxEltType));
+    }
+    /* gather is not bounds checked */
+    inline proc type gather(
+      container: ?,
+      startIdx: integral,
+      indexVector: this.indexVectorType,
+      param scale: int = 0,
+      mask: ? = none
+    ): this {
+      var result = new this();
+      result.gather(container, startIdx, indexVector, scale=scale, mask=mask);
+      return result;
+    }
+
+    /* gather is not bounds checked */
+    inline proc ref gather(
+      ptr: c_ptrConst(eltType),
+      startIdx: integral,
+      indexVector: this.type.indexVectorType,
+      param scale: int = 0,
+      mask: ? = none
+    ) where mask.type == nothing ||
+            this.type.isValidLoadMask(mask.type, onlyInts=false) {
+      var ptr_ = ptr + startIdx;
+      if mask.type == nothing {
+        data = Intrin.gather(eltType, numElts, ptr_,
+                             indexVector.eltType, indexVector.data, scale);
+      } else {
+        data = Intrin.gatherMasked(eltType, numElts, ptr_,
+                                   indexVector.eltType, indexVector.data,
+                                   scale, mask.data, this.data);
+      }
+    }
+    /* gather is not bounds checked */
+    inline proc ref gather(
+      arr: [] eltType,
+      startIdx: integral,
+      indexVector: this.type.indexVectorType,
+      param scale: int = 0,
+      mask: ? = none
+    ) where (mask.type == nothing ||
+             this.type.isValidLoadMask(mask.type, onlyInts=false)) &&
+            isValidContainer(arr, eltType) {
+      const ptr =
+        this.type._computeAddressConst(arr, startIdx, checkBounds=false);
+      gather(ptr, 0, indexVector, scale=scale, mask=mask);
+    }
+
+    /* gather is not bounds checked */
+    inline proc ref gather(
+      tup,
+      startIdx: integral,
+      indexVector: this.type.indexVectorType,
+      param scale: int = 0,
+      mask: ? = none
+    ) where (mask.type == nothing ||
+             this.type.isValidLoadMask(mask.type, onlyInts=false)) &&
+            isValidContainer(tup, eltType) &&
+            isHomogeneousTuple(tup) {
+      const ptr =
+        this.type._computeAddressConst(tup, startIdx, checkBounds=false);
+      gather(ptr, 0, indexVector, scale=scale, mask=mask);
+    }
+
+
+
 
 
     // TODO: transmute (bitcast)
@@ -638,14 +709,14 @@ module CVI {
 
 
 
-    inline proc type indicies(rng: range(?)): range(?) do
+    inline proc type indices(rng: range(?)): range(?) do
       return rng by numElts;
-    inline proc type indicies(dom: domain(?)): domain(?) do
+    inline proc type indices(dom: domain(?)): domain(?) do
       return dom by numElts;
-    inline proc type indicies(container: ?): range(?)
+    inline proc type indices(container: ?): range(?)
     where isHomogeneousTuple(container) do
       return 0..#container.size by numElts;
-    inline proc type indicies(container: ?): domain(?)
+    inline proc type indices(container: ?): domain(?)
     where isArray(container) do
       return container.domain by numElts;
 
@@ -653,7 +724,7 @@ module CVI {
 
     inline iter type vectors(container: ?, param aligned: bool = false): this
       where isValidContainer(container, eltType) {
-      for i in indicies(container) {
+      for i in indices(container) {
         yield this.load(container, i, aligned=aligned);
       }
     }
@@ -661,7 +732,7 @@ module CVI {
                              container: ?,
                              param aligned: bool = false): this
     where tag == iterKind.standalone && isValidContainer(container, eltType) {
-      for i in indicies(container).these(tag=tag) {
+      for i in indices(container).these(tag=tag) {
         yield this.load(container, i, aligned=aligned);
       }
     }
@@ -670,7 +741,7 @@ module CVI {
                              container: ?,
                              param aligned: bool = false): this
     where tag == iterKind.leader && isValidContainer(container, eltType) {
-      for followThis in indicies(container).these(tag=tag) {
+      for followThis in indices(container).these(tag=tag) {
         yield followThis;
       }
     }
@@ -679,7 +750,7 @@ module CVI {
                              container: ?,
                              param aligned: bool = false): this
     where tag == iterKind.follower && isValidContainer(container, eltType) {
-      for i in indicies(container).these(tag=tag, followThis=followThis) {
+      for i in indices(container).these(tag=tag, followThis=followThis) {
         yield this.load(container, i, aligned=aligned);
       }
     }
@@ -687,7 +758,7 @@ module CVI {
     inline iter type vectorsRef(ref container: ?,
                                 param aligned: bool = false) ref : this
     where isValidContainer(container, eltType) {
-      for i in indicies(container) {
+      for i in indices(container) {
         const addr = this._computeAddress(container, i);
         var vr = new vectorRef(this, addr, aligned=aligned);
         yield vr;
@@ -697,7 +768,7 @@ module CVI {
                                 ref container: ?,
                                 param aligned: bool = false) ref : this
     where tag == iterKind.standalone && isValidContainer(container, eltType) {
-      for i in indicies(container).these(tag=tag) {
+      for i in indices(container).these(tag=tag) {
         const addr = this._computeAddress(container, i);
         var vr = new vectorRef(this, addr, aligned=aligned);
         yield vr;
@@ -708,7 +779,7 @@ module CVI {
                                 ref container: ?,
                                 param aligned: bool = false) ref : this
       where tag == iterKind.leader && isValidContainer(container, eltType) {
-      for followThis in indicies(container).these(tag=tag) {
+      for followThis in indices(container).these(tag=tag) {
         yield followThis;
       }
     }
@@ -717,7 +788,7 @@ module CVI {
                                 ref container: ?,
                                 param aligned: bool = false) ref : this
     where tag == iterKind.follower && isValidContainer(container, eltType) {
-      for i in indicies(container).these(tag=tag, followThis=followThis) {
+      for i in indices(container).these(tag=tag, followThis=followThis) {
         const addr = this._computeAddress(container, i);
         var vr = new vectorRef(this, addr, aligned=aligned);
         yield vr;

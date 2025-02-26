@@ -24,11 +24,11 @@ proc maskLoadTest(of, type eltType, param numElts: int) {
   mask.set(mask.numElts-1, 0:mask.eltType); // last lane is zero
   of.withSerializer(vecSerializer).writeln("  mask: ", mask);
 
-  for i in a.type.indicies(arr.domain) {
-    a.loadWithMask(mask, arr, i);
+  for i in a.type.indices(arr.domain) {
+    a.loadMasked(mask, arr, i);
     of.withSerializer(vecSerializer).writeln("  vec at ", i, ": ", a);
 
-    var b = a.type.loadWithMask(mask, arr, i);
+    var b = a.type.loadMasked(mask, arr, i);
     of.withSerializer(vecSerializer).writeln("  vec at ", i, ": ", b);
   }
 }
@@ -39,7 +39,7 @@ proc maskLoadTestDriver(test: borrowed Test) throws {
   import ChplConfig;
 
   if ChplConfig.CHPL_TARGET_ARCH == "arm64" {
-    test.skip("loadWithMask not supported on arm64 yet");
+    test.skip("loadMasked not supported on arm64 yet");
     return;
   }
 

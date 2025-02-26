@@ -21,7 +21,7 @@ proc test1(test: borrowed Test) throws {
     }
 
     actualOutput.writeln("arr: ", arr);
-    for i in vecType.indicies(dom) {
+    for i in vecType.indices(dom) {
       actualOutput.writeln("  vec(",i,"): ", vecType.load(arr, i));
     }
 
@@ -33,7 +33,7 @@ proc test1(test: borrowed Test) throws {
     }
 
     actualOutput.writeln("tup: ", tup);
-    for i in vecType.indicies(0..#16) {
+    for i in vecType.indices(0..#16) {
       actualOutput.writeln("  vec(",i,"): ", vecType.load(tup, i));
     }
 
@@ -60,7 +60,7 @@ proc test1(test: borrowed Test) throws {
     // {
     //   var arr = [i in 1..#100] i:real(32);
     //   var arr2 = [i in 1..#100] -i:real(32);
-    //   forall (i1, i2) in zip(vecType.indicies(arr.domain), vecType.indicies(arr2.domain)) {
+    //   forall (i1, i2) in zip(vecType.indices(arr.domain), vecType.indices(arr2.domain)) {
     //     var v1 = vecType.load(arr, i1);
     //     var v2 = vecType.load(arr2, i2);
     //     actualOutput.writeln("  i1: ", i1, " i2: ", i2, " v1: ", v1, " v2: ", v2);
@@ -83,7 +83,7 @@ proc test1(test: borrowed Test) throws {
       var arr: [D] real(32) = D;
       var arr2: [D2] real(32) = -D;
       actualOutput.writeln("arr: ", arr2);
-      forall (i, v) in zip(vecType.indicies(arr), vecType.vectorsRef(arr2)) {
+      forall (i, v) in zip(vecType.indices(arr), vecType.vectorsRef(arr2)) {
         actualOutput.writeln("  i: ", i);
         v += vecType.load(arr, i);
       }
@@ -98,7 +98,7 @@ proc test1(test: borrowed Test) throws {
       var arr2: [D2] int;
       actualOutput.writeln("arr: ", arr);
       actualOutput.writeln("arr2: ", arr2);
-      forall (v, i) in zip(vecType.vectors(arr), vecType.indicies(arr2)) {
+      forall (v, i) in zip(vecType.vectors(arr), vecType.indices(arr2)) {
         v.store(arr2, i);
       }
       actualOutput.writeln("arr2: ", arr2);

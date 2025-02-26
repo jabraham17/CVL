@@ -109,11 +109,36 @@ module Intrin {
     masked out elements are zeroed out
     only the most significant bit in each vector lane is considered for the mask
   */
-  inline proc loadWithMask(type eltType,
+  inline proc loadMasked(type eltType,
                            param numElts: int,
                            ptr: c_ptrConst(eltType),
                            mask: ?): vectorType(eltType, numElts) do
-    return implType(eltType, numElts).loadWithMask(ptr, mask);
+    return implType(eltType, numElts).loadMasked(ptr, mask);
+
+  inline proc gather(
+    type eltType,
+    param numElts: int,
+    ptr: c_ptrConst(eltType),
+    type indexType,
+    indices: ?,
+    param scale: int
+  ): vectorType(eltType, numElts
+  ) do
+    return implType(eltType, numElts).gather(ptr, indexType, indices, scale);
+
+   // TODO: this assumes i32 indices!!!!
+  inline proc gatherMasked(
+    type eltType,
+    param numElts: int,
+    ptr: c_ptrConst(eltType),
+    type indexType,
+    indices: ?,
+    param scale: int,
+    mask: ?,
+    src: vectorType(eltType, numElts)
+  ): vectorType(eltType, numElts) do
+    return implType(eltType, numElts)
+            .gatherMasked(ptr, indexType, indices, scale, mask, src);
 
   inline proc swapPairs(type eltType,
                         param numElts: int,

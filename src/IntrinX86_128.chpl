@@ -1,11 +1,12 @@
 @chplcheck.ignore("PascalCaseModules")
 module IntrinX86_128 {
   use CTypes only c_ptr, c_ptrConst;
-  use Reflection only canResolveTypeMethod;
+  use Reflection only canResolveTypeMethod, getRoutineName;
   import ChplConfig;
   if ChplConfig.CHPL_TARGET_ARCH == "x86_64" {
     require "x86intrin.h";
     require "wrapper-x86-128.h";
+    require "wrapper-x86-gathers.h";
   }
 
   extern "__m128"  type vec32x4r;
@@ -92,6 +93,8 @@ module IntrinX86_128 {
     return doSimpleOp(op, t, x, y);
   inline proc doSimpleOp(param op: string, x: ?t, y: ?, z: ?): t do
     return doSimpleOp(op, t, x, y, z);
+  inline proc doSimpleOp(param op: string, x: ?t, y: ?, z: ?, w: ?): t do
+    return doSimpleOp(op, t, x, y, z, w);
   inline proc doSimpleOp(param op: string, xs): xs(0).type where isTuple(xs) do
     return doSimpleOp(op, xs(0).type, xs);
   /*
@@ -126,6 +129,17 @@ module IntrinX86_128 {
     proc func(externX: t1, externY: t2, externZ: t3): returnType;
 
     return func(x, y, z);
+  }
+  inline proc doSimpleOp(param op: string,
+                         type returnType,
+                         x: ?t1, y: ?t2, z: ?t3, w: ?t4): returnType {
+    param externName = op + returnType.typeSuffix;
+
+    pragma "fn synchronization free"
+    extern externName
+    proc func(externX: t1, externY: t2, externZ: t3, externW: t4): returnType;
+
+    return func(x, y, z, w);
   }
   inline proc doSimpleOp(param op: string,
                          type returnType, xs): returnType where isTuple(xs) {
@@ -230,16 +244,85 @@ module IntrinX86_128 {
     }
 
     @chplcheck.ignore("UnusedFormal")
-    inline proc type loadWithMask(x: c_ptrConst(laneType), mask: ?): vecType {
-      if canResolveTypeMethod(extensionType, "loadWithMask", x, mask) then
-        return extensionType.loadWithMask(x, mask);
+    inline proc type loadMasked(x: c_ptrConst(laneType), mask: ?): vecType {
+      if canResolveTypeMethod(extensionType, "loadMasked", x, mask) then
+        return extensionType.loadMasked(x, mask);
       else {
         if laneType == int(8) || laneType == int(16) {
-          compilerError("loadWithMask is not supported with " +
+          compilerError(getRoutineName() +
+                        " is not supported with " +
                         laneType:string +
                         " on this platform");
         } else {
           return doSimpleOp(mmPrefix+"_maskload_", vecType, x, mask);
+        }
+      }
+    }
+
+    @chplcheck.ignore("UnusedFormal")
+    inline proc type gather(
+      x: c_ptrConst(laneType),
+      type indexType,
+      indices: ?,
+      param scale: int
+    ): vecType {
+      // TODO: canResolveTypeMethod can't mix param, type, and value
+      if canResolveTypeMethod(extensionType, "gather") then
+        return extensionType.gather(x, indexType, indices, scale);
+      else {
+        if laneType == int(8) || laneType == int(16) {
+          compilerError(getRoutineName() +
+                        " is not supported with " +
+                        laneType:string +
+                        " on this platform");
+        } else if indexType != int(32) {
+          compilerError(getRoutineName() + " only supports int(32) indices");
+        } else if !(scale == 0 || scale == 1 ||
+                    scale == 2 || scale == 4 || scale == 8) {
+          compilerError(getRoutineName() +
+                        " only supports a scale of 0, 1, 2, 4, or 8");
+        } else {
+          // if scale is 0, compute the proper scale based on the laneType
+          param computedScale = if scale == 0
+                                  then numBits(laneType)/8
+                                  else scale;
+          return doSimpleOp(mmPrefix+"_i32gather_" + computedScale:string + "_",
+                            vecType, x, indices);
+        }
+      }
+    }
+    @chplcheck.ignore("UnusedFormal")
+    inline proc type gatherMasked(
+      x: c_ptrConst(laneType),
+      type indexType,
+      indices: ?,
+      param scale: int,
+      mask: ?,
+      src: vecType
+    ): vecType {
+      // TODO: canResolveTypeMethod can't mix param, type, and value
+      if canResolveTypeMethod(extensionType, "gatherMasked") then
+        return extensionType.gatherMasked(x, indexType, indices, scale, mask);
+      else {
+        if laneType == int(8) || laneType == int(16) {
+          compilerError(getRoutineName() +
+                        " is not supported with " +
+                        laneType:string +
+                        " on this platform");
+        } else if indexType != int(32) {
+          compilerError(getRoutineName() + " only supports int(32) indices");
+        } else if !(scale == 0 || scale == 1 ||
+                    scale == 2 || scale == 4 || scale == 8) {
+          compilerError(getRoutineName() +
+                        " only supports a scale of 0, 1, 2, 4, or 8");
+        } else {
+          // if scale is 0, compute the proper scale based on the laneType
+          param computedScale = if scale == 0
+                                  then numBits(laneType)/8
+                                  else scale;
+          return doSimpleOp(mmPrefix+"_mask_i32gather_" +
+                            computedScale:string + "_",
+                            vecType, src, x, indices, mask);
         }
       }
     }

@@ -1,7 +1,7 @@
 @chplcheck.ignore("PascalCaseModules")
 module IntrinArm64_128 {
   use CTypes only c_ptr, c_ptrConst;
-  use Reflection only canResolveTypeMethod;
+  use Reflection only canResolveTypeMethod, getRoutineName;
   import ChplConfig;
   if ChplConfig.CHPL_TARGET_ARCH == "arm64" {
     require "arm_neon.h";
@@ -196,11 +196,40 @@ module IntrinArm64_128 {
       storea(x, y);
 
     @chplcheck.ignore("UnusedFormal")
-    inline proc type loadWithMask(x: c_ptrConst(laneType), mask: ?): vecType {
-      compilerError("loadWithMask is not supported with " +
+    inline proc type loadMasked(x: c_ptrConst(laneType), mask: ?): vecType {
+      compilerError(getRoutineName() +
+                    " is not supported with " +
                     laneType:string +
                     " on this platform");
     }
+
+    @chplcheck.ignore("UnusedFormal")
+    inline proc type gather(
+      x: c_ptrConst(laneType),
+      type indexType,
+      indices: ?,
+      param scale: int
+    ): vecType {
+      compilerError(getRoutineName() +
+                    " is not supported with " +
+                    laneType:string +
+                    " on this platform");
+    }
+    @chplcheck.ignore("UnusedFormal")
+    inline proc type gatherMasked(
+      x: c_ptrConst(laneType),
+      type indexType,
+      indices: ?,
+      param scale: int,
+      mask: ?,
+      src: vecType
+    ): vecType {
+      compilerError(getRoutineName() +
+                    " is not supported with " +
+                    laneType:string +
+                    " on this platform");
+    }
+
 
     // bit cast int to float or float to int
     // TODO im not happy with this api

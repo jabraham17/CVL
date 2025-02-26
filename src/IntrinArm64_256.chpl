@@ -4,6 +4,7 @@
 module IntrinArm64_256 {
   use IntrinArm64_128 only numBits;
   use CTypes only c_ptr, c_ptrConst;
+  use Reflection only getRoutineName;
 
   record vecPair {
     type vt; // value type
@@ -73,8 +74,35 @@ module IntrinArm64_256 {
       this.storea(x, y);
 
     @chplcheck.ignore("UnusedFormal")
-    inline proc type loadWithMask(x: c_ptrConst(laneType), mask: ?): vecType {
-      compilerError("loadWithMask is not supported with " +
+    inline proc type loadMasked(x: c_ptrConst(laneType), mask: ?): vecType {
+      compilerError(getRoutineName() +
+                    " is not supported with " +
+                    laneType:string +
+                    " on this platform");
+    }
+    @chplcheck.ignore("UnusedFormal")
+    inline proc type gather(
+      x: c_ptrConst(laneType),
+      type indexType,
+      indices: ?,
+      param scale: int
+    ): vecType {
+      compilerError(getRoutineName() +
+                    " is not supported with " +
+                    laneType:string +
+                    " on this platform");
+    }
+    @chplcheck.ignore("UnusedFormal")
+    inline proc type gatherMasked(
+      x: c_ptrConst(laneType),
+      type indexType,
+      indices: ?,
+      param scale: int,
+      mask: ?,
+      src: vecType
+    ): vecType {
+      compilerError(getRoutineName() +
+                    " is not supported with " +
                     laneType:string +
                     " on this platform");
     }

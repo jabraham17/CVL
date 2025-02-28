@@ -21,6 +21,15 @@ jobs:
       - name: Run Tests
         run: |
           ./test.sh
+  mason-test-linux-x86-nightly:
+    runs-on: ubuntu-latest
+    container:
+      image: chapel/chapel:nightly
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run Tests
+        run: |
+          ./test.sh
   mason-test-macos-arm:
     runs-on: macos-latest
     steps:
@@ -35,6 +44,16 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: chapel/chapel:latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run chplcheck
+        run: |
+          set -x
+          ./lint.sh
+  chplcheck-nightly:
+    runs-on: ubuntu-latest
+    container:
+      image: chapel/chapel:nightly
     steps:
       - uses: actions/checkout@v4
       - name: Run chplcheck

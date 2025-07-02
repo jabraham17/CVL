@@ -9,10 +9,10 @@ compopts="--using-attribute-toolname=lint -sCVI.implementationWarnings=false --n
 
 # TODO
 # "BitTest.chpl"
-# "CmpTest.chpl"
 # "IterTest.chpl"
 tests = [
   "ArrTest.chpl",
+  "CmpTest.chpl",
   "FmaTest.chpl",
   "GatherTest.chpl",
   "InitTest.chpl",

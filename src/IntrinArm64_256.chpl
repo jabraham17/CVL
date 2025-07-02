@@ -3,7 +3,7 @@
 @chplcheck.ignore("PascalCaseModules")
 module IntrinArm64_256 {
   use IntrinArm64_128 only numBits;
-  use CTypes only c_ptr, c_ptrConst;
+  use CTypes only c_ptr, c_ptrConst, c_int;
   use Reflection only getRoutineName;
 
   record vecPair {
@@ -196,6 +196,16 @@ module IntrinArm64_256 {
       return new vecType(implVecType.bitSelect(mask.lo, x.lo, y.lo),
                          implVecType.bitSelect(mask.hi, x.hi, y.hi));
 
+    inline proc type isAllZeros(x: vecType): bool do
+      return implVecType.isAllZeros(x.lo) && implVecType.isAllZeros(x.hi);
+    inline proc type allZeros(): vecType do
+      return new vecType(implVecType.allZeros(), implVecType.allZeros());
+    inline proc type allOnes(): vecType do
+      return new vecType(implVecType.allOnes(), implVecType.allOnes());
+    inline proc type moveMask(x: vecType): c_int do
+      return implVecType.moveMask(x.lo) |
+             (implVecType.moveMask(x.hi) << offset);
+
     inline proc type min(x: vecType, y: vecType): vecType do
       return new vecType(implVecType.min(x.lo, y.lo),
                          implVecType.min(x.hi, y.hi));
@@ -240,6 +250,11 @@ module IntrinArm64_256 {
     inline proc type fmsub(x: vecType, y: vecType, z: vecType): vecType do
       return new vecType(implVecType.fmsub(x.lo, y.lo, z.lo),
                          implVecType.fmsub(x.hi, y.hi, z.hi));
+    inline proc type reinterpretCast(type toVecType, x: vecType): toVecType do
+      return new toVecType(
+        implVecType.reinterpretCast(toVecType.vt, x.lo),
+        implVecType.reinterpretCast(toVecType.vt, x.hi)
+      );
 
   }
 

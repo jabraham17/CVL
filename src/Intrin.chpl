@@ -1,5 +1,5 @@
 module Intrin {
-  use CTypes only c_ptr, c_ptrConst;
+  use CTypes only c_ptr, c_ptrConst, c_int;
 
   import ChplConfig;
   proc isX8664() param: bool do return ChplConfig.CHPL_TARGET_ARCH == "x86_64";
@@ -280,6 +280,43 @@ module Intrin {
                     x: vectorType(eltType, numElts),
                     y: x.type): x.type do
     return implType(eltType, numElts).cmpGe(x, y);
+  inline proc bitSelect(type eltType,
+                        param numElts: int,
+                        mask: ?,
+                        x: vectorType(eltType, numElts),
+                        y: x.type): x.type {
+    return implType(eltType, numElts).bitSelect(mask, x, y);
+  }
+  inline proc isAllZeros(type eltType,
+                         param numElts: int,
+                         x: vectorType(eltType, numElts)): bool do
+    return implType(eltType, numElts).isAllZeros(x);
+
+  inline proc allOnes(type eltType,
+                      param numElts: int): vectorType(eltType, numElts) do
+    return implType(eltType, numElts).allOnes();
+  inline proc allZeros(type eltType,
+                       param numElts: int): vectorType(eltType, numElts) do
+    return implType(eltType, numElts).allZeros();
+  inline proc moveMask(type eltType,
+                       param numElts: int,
+                       x: vectorType(eltType, numElts)): c_int do
+    return implType(eltType, numElts).moveMask(x);
+
+  inline proc reinterpretCast(
+    type fromEltType,
+    param fromNumElts: int,
+    type toEltType,
+    param toNumElts: int,
+    x: vectorType(fromEltType, fromNumElts)
+  ): vectorType(toEltType, toNumElts) {
+    if fromEltType == toEltType &&
+       fromNumElts == toNumElts then
+      return x; // no-op
+    else
+      return implType(fromEltType, fromNumElts)
+        .reinterpretCast(vectorType(toEltType, toNumElts), x);
+  }
 
   /*
     Add pairs of adjacent elements
@@ -329,13 +366,6 @@ module Intrin {
   inline proc max(type eltType, param numElts: int,
                   x: vectorType(eltType, numElts), y: x.type): x.type do
     return implType(eltType, numElts).max(x, y);
-  inline proc bitSelect(type eltType,
-                        param numElts: int,
-                        mask: ?,
-                        x: vectorType(eltType, numElts),
-                        y: x.type): x.type {
-    return implType(eltType, numElts).bitSelect(mask, x, y);
-  }
   inline proc abs(type eltType, param numElts: int,
                   x: vectorType(eltType, numElts)): x.type do
     return implType(eltType, numElts).abs(x);

@@ -2,7 +2,7 @@ module CVI {
   config param implementationWarnings = true;
   use CTypes only c_ptr, c_ptrConst,
                   c_ptrTo, c_ptrToConst,
-                  c_addrOf, c_addrOfConst;
+                  c_addrOf, c_addrOfConst, c_int;
   import Intrin;
 
   proc numBits(type t) param: int where isSubtype(t, vector) do
@@ -702,6 +702,22 @@ module CVI {
 
 
 
+    inline proc transmute(type t): t where isSubtype(t, vector) &&
+                                           numBits(t) == numBits(this.type) {
+      var result: t;
+      result.data = Intrin.reinterpretCast(eltType, numElts,
+                                          t.eltType, t.numElts, this.data);
+      return result;
+    }
+    inline proc transmute(type t): t where !isSubtype(t, vector) {
+      compilerError("cannot transmute to non-vector type: " + t:string);
+    }
+    inline proc transmute(type t): t where isSubtype(t, vector) &&
+                                      numBits(t) != numBits(this.type) {
+      compilerError("cannot transmute vector of length " +
+                    numBits(this) + " to vector of length " + numBits(t));
+    }
+
 
 
     // TODO: transmute (bitcast)
@@ -903,6 +919,25 @@ module CVI {
     result.data = Intrin.blendLowHigh(eltType, numElts, x.data, y.data);
     return result;
   }
+
+
+  inline proc vector.isZero(): bool {
+    return Intrin.isAllZeros(eltType, numElts, this.data);
+  }
+  inline proc vector.moveMask(): c_int {
+    return Intrin.moveMask(eltType, numElts, this.data);
+  }
+  inline proc type vector.ones(): this {
+    var result: this;
+    result.data = Intrin.allOnes(eltType, numElts);
+    return result;
+  }
+  inline proc type vector.zeros(): this {
+    var result: this;
+    result.data = Intrin.allZeros(eltType, numElts);
+    return result;
+  }
+
 
 
   inline proc sqrt(x: vector(?eltType, ?numElts)): x.type {

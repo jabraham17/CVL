@@ -90,6 +90,16 @@ module IntrinArm64_128 {
     else if t == vec16x8u then return "16x8u";
     else if t == vec32x4u then return "32x4u";
     else if t == vec64x2u then return "64x2u";
+    else if t == vec32x2r then return "32x2r";
+    else if t == vec64x1r then return "64x1r";
+    else if t == vec8x8i  then return "8x8i";
+    else if t == vec16x4i then return "16x4i";
+    else if t == vec32x2i then return "32x2i";
+    else if t == vec64x1i then return "64x1i";
+    else if t == vec8x8u  then return "8x8u";
+    else if t == vec16x4u then return "16x4u";
+    else if t == vec32x2u then return "32x2u";
+    else if t == vec64x1u then return "64x1u";
     else compilerError("Unknown type: ", t);
   }
 
@@ -380,6 +390,44 @@ module IntrinArm64_128 {
         return doSimpleOp("vbslq", vecType, mask, x, y);
       }
     }
+    inline proc type isAllZeros(x: vecType): bool {
+      if canResolveTypeMethod(extensionType, "isAllZeros", x) then
+        return extensionType.isAllZeros(x);
+      else {
+        // var low = doSimpleOp("vget_low", getHalfType(vecType), x);
+        // var high = doSimpleOp("vget_high", getHalfType(vecType), x);
+        // var or = doSimpleOp("vorr", getHalfType(vecType), low, high);
+        // var res = doSimpleOp("vpmax", getHalfType(vecType), or, or);
+        // return doSimpleOp() == 0;
+        pragma "fn synchronization free"
+        extern "is_all_zeros_" + vecTypeStr(vecType)
+        proc func(x: vecType): bool;
+        return func(x);
+      }
+    }
+    inline proc type allOnes(): vecType {
+      if canResolveTypeMethod(extensionType, "allOnes") then
+        return extensionType.allOnes();
+      else
+        return doSimpleOp("vdupq_n", vecType, -1);
+    }
+    inline proc type allZeros(): vecType {
+      if canResolveTypeMethod(extensionType, "allZeros") then
+        return extensionType.allZeros();
+      else
+        return doSimpleOp("vdupq_n", vecType, 0);
+    }
+
+    inline proc type moveMask(x: vecType): c_int {
+      if canResolveTypeMethod(extensionType, "moveMask", x) then
+        return extensionType.moveMask(x);
+      else {
+        pragma "fn synchronization free"
+        extern "movemask_" + vecTypeStr(vecType)
+        proc func(x: vecType): c_int;
+        return func(x);
+      }
+    }
 
     inline proc type min(x: vecType, y: vecType): vecType {
       if canResolveTypeMethod(extensionType, "min", x, y) then
@@ -433,6 +481,17 @@ module IntrinArm64_128 {
       else
         return fmadd(x, y, doSimpleOp("vnegq", z));
     }
+
+    inline proc type reinterpretCast(type toVecType, x: vecType): toVecType {
+      param fromSuffix = typeToSuffix(vecType);
+      param toSuffix = typeToSuffix(toVecType);
+      param externName = "vreinterpret_" + fromSuffix + "_" + toSuffix;
+      pragma "fn synchronization free"
+      extern externName proc func(externX: vecType): toVecType;
+      return func(x);
+    }
+
+
   }
 
 

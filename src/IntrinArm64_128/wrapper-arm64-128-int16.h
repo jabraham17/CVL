@@ -31,4 +31,16 @@ LANES(EXTRACT_VECTOR_16x8i)
 
 #undef LANES
 
+static inline int is_all_zeros_16x8i(int16x8_t x) {
+  return vminvq_s16(x) == 0;
+}
+
+static inline int movemask_16x8i(int16x8_t x) {
+  uint16x8_t input = vreinterpretq_u16_s16(x);
+  uint32x4_t paired16 = vreinterpretq_u32_u16(vshrq_n_u16(input, 15));
+  uint64x2_t paired32 = vreinterpretq_u64_u32(vsraq_n_u32(paired16, paired16, 14));
+  uint8x16_t paired64 = vreinterpretq_u8_u64(vsraq_n_u64(paired32, paired32, 28));
+  return vgetq_lane_u8(paired64, 0) | ((int) vgetq_lane_u8(paired64, 8) << 8);
+}
+
 #endif

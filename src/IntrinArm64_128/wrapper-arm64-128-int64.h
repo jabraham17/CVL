@@ -31,4 +31,15 @@ LANES(EXTRACT_VECTOR_64x2i)
 
 #undef LANES
 
+static inline int is_all_zeros_64x2i(int64x2_t x) {
+  int64x1_t and_reduced = vorr_s64(vget_low_s64(x), vget_high_s64(x));
+  return vget_lane_s64(and_reduced, 0) == 0;
+}
+
+static inline int movemask_64x2i(int64x2_t x) {
+  uint64x2_t input = vreinterpretq_u64_s64(x);
+  uint8x16_t paired64 = vreinterpretq_u8_u64(vshrq_n_u64(input, 63));
+  return vgetq_lane_u8(paired64, 0) | ((int) vgetq_lane_u8(paired64, 8) << 8);
+}
+
 #endif

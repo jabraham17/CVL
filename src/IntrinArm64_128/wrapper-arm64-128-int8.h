@@ -33,4 +33,29 @@ LANES(EXTRACT_VECTOR_8x16i)
 
 #undef LANES
 
+
+#define HALF_LANES(V) \
+V(0) V(1) V(2) V(3) V(4) V(5) V(6) V(7)
+
+#define GET_LANE_8x8i(LANE) \
+  static inline int8_t get_lane_8x8i##LANE(int8x8_t v) { \
+    return vget_lane_s8(v, LANE); \
+  }
+HALF_LANES(GET_LANE_8x8i)
+#undef GET_LANE_8x8i
+
+#undef HALF_LANES
+
+static inline int is_all_zeros_8x16i(int8x16_t x) {
+  return vminvq_s8(x) == 0;
+}
+static inline int movemask_8x16i(int8x16_t x) {
+  uint8x16_t input = vreinterpretq_u8_s8(x);
+  uint16x8_t high_bits = vreinterpretq_u16_u8(vshrq_n_u8(input, 7));
+  uint32x4_t paired16 = vreinterpretq_u32_u16(vsraq_n_u16(high_bits, high_bits, 7));
+  uint64x2_t paired32 = vreinterpretq_u64_u32(vsraq_n_u32(paired16, paired16, 14));
+  uint8x16_t paired64 = vreinterpretq_u8_u64(vsraq_n_u64(paired32, paired32, 28));
+  return vgetq_lane_u8(paired64, 0) | ((int) vgetq_lane_u8(paired64, 8) << 8);
+}
+
 #endif

@@ -30,3 +30,11 @@ tests = [
 compopts = "--ccflags -msse4.1 --ccflags -mavx2"
 [architecture.arm64]
 compopts = ""
+
+[tool.chpl-language-server]
+module-dir = ["src"]
+
+[tool.chplcheck]
+file = ["src/*.chpl"]
+add-rules = ["lint/rules.py"]
+disable-rule = ["IncorrectIndentation"]

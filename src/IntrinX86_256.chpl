@@ -13,7 +13,7 @@ module IntrinX86_256 {
   import ChplConfig;
   if ChplConfig.CHPL_TARGET_ARCH == "x86_64" {
     require "x86intrin.h";
-    require "wrapper-x86-256.h";
+    require "IntrinX86_256/wrapper-x86-256.h";
   }
 
   extern "__m256"  type vec32x8r;

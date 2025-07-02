@@ -5,8 +5,8 @@ module IntrinX86_128 {
   import ChplConfig;
   if ChplConfig.CHPL_TARGET_ARCH == "x86_64" {
     require "x86intrin.h";
-    require "wrapper-x86-128.h";
-    require "wrapper-x86-gathers.h";
+    require "IntrinX86_128/wrapper-x86-128.h";
+    require "IntrinX86_128/wrapper-x86-gathers.h";
   }
 
   extern "__m128"  type vec32x4r;
@@ -635,6 +635,12 @@ module IntrinX86_128 {
       else
         return doSimpleOp(mmPrefix+"_fmsub_", x, y, z);
     }
+
+    inline proc type reinterpretCast(type toVecType, x: vecType): toVecType {
+      // TODO
+      // _mm256_castps_si256
+    }
+
   }
 
 

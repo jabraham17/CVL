@@ -167,6 +167,11 @@ def rules(driver):
         if not isinstance(node.parent(), chapel.Module):
             return True
 
+        # we only consider 'use' statements that aren't explicitly qualified
+        # as private
+        if node.visibility() == "private":
+            return True
+
         # if any of the vis clauses don't have 'only' as the limitation, warn
         return all([vis.limitation_kind() == 'only' for vis in node.visibility_clauses()])
 

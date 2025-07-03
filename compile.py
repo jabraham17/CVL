@@ -7,6 +7,7 @@
 import sys
 import os
 import argparse as ap
+from pathlib import Path
 # use pip vendor TOML if no system TOML is available (Python 3.10 or less)
 try: import tomllib
 except ModuleNotFoundError: import pip._vendor.tomli as tomllib
@@ -20,7 +21,7 @@ def get_arch():
 class Compopts:
     def __init__(self, workspace):
         self.workspace = workspace
-        self.Mason_toml = os.path.join(workspace, "Mason.toml")
+        self.Mason_toml = workspace / "Mason.toml"
         self.data = {}
         self.load()
     
@@ -44,7 +45,7 @@ class Compopts:
         return compopts
 
     def get_module_compopts(self):
-        src = os.path.join(self.workspace, "src")
+        src = self.workspace / "src"
         module_compopts = "-M{}".format(src)
         return module_compopts
 
@@ -57,7 +58,7 @@ class Compopts:
 
 def main():
 
-    cvi_directory = os.path.dirname(os.path.realpath(__file__))
+    cvi_directory = Path(__file__).resolve().parent
     compopts = Compopts(cvi_directory)
 
     a = ap.ArgumentParser()
@@ -68,7 +69,7 @@ def main():
     args = a.parse_args()
 
     print(args.action())
-    
-    
+
+
 if __name__ == "__main__":
     main()

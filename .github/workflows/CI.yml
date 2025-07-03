@@ -66,10 +66,7 @@ jobs:
       image: chapel/chapel:latest
     steps:
       - uses: actions/checkout@v4
-      - name: Install CMake
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y cmake
+      - uses: jwlawson/actions-setup-cmake@v2.0.2
       - name: Run CMake Tests
         run: |
           ./tests/cmake/testExampleProject.sh

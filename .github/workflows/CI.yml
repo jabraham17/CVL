@@ -71,3 +71,16 @@ jobs:
         run: |
           ./tests/cmake/testExampleProject.sh
 
+  python-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v4
+      - name: Install dependencies
+        run: |
+          python3 -m pip install --upgrade pip
+          python3 -m pip install tox
+      - name: Run Python Tests
+        run: |
+          python3 -m tox

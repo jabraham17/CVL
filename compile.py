@@ -1,16 +1,20 @@
 #!/usr/bin/env python3
 
-# 
+#
 # Get the command line flags to use this library in your code
-# 
+#
 
 import sys
 import os
 import argparse as ap
 from pathlib import Path
+
 # use pip vendor TOML if no system TOML is available (Python 3.10 or less)
-try: import tomllib
-except ModuleNotFoundError: import pip._vendor.tomli as tomllib
+try:
+    import tomllib
+except ModuleNotFoundError:
+    import pip._vendor.tomli as tomllib
+
 
 def get_arch():
     machine = os.uname()[4]
@@ -18,13 +22,14 @@ def get_arch():
         return "arm64"
     return machine
 
+
 class Compopts:
     def __init__(self, workspace):
         self.workspace = workspace
         self.Mason_toml = workspace / "Mason.toml"
         self.data = {}
         self.load()
-    
+
     def load(self):
         with open(self.Mason_toml, "rb") as f:
             self.data = tomllib.load(f)
@@ -38,7 +43,6 @@ class Compopts:
         else:
             arch_compopts = arch_specific.get("compopts", "")
         return arch_compopts
-
 
     def get_mason_compopts(self):
         compopts = self.data["brick"].get("compopts", "")
@@ -62,10 +66,34 @@ def main():
     compopts = Compopts(cvi_directory)
 
     a = ap.ArgumentParser()
-    a.add_argument("--module-compopts", const=compopts.get_module_compopts, dest="action",action="store_const", default=compopts.get_compopts)
-    a.add_argument("--base-compopts", const=compopts.get_mason_compopts, dest="action",action="store_const", default=compopts.get_compopts)
-    a.add_argument("--arch-compopts", const=compopts.get_arch_compopts, dest="action",action="store_const", default=compopts.get_compopts)
-    a.add_argument("--all-compopts", const=compopts.get_compopts, dest="action",action="store_const", default=compopts.get_compopts)
+    a.add_argument(
+        "--module-compopts",
+        const=compopts.get_module_compopts,
+        dest="action",
+        action="store_const",
+        default=compopts.get_compopts,
+    )
+    a.add_argument(
+        "--base-compopts",
+        const=compopts.get_mason_compopts,
+        dest="action",
+        action="store_const",
+        default=compopts.get_compopts,
+    )
+    a.add_argument(
+        "--arch-compopts",
+        const=compopts.get_arch_compopts,
+        dest="action",
+        action="store_const",
+        default=compopts.get_compopts,
+    )
+    a.add_argument(
+        "--all-compopts",
+        const=compopts.get_compopts,
+        dest="action",
+        action="store_const",
+        default=compopts.get_compopts,
+    )
     args = a.parse_args()
 
     print(args.action())

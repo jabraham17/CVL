@@ -59,4 +59,18 @@ jobs:
       - name: Run chplcheck
         run: |
           set -x
-          ./lint.sh
+
+  cmake-test:
+    runs-on: ubuntu-latest
+    container:
+      image: chapel/chapel:latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install CMake
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake
+      - name: Run CMake Tests
+        run: |
+          ./tests/cmake/testExampleProject.sh
+

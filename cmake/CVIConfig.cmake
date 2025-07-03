@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.20)
-find_package(chpl REQUIRED HINTS .)
+find_package(chpl REQUIRED)
 project(cvi LANGUAGES CHPL)
 
 set(CVI_ROOT "${CMAKE_CURRENT_LIST_DIR}/..")
@@ -18,3 +18,6 @@ if(NOT CVI_COMPOPTS_CODE EQUAL 0)
 endif()
 message(STATUS "CVI: Compile options: ${CVI_COMPOPTS_STR}")
 separate_arguments(CVI_COMPOPTS UNIX_COMMAND "${CVI_COMPOPTS_STR}")
+
+add_library(cvi INTERFACE)
+target_link_options(cvi INTERFACE ${CVI_COMPOPTS})

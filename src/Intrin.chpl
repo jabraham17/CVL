@@ -210,9 +210,9 @@ module Intrin {
                   param numElts: int,
                   x: vectorType(eltType, numElts),
                   y: x.type): x.type {
-    import CVI;
+    import CVL;
     if isIntegralType(eltType) then
-      if CVI.implementationWarnings then
+      if CVL.implementationWarnings then
         compilerWarning(
           "div on ints is emulated by converting to float and back"
         );

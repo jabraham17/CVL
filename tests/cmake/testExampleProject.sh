@@ -54,17 +54,17 @@ function check_deps() {
 clean
 
 #
-# Test that we can pass CVI_DIR to the CMakeLists.txt
+# Test that we can pass CVL_DIR to the CMakeLists.txt
 #
-build "-DCVI_DIR=${CURRENT_DIR}/../../cmake" "--target ExampleProject"
+build "-DCVL_DIR=${CURRENT_DIR}/../../cmake" "--target ExampleProject"
 run
 check_no_deps
 clean
 
 #
-# Test that we can pass CVI_SOURCE_DIR to the CMakeLists.txt
+# Test that we can pass CVL_SOURCE_DIR to the CMakeLists.txt
 #
-build "-DCVI_SOURCE_DIR=${CURRENT_DIR}/../.." "--target ExampleProject"
+build "-DCVL_SOURCE_DIR=${CURRENT_DIR}/../.." "--target ExampleProject"
 run
 check_no_deps
 clean

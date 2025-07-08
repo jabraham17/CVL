@@ -62,8 +62,8 @@ class Compopts:
 
 def main():
 
-    cvi_directory = Path(__file__).resolve().parent
-    compopts = Compopts(cvi_directory)
+    cvl_directory = Path(__file__).resolve().parent
+    compopts = Compopts(cvl_directory)
 
     a = ap.ArgumentParser()
     a.add_argument(

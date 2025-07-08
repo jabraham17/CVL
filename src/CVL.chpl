@@ -1,4 +1,4 @@
-module CVI {
+module CVL {
   config param implementationWarnings = true;
   use CTypes only c_ptr, c_ptrConst,
                   c_ptrTo, c_ptrToConst,

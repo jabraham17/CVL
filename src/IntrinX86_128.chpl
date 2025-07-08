@@ -578,8 +578,8 @@ module IntrinX86_128 {
       if canResolveTypeMethod(extensionType, "bitSelect", mask, x, y) then
         return extensionType.bitSelect(mask, x, y);
       else {
-        import CVI;
-        if CVI.implementationWarnings then
+        import CVL;
+        if CVL.implementationWarnings then
           compilerWarning("bitSelect is unimplemented");
         // _mm_or_si128(_mm_and_si128(mask, a), _mm_andnot_si128(mask, b));
         return x; // TODO
@@ -744,8 +744,8 @@ module IntrinX86_128 {
     proc type laneType type do return int(8);
 
     inline proc type mul(x: vecType, y: vecType): vecType {
-      import CVI;
-      if CVI.implementationWarnings then
+      import CVL;
+      if CVL.implementationWarnings then
         compilerWarning("'mul' on int(8) is implemented as scalar operations");
       // TODO: theres no mul_epi8 instruction, we can emulate with mullo_epi16
       // the loop here is painfully slow
@@ -756,8 +756,8 @@ module IntrinX86_128 {
       return res;
     }
     inline proc type div(x: vecType, y: vecType): vecType {
-      import CVI;
-      if CVI.implementationWarnings then
+      import CVL;
+      if CVL.implementationWarnings then
         compilerWarning("'div' on int(8) is implemented as scalar operations");
       // TODO: theres no div_epi8 instruction,
       // but surely we can do better than this
@@ -768,8 +768,8 @@ module IntrinX86_128 {
       return res;
     }
     inline proc type hadd(x: vecType, y: vecType): vecType {
-      import CVI;
-      if CVI.implementationWarnings then
+      import CVL;
+      if CVL.implementationWarnings then
         compilerWarning("'hadd' on int(8) is implemented as scalar operations");
       // TODO: theres no hadd_epi8 instruction,
       // but surely we can do better than this
@@ -794,8 +794,8 @@ module IntrinX86_128 {
     proc type laneType type do return int(16);
 
     inline proc type mul(x: vecType, y: vecType): vecType {
-      import CVI;
-      if CVI.implementationWarnings then
+      import CVL;
+      if CVL.implementationWarnings then
         compilerWarning("'mul' on int(16) is implemented as scalar operations");
       // TODO: theres no mul_epi16 instruction, we can emulate with mullo_epi16
       // and mulhi_epi16
@@ -807,8 +807,8 @@ module IntrinX86_128 {
       return res;
     }
     inline proc type div(x: vecType, y: vecType): vecType {
-      import CVI;
-      if CVI.implementationWarnings then
+      import CVL;
+      if CVL.implementationWarnings then
         compilerWarning("'div' on int(16) is implemented as scalar operations");
       // TODO: theres no div_epi16 instruction,
       // but surely we can do better than this
@@ -836,8 +836,8 @@ module IntrinX86_128 {
     proc type laneType type do return int(32);
 
     inline proc type div(x: vecType, y: vecType): vecType {
-      import CVI;
-      if CVI.implementationWarnings then
+      import CVL;
+      if CVL.implementationWarnings then
         compilerWarning("'div' on int(32) is implemented as scalar operations");
       // TODO: theres no div_epi32 instruction,
       // but surely we can do better than this
@@ -849,8 +849,8 @@ module IntrinX86_128 {
     }
 
     inline proc type mul(x: vecType, y: vecType): vecType {
-      import CVI;
-      if CVI.implementationWarnings then
+      import CVL;
+      if CVL.implementationWarnings then
         compilerWarning("'mul' on int(32) is implemented as scalar operations");
       // TODO: we could do somthing with mul_epi32 and mulhi_epi32
       var res: vecType;
@@ -897,8 +897,8 @@ module IntrinX86_128 {
       return base.interleaveUpper(x, y);
 
     inline proc type div(x: vecType, y: vecType): vecType {
-      import CVI;
-      if CVI.implementationWarnings then
+      import CVL;
+      if CVL.implementationWarnings then
         compilerWarning("'div' on int(64) is implemented as scalar operations");
       // TODO: theres no div_epi16 instruction,
       // but surely we can do better than this
@@ -909,8 +909,8 @@ module IntrinX86_128 {
       return res;
     }
     inline proc type hadd(x: vecType, y: vecType): vecType {
-      import CVI;
-      if CVI.implementationWarnings then
+      import CVL;
+      if CVL.implementationWarnings then
         compilerWarning("'hadd' on int(64) is " +
                         "implemented as scalar operations");
       // TODO: theres no hadd_epi8 instruction,

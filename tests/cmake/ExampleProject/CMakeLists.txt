@@ -5,22 +5,22 @@ project(ExampleProject LANGUAGES CHPL)
 add_executable(ExampleProject main.chpl)
 install(TARGETS ExampleProject DESTINATION bin)
 
-set(CVI_SOURCE_DIR "" CACHE PATH "Path to the CVI source directory")
+set(CVL_SOURCE_DIR "" CACHE PATH "Path to the CVL source directory")
 
 
-find_package(CVI CONFIG HINTS ${CVI_SOURCE_DIR})
-if (NOT CVI_FOUND)
-  message("CVI not found, cloning it...")
+find_package(CVL CONFIG HINTS ${CVL_SOURCE_DIR})
+if (NOT CVL_FOUND)
+  message("CVL not found, cloning it...")
   include(FetchContent)
   FetchContent_Declare(
-    CVI
-    GIT_REPOSITORY https://github.com/jabraham17/cvi.git
+    CVL
+    GIT_REPOSITORY https://github.com/jabraham17/cvl.git
     GIT_BRANCH main
     GIT_TAG main
     GIT_SHALLOW TRUE
   )
-  FetchContent_MakeAvailable(CVI)
-  FetchContent_GetProperties(CVI SOURCE_DIR CVI_SOURCE_DIR_FETCHED)
-  find_package(CVI REQUIRED CONFIG HINTS ${CVI_SOURCE_DIR_FETCHED})
+  FetchContent_MakeAvailable(CVL)
+  FetchContent_GetProperties(CVL SOURCE_DIR CVL_SOURCE_DIR_FETCHED)
+  find_package(CVL REQUIRED CONFIG HINTS ${CVL_SOURCE_DIR_FETCHED})
 endif()
-target_link_libraries(ExampleProject PRIVATE cvi)
+target_link_libraries(ExampleProject PRIVATE cvl)

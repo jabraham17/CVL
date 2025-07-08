@@ -59,6 +59,10 @@ class Compopts:
         arch_compopts = self.get_arch_compopts()
         return "{} {} {}".format(module_compopts, mason_compopts, arch_compopts)
 
+    def get_docopts(self):
+        docopts = self.data["brick"].get("docopts", "")
+        return docopts
+
 
 def main():
 
@@ -90,6 +94,13 @@ def main():
     a.add_argument(
         "--all-compopts",
         const=compopts.get_compopts,
+        dest="action",
+        action="store_const",
+        default=compopts.get_compopts,
+    )
+    a.add_argument(
+        "--docopts",
+        const=compopts.get_docopts,
         dest="action",
         action="store_const",
         default=compopts.get_compopts,

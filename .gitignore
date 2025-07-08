@@ -1,5 +1,6 @@
 target/
 Mason.lock
+doc/
 .vscode
 a.out
 .cls-commands.json

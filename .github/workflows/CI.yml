@@ -12,7 +12,8 @@ jobs:
   mason-test-linux-x86:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
       - name: Set up Homebrew
         uses: Homebrew/actions/setup-homebrew@master
       - name: Install Chapel
@@ -26,14 +27,16 @@ jobs:
     container:
       image: chapel/chapel:nightly
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
       - name: Run Tests
         run: |
           ./test.sh
   mason-test-macos-arm:
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
       - name: Install Chapel
         run: |
           brew install chapel
@@ -45,28 +48,31 @@ jobs:
     container:
       image: chapel/chapel:latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
       - name: Run chplcheck
         run: |
-          set -x
           ./lint.sh
   chplcheck-nightly:
     runs-on: ubuntu-latest
     container:
       image: chapel/chapel:nightly
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
       - name: Run chplcheck
         run: |
-          set -x
+          ./lint.sh
 
   cmake-test:
     runs-on: ubuntu-latest
     container:
       image: chapel/chapel:latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: jwlawson/actions-setup-cmake@v2.0.2
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up CMake
+        uses: jwlawson/actions-setup-cmake@v2.0.2
       - name: Run CMake Tests
         run: |
           ./tests/cmake/testExampleProject.sh
@@ -74,7 +80,8 @@ jobs:
   python-tests:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
       - name: Set up Python
         uses: actions/setup-python@v4
       - name: Install dependencies

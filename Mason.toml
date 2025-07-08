@@ -6,6 +6,7 @@ license="None"
 type="library"
 # TODO: implementation still in progress, use -sSIMD.implementationWarnings=false
 compopts="--using-attribute-toolname=lint -sCVL.implementationWarnings=false --no-overload-sets-checks"
+docopts="--using-attribute-toolname=lint"
 
 # TODO
 # "BitTest.chpl"

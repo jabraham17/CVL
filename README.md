@@ -1,3 +1,3 @@
-# CVI: chpl Vector Intrinsics
+# CVL: chpl Vector Library
 
-Portable SIMD intrinsics for Chapel.
+Portable SIMD intrinsics for the Chapel language.

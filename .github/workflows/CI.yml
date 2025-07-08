@@ -22,6 +22,7 @@ jobs:
       - name: Run Tests
         run: |
           ./test.sh
+
   mason-test-linux-x86-nightly:
     runs-on: ubuntu-latest
     container:
@@ -32,6 +33,7 @@ jobs:
       - name: Run Tests
         run: |
           ./test.sh
+
   mason-test-macos-arm:
     runs-on: macos-latest
     steps:
@@ -43,6 +45,7 @@ jobs:
       - name: Run Tests
         run: |
           ./test.sh
+
   chplcheck:
     runs-on: ubuntu-latest
     container:
@@ -53,6 +56,7 @@ jobs:
       - name: Run chplcheck
         run: |
           ./lint.sh
+
   chplcheck-nightly:
     runs-on: ubuntu-latest
     container:

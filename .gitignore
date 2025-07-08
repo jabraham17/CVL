@@ -1,6 +1,6 @@
 target/
 Mason.lock
-doc/
+build/
 .vscode
 a.out
 .cls-commands.json

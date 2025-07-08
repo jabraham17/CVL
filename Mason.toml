@@ -1,8 +1,10 @@
 [brick]
 name="CVL"
 version="0.1.0"
-chplVersion="2.2.0"
-license="None"
+author="Jade Abraham"
+chplVersion="2.4.0"
+license="Apache-2.0"
+copyright="2025, Jade Abraham"
 type="library"
 # TODO: implementation still in progress, use -sSIMD.implementationWarnings=false
 compopts="--using-attribute-toolname=lint -sCVL.implementationWarnings=false --no-overload-sets-checks"

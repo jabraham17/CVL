@@ -1,7 +1,8 @@
 target/
 Mason.lock
 build/
-.vscode
+.vscode/*
+!.vscode/extensions.json
 a.out
 .cls-commands.json
 __pycache__/

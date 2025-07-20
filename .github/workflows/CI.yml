@@ -14,12 +14,12 @@ on:
 
 jobs:
   test-chpl-latest:
-    uses: ./.github/workflows/chpl-test.yml
+    uses: ./.github/workflows/chpl-tests.yml
     with:
       chapel_version: latest
       run_optional_tests: true
   test-chpl-2.4:
-    uses: ./.github/workflows/chpl-test.yml
+    uses: ./.github/workflows/chpl-tests.yml
     with:
       chapel_version: 2.4.0
       run_optional_tests: false

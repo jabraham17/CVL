@@ -12,7 +12,7 @@ on:
 
 jobs:
   test-chpl-nightly:
-    uses: ./.github/workflows/chapel-test.yml
+    uses: ./.github/workflows/chpl-tests.yml
     with:
       chapel_version: nightly
       run_optional_tests: false

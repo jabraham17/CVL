@@ -1,4 +1,4 @@
-name: Run on Chapel nightly
+name: Run on chpl nightly
 #
 # Runs the same tests as the CI, but using the latest Chapel nightly build.
 # This prevents potential regressions from the latest changes in Chapel. This
@@ -11,7 +11,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  tests:
+  test-chpl-nightly:
     uses: ./.github/workflows/chapel-test.yml
     with:
       chapel_version: nightly

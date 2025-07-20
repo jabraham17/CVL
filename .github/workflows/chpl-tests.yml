@@ -1,4 +1,4 @@
-name: Chapel Tests
+name: chpl tests
 on:
   workflow_call:
     inputs:

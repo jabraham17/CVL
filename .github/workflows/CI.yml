@@ -13,15 +13,13 @@ on:
 # TODO: add comm!=none jobs for brew once brew has ML chapel
 
 jobs:
-  tests:
-    uses: ./.github/workflows/chapel-test.yml
+  test-chpl-latest:
+    uses: ./.github/workflows/chpl-test.yml
     with:
       chapel_version: latest
       run_optional_tests: true
-
-jobs:
-  tests:
-    uses: ./.github/workflows/chapel-test.yml
+  test-chpl-2.4:
+    uses: ./.github/workflows/chpl-test.yml
     with:
       chapel_version: 2.4.0
       run_optional_tests: false

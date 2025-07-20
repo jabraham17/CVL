@@ -29,7 +29,7 @@ function run() {
   fi
 
   # Run the executable to ensure it works
-  "${INSTALL_DIR}/bin/ExampleProject"
+  "${INSTALL_DIR}/bin/ExampleProject" -nl 1
 
   set +x
 }

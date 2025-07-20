@@ -1,6 +1,7 @@
 name: CI
-desciption: Runs tests on every push to the main branch
-
+#
+# Runs tests on every push to the main branch
+#
 on:
   push:
     branches:

@@ -1,8 +1,9 @@
 name: Run on Chapel nightly
-desciption: |
-  Runs the same tests as the CI, but using the latest Chapel nightly build.
-  This prevents potential regressions from the latest changes in Chapel. This
-  workflow runs on a weekly schedule and can also be triggered manually.
+#
+# Runs the same tests as the CI, but using the latest Chapel nightly build.
+# This prevents potential regressions from the latest changes in Chapel. This
+# workflow runs on a weekly schedule and can also be triggered manually.
+#
 
 on:
   schedule:

@@ -57,7 +57,7 @@ jobs:
       matrix:
         image:
           - chapel/chapel:${{ inputs.chapel_version }}
-          - chapel/chapel-gasnet-udp:${{ inputs.chapel_version }}
+          - chapel/chapel-gasnet:${{ inputs.chapel_version }}
           - chapel/chapel-gasnet-smp:${{ inputs.chapel_version }}
     container:
       image: ${{ matrix.image }}
@@ -86,7 +86,7 @@ jobs:
       matrix:
         image:
           - chapel/chapel:${{ inputs.chapel_version }}
-          - chapel/chapel-gasnet-udp:${{ inputs.chapel_version }}
+          - chapel/chapel-gasnet:${{ inputs.chapel_version }}
           - chapel/chapel-gasnet-smp:${{ inputs.chapel_version }}
     container:
       image: ${{ matrix.image }}

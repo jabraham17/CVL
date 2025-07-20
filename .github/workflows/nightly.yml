@@ -11,40 +11,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  nightly-mason-test-linux-x86:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Set up Homebrew
-        uses: Homebrew/actions/setup-homebrew@master
-      - name: Install Chapel from HEAD
-        run: |
-          brew install --HEAD chapel
-      - name: Run Tests
-        run: |
-          ./test.sh
-
-  nightly-mason-test-macos-arm:
-    runs-on: macos-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Install Chapel from HEAD
-        run: |
-
-          brew install --HEAD chapel
-      - name: Run Tests
-        run: |
-          ./test.sh
-
-  nightly-chplcheck:
-    runs-on: ubuntu-latest
-    container:
-      image: chapel/chapel:nightly
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Run chplcheck
-        run: |
-          ./lint.sh
+  tests:
+    uses: ./.github/workflows/chapel-test.yml
+    with:
+      chapel_version: nightly
+      run_optional_tests: false

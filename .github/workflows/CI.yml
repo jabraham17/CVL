@@ -10,68 +10,18 @@ on:
 
 # TODO: add a linux-arm runner
 
+# TODO: add comm!=none jobs for brew once brew has ML chapel
+
 jobs:
-  mason-test-linux-x86:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Set up Homebrew
-        uses: Homebrew/actions/setup-homebrew@master
-      - name: Install Chapel
-        run: |
-          brew install chapel
-      - name: Run Tests
-        run: |
-          ./test.sh
+  tests:
+    uses: ./.github/workflows/chapel-test.yml
+    with:
+      chapel_version: latest
+      run_optional_tests: true
 
-  mason-test-macos-arm:
-    runs-on: macos-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Install Chapel
-        run: |
-          brew install chapel
-      - name: Run Tests
-        run: |
-          ./test.sh
-
-  chplcheck:
-    runs-on: ubuntu-latest
-    container:
-      image: chapel/chapel:latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Run chplcheck
-        run: |
-          ./lint.sh
-
-  cmake-test:
-    runs-on: ubuntu-latest
-    container:
-      image: chapel/chapel:latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Set up CMake
-        uses: jwlawson/actions-setup-cmake@v2.0.2
-      - name: Run CMake Tests
-        run: |
-          ./tests/cmake/testExampleProject.sh
-
-  python-tests:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Set up Python
-        uses: actions/setup-python@v4
-      - name: Install dependencies
-        run: |
-          python3 -m pip install --upgrade pip
-          python3 -m pip install tox
-      - name: Run Python Tests
-        run: |
-          python3 -m tox
+jobs:
+  tests:
+    uses: ./.github/workflows/chapel-test.yml
+    with:
+      chapel_version: 2.4.0
+      run_optional_tests: false

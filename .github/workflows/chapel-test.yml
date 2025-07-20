@@ -1,0 +1,116 @@
+name: Chapel Tests
+on:
+  workflow_call:
+    inputs:
+      chapel_version:
+        description: 'Chapel version to use (latest, nightly, or a specific version)'
+        required: true
+        type: string
+      run_optional_tests:
+        description: 'Whether to run additional tests (CMake and Python)'
+        required: false
+        type: boolean
+        default: true
+
+# brew only supports nightly and latest
+jobs:
+  mason-test-linux-x86:
+    if: ${{ inputs.chapel_version == 'nightly' || inputs.chapel_version == 'latest' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Homebrew
+        uses: Homebrew/actions/setup-homebrew@master
+      - name: Install Chapel
+        run: |
+          if [ "${{ inputs.chapel_version }}" = "nightly" ]; then
+            brew install --HEAD chapel
+          else
+            brew install chapel
+          fi
+      - name: Run Tests
+        run: |
+          ./test.sh
+
+  # brew only supports nightly and latest
+  mason-test-macos-arm:
+    if: ${{ inputs.chapel_version == 'nightly' || inputs.chapel_version == 'latest' }}
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install Chapel
+        run: |
+          if [ "${{ inputs.chapel_version }}" = "nightly" ]; then
+            brew install --HEAD chapel
+          else
+            brew install chapel
+          fi
+      - name: Run Tests
+        run: |
+          ./test.sh
+
+  mason-test-docker:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        image:
+          - chapel/chapel:${{ inputs.chapel_version }}
+          - chapel/chapel-gasnet-udp:${{ inputs.chapel_version }}
+          - chapel/chapel-gasnet-smp:${{ inputs.chapel_version }}
+    container:
+      image: ${{ matrix.image }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Run Tests
+        run: |
+          ./test.sh
+
+  chplcheck:
+    runs-on: ubuntu-latest
+    container:
+      image: chapel/chapel:${{ inputs.chapel_version }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Run chplcheck
+        run: |
+          ./lint.sh
+
+  cmake-tests:
+    if: ${{ inputs.run_optional_tests }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        image:
+          - chapel/chapel:${{ inputs.chapel_version }}
+          - chapel/chapel-gasnet-udp:${{ inputs.chapel_version }}
+          - chapel/chapel-gasnet-smp:${{ inputs.chapel_version }}
+    container:
+      image: ${{ matrix.image }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up CMake
+        uses: jwlawson/actions-setup-cmake@v2.0.2
+      - name: Run CMake Tests
+        run: |
+          ./tests/cmake/testExampleProject.sh
+
+  python-tests:
+    if: ${{ inputs.run_optional_tests }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v4
+      - name: Install dependencies
+        run: |
+          python3 -m pip install --upgrade pip
+          python3 -m pip install tox
+      - name: Run Python Tests
+        run: |
+          python3 -m tox

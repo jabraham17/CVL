@@ -32,7 +32,7 @@ tests = [
 
 [architecture]
 [architecture.x86_64]
-compopts = "--ccflags -msse4.1 --ccflags -mavx2"
+compopts = "--ccflags=-msse4.1 --ccflags=-mavx2"
 [architecture.arm64]
 compopts = ""
 

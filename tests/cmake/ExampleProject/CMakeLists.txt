@@ -4,6 +4,7 @@ find_package(chpl REQUIRED)
 project(ExampleProject LANGUAGES CHPL)
 add_executable(ExampleProject main.chpl)
 install(TARGETS ExampleProject DESTINATION bin)
+install(PROGRAMS "${PROJECT_BINARY_DIR}/ExampleProject_real" DESTINATION bin)
 
 set(CVL_SOURCE_DIR "" CACHE PATH "Path to the CVL source directory")
 

@@ -1,12 +1,13 @@
 @chplcheck.ignore("PascalCaseModules")
 module IntrinX86_128 {
-  use CTypes only c_ptr, c_ptrConst;
+  use CTypes only c_ptr, c_ptrConst, c_int;
   use Reflection only canResolveTypeMethod, getRoutineName;
   import ChplConfig;
   if ChplConfig.CHPL_TARGET_ARCH == "x86_64" {
     require "x86intrin.h";
     require "IntrinX86_128/wrapper-x86-128.h";
     require "IntrinX86_128/wrapper-x86-gathers.h";
+    require "IntrinX86_128/wrapper-x86-fp-compare.h";
   }
 
   extern "__m128"  type vec32x4r;
@@ -537,39 +538,54 @@ module IntrinX86_128 {
     // TODO this is not going to work because of macros/const int issues
     // }
 
+    /*
+      For floating point types, the comparison is ordered and non-signaling.
+    */
     inline proc type cmpEq(x: vecType, y: vecType): vecType {
       if canResolveTypeMethod(extensionType, "cmpEq", x, y) then
         return extensionType.cmpEq(x, y);
+      else if isRealType(laneType) then
+        return doSimpleOp("cmpEq"+vecType.numBits:string, x, y);
       else
         return doSimpleOp(mmPrefix+"_cmpeq_", x, y);
     }
     inline proc type cmpNe(x: vecType, y: vecType): vecType {
       if canResolveTypeMethod(extensionType, "cmpNe", x, y) then
         return extensionType.cmpNe(x, y);
+      else if isRealType(laneType) then
+        return doSimpleOp("cmpNe"+vecType.numBits:string, x, y);
       else
         return doSimpleOp(mmPrefix+"_cmpne_", x, y);
     }
     inline proc type cmpLt(x: vecType, y: vecType): vecType {
       if canResolveTypeMethod(extensionType, "cmpLt", x, y) then
         return extensionType.cmpLt(x, y);
+      else if isRealType(laneType) then
+        return doSimpleOp("cmpLt"+vecType.numBits:string, x, y);
       else
         return doSimpleOp(mmPrefix+"_cmplt_", x, y);
     }
     inline proc type cmpLe(x: vecType, y: vecType): vecType {
       if canResolveTypeMethod(extensionType, "cmpLe", x, y) then
         return extensionType.cmpLe(x, y);
+      else if isRealType(laneType) then
+        return doSimpleOp("cmpLe"+vecType.numBits:string, x, y);
       else
         return doSimpleOp(mmPrefix+"_cmple_", x, y);
     }
     inline proc type cmpGt(x: vecType, y: vecType): vecType {
       if canResolveTypeMethod(extensionType, "cmpGt", x, y) then
         return extensionType.cmpGt(x, y);
+      else if isRealType(laneType) then
+        return doSimpleOp("cmpGt"+vecType.numBits:string, x, y);
       else
         return doSimpleOp(mmPrefix+"_cmpgt_", x, y);
     }
     inline proc type cmpGe(x: vecType, y: vecType): vecType {
       if canResolveTypeMethod(extensionType, "cmpGe", x, y) then
         return extensionType.cmpGe(x, y);
+      else if isRealType(laneType) then
+        return doSimpleOp("cmpGe"+vecType.numBits:string, x, y);
       else
         return doSimpleOp(mmPrefix+"_cmpge_", x, y);
     }
@@ -639,6 +655,13 @@ module IntrinX86_128 {
     inline proc type reinterpretCast(type toVecType, x: vecType): toVecType {
       // TODO
       // _mm256_castps_si256
+      // return x;
+      import CVL;
+      if CVL.implementationWarnings then
+        compilerWarning("reinterpretCast is unimplemented");
+      x;
+      var y: toVecType;
+      return y;
     }
 
   }

@@ -17,6 +17,13 @@ jobs:
   mason-test-linux-x86:
     if: ${{ inputs.chapel_version == 'nightly' || inputs.chapel_version == 'latest' }}
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        backend:
+          - llvm
+          - gnu
+    env:
+      CHPL_TARGET_COMPILER: ${{ matrix.backend }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -37,6 +44,13 @@ jobs:
   mason-test-macos-arm:
     if: ${{ inputs.chapel_version == 'nightly' || inputs.chapel_version == 'latest' }}
     runs-on: macos-latest
+    strategy:
+      matrix:
+        backend:
+          - llvm
+          - clang
+    env:
+      CHPL_TARGET_COMPILER: ${{ matrix.backend }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -59,8 +73,13 @@ jobs:
           - chapel/chapel:${{ inputs.chapel_version }}
           - chapel/chapel-gasnet:${{ inputs.chapel_version }}
           - chapel/chapel-gasnet-smp:${{ inputs.chapel_version }}
+        backend:
+          - llvm
+          - gnu
     container:
       image: ${{ matrix.image }}
+    env:
+      CHPL_TARGET_COMPILER: ${{ matrix.backend }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -88,8 +107,13 @@ jobs:
           - chapel/chapel:${{ inputs.chapel_version }}
           - chapel/chapel-gasnet:${{ inputs.chapel_version }}
           - chapel/chapel-gasnet-smp:${{ inputs.chapel_version }}
+        backend:
+          - llvm
+          - gnu
     container:
       image: ${{ matrix.image }}
+    env:
+      CHPL_TARGET_COMPILER: ${{ matrix.backend }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4

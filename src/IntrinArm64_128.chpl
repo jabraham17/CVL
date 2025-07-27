@@ -152,7 +152,7 @@ module IntrinArm64_128 {
   inline proc reinterpret(vec: ?, type t): t {
     param fromType = typeToSuffix(vec.type);
     param toType = typeToSuffix(t);
-    param externName = "vreinterpret_" + fromType + "_" + toType;
+    param externName = "vreinterpretq_" + toType + "_" + fromType;
 
     pragma "fn synchronization free"
     extern externName proc func(externVec: vec.type): t;
@@ -483,12 +483,7 @@ module IntrinArm64_128 {
     }
 
     inline proc type reinterpretCast(type toVecType, x: vecType): toVecType {
-      param fromSuffix = typeToSuffix(vecType);
-      param toSuffix = typeToSuffix(toVecType);
-      param externName = "vreinterpret_" + fromSuffix + "_" + toSuffix;
-      pragma "fn synchronization free"
-      extern externName proc func(externX: vecType): toVecType;
-      return func(x);
+      return reinterpret(x, toVecType);
     }
 
 

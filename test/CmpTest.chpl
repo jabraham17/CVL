@@ -55,21 +55,19 @@ proc cmpTest(of, type eltType, param numElts: int) {
   }
 }
 
-proc cmpTest_real_128(test: borrowed Test) throws {
-  test.skip("shuffles on real don't work yet");
+proc cmpTestReal128(test: borrowed Test) throws {
   manage new outputManager(test, getGoodFile(".real-128")) as actualOutput {
     cmpTest(actualOutput, real(32), 4);
     cmpTest(actualOutput, real(64), 2);
   }
 }
-proc cmpTest_real_256(test: borrowed Test) throws {
-  test.skip("shuffles on real don't work yet");
+proc cmpTestReal256(test: borrowed Test) throws {
   manage new outputManager(test, getGoodFile(".real-256")) as actualOutput {
     cmpTest(actualOutput, real(32), 8);
     cmpTest(actualOutput, real(64), 4);
   }
 }
-proc cmpTest_int_128(test: borrowed Test) throws {
+proc cmpTestInt128(test: borrowed Test) throws {
   manage new outputManager(test, getGoodFile(".int-128")) as actualOutput {
     cmpTest(actualOutput, int(8), 16);
     cmpTest(actualOutput, int(16), 8);
@@ -77,7 +75,7 @@ proc cmpTest_int_128(test: borrowed Test) throws {
     cmpTest(actualOutput, int(64), 2);
   }
 }
-proc cmpTest_int_256(test: borrowed Test) throws {
+proc cmpTestInt256(test: borrowed Test) throws {
   manage new outputManager(test, getGoodFile(".int-256")) as actualOutput {
     cmpTest(actualOutput, int(8), 32);
     cmpTest(actualOutput, int(16), 16);

@@ -125,6 +125,11 @@ module CVL {
       return result;
     }
 
+    inline proc toTuple(): numElts * eltType {
+      type tupType = numElts * eltType;
+      return this:tupType;
+    }
+
     /* VECTOR + VECTOR */
     inline operator+(x: vector(?eltType, ?numElts), y: x.type): x.type {
       var result: x.type;

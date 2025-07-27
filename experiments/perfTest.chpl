@@ -4,7 +4,7 @@ use Time;
 config const n = 100_000;
 config const i = 50;
 config const print = false;
-use SIMD;
+use CVL;
 type vecType = vector(int(32), 4);
 const D = {1:int(32)..#n:int(32)};
 

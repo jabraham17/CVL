@@ -408,14 +408,22 @@ module IntrinArm64_128 {
     inline proc type allOnes(): vecType {
       if canResolveTypeMethod(extensionType, "allOnes") then
         return extensionType.allOnes();
-      else
-        return doSimpleOp("vdupq_n", vecType, -1);
+      else {
+        type maskType = getBitMaskType(vecType);
+        return reinterpret(
+          doSimpleOp("vdupq_n", maskType, (-1):uint(numBits(laneType))),
+          vecType);
+      }
     }
     inline proc type allZeros(): vecType {
       if canResolveTypeMethod(extensionType, "allZeros") then
         return extensionType.allZeros();
-      else
-        return doSimpleOp("vdupq_n", vecType, 0);
+      else {
+        type maskType = getBitMaskType(vecType);
+        return reinterpret(
+          doSimpleOp("vdupq_n", maskType, 0:uint(numBits(laneType))),
+          vecType);
+      }
     }
 
     inline proc type moveMask(x: vecType): c_int {

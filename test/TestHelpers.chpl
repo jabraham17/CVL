@@ -11,8 +11,8 @@ config const verbosePrint = false;
 config const dumpActual = false;
 config const precision = 2;
 config const padding = 5;
-var vecSerializer = new precisionSerializer(precision=precision, padding=padding);
-// var vecOut = stdout.withSerializer(vecSerializer);
+var vecSerializer = new precisionSerializer(precision=precision,
+                                            padding=padding);
 
 //
 // Test Helpers
@@ -25,7 +25,9 @@ proc newOutputFile(): IO.file {
   return IO.openMemFile();
 }
 
-proc compareOutput(test: borrowed Test, goodFile: IO.fileReader(?), actualOutput: IO.fileReader(?)) throws {
+proc compareOutput(test: borrowed Test,
+                   goodFile: IO.fileReader(?),
+                   actualOutput: IO.fileReader(?)) throws {
   var goodFileContents = goodFile.lines(stripNewline=true);
   var actualOutputLines = actualOutput.lines(stripNewline=true);
 

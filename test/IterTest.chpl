@@ -60,10 +60,12 @@ proc test1(test: borrowed Test) throws {
     // {
     //   var arr = [i in 1..#100] i:real(32);
     //   var arr2 = [i in 1..#100] -i:real(32);
-    //   forall (i1, i2) in zip(vecType.indices(arr.domain), vecType.indices(arr2.domain)) {
+    //   forall (i1, i2) in zip(vecType.indices(arr.domain),
+    //                          vecType.indices(arr2.domain)) {
     //     var v1 = vecType.load(arr, i1);
     //     var v2 = vecType.load(arr2, i2);
-    //     actualOutput.writeln("  i1: ", i1, " i2: ", i2, " v1: ", v1, " v2: ", v2);
+    //     actualOutput.writeln("  i1: ", i1, " i2: ", i2,
+    //                          " v1: ", v1, " v2: ", v2);
     //   }
     // }
 

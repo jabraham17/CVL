@@ -36,9 +36,11 @@ jobs:
           else
             brew install chapel
           fi
+      - name: Set up CMake
+        uses: jwlawson/actions-setup-cmake@v2.0.2
       - name: Run Tests
         run: |
-          ./test.sh
+          ./util/testAll.sh
 
   # brew only supports nightly and latest
   mason-test-macos-arm:
@@ -61,9 +63,11 @@ jobs:
           else
             brew install chapel
           fi
+      - name: Set up CMake
+        uses: jwlawson/actions-setup-cmake@v2.0.2
       - name: Run Tests
         run: |
-          ./test.sh
+          ./util/testAll.sh
 
   mason-test-docker:
     runs-on: ubuntu-latest
@@ -83,9 +87,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Set up CMake
+        uses: jwlawson/actions-setup-cmake@v2.0.2
       - name: Run Tests
         run: |
-          ./test.sh
+          ./util/testAll.sh
 
   chplcheck:
     runs-on: ubuntu-latest
@@ -96,32 +102,7 @@ jobs:
         uses: actions/checkout@v4
       - name: Run chplcheck
         run: |
-          ./lint.sh
-
-  cmake-tests:
-    if: ${{ inputs.run_optional_tests }}
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        image:
-          - chapel/chapel:${{ inputs.chapel_version }}
-          - chapel/chapel-gasnet:${{ inputs.chapel_version }}
-          - chapel/chapel-gasnet-smp:${{ inputs.chapel_version }}
-        backend:
-          - llvm
-          - gnu
-    container:
-      image: ${{ matrix.image }}
-    env:
-      CHPL_TARGET_COMPILER: ${{ matrix.backend }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Set up CMake
-        uses: jwlawson/actions-setup-cmake@v2.0.2
-      - name: Run CMake Tests
-        run: |
-          ./tests/cmake/testExampleProject.sh
+          ./util/lint.sh
 
   python-tests:
     if: ${{ inputs.run_optional_tests }}
@@ -137,4 +118,4 @@ jobs:
           python3 -m pip install tox
       - name: Run Python Tests
         run: |
-          python3 -m tox
+          ./util/tox.sh

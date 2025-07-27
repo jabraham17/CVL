@@ -1,17 +1,17 @@
 #!/usr/bin/env bash
 
-FILE_DIR=$(cd $(dirname $0); pwd)
+PROJECT_DIR=$(cd $(dirname $0); cd ..; pwd)
 
-(cd $FILE_DIR && set -x && \
+(cd $PROJECT_DIR && set -x && \
   mason test --show -- \
     $@ \
     $(./compile.py --arch-compopts) \
-  | tee $FILE_DIR/test.log \
+  | tee $PROJECT_DIR/test.log \
 )
 
 # check the last line of test.log, if it starts with OK, then the test passed
 # this is required because mason exits with 1 if a test is skipped
-if [[ "$(tail -n 1 $FILE_DIR/test.log)" == "OK"* ]]; then
+if [[ "$(tail -n 1 $PROJECT_DIR/test.log)" == "OK"* ]]; then
   exit 0
 else
   exit 1

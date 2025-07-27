@@ -7,3 +7,4 @@ a.out
 .cls-commands.json
 __pycache__/
 *.DS_Store
+test.log

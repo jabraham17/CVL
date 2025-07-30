@@ -41,7 +41,7 @@ proc bitTest(of, type eltType, param numElts: int) {
 
   {
     var ones = a.type.ones();
-    of.writeln("  ones(): ", toHex(ones.toTuple()));
+    of.writeln("  ones(): ", toHex(ones));
     var computedOnes = ~(a & 0:eltType);
     of.writeln("  ~(a & 0): ", toHex(computedOnes));
     var zeros = a.type.zeros();

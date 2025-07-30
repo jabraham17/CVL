@@ -23,7 +23,7 @@ def get_arch():
     return machine
 
 
-class Compopts:
+class Project:
     def __init__(self, workspace):
         self.workspace = workspace
         self.Mason_toml = workspace / "Mason.toml"
@@ -63,48 +63,57 @@ class Compopts:
         docopts = self.data["brick"].get("docopts", "")
         return docopts
 
+    def get_tests(self):
+        tests = self.data["brick"].get("tests", "")
+        return tests
+
 
 def main():
 
     cvl_directory = Path(__file__).resolve().parent
-    compopts = Compopts(cvl_directory)
+    project = Project(cvl_directory)
 
     a = ap.ArgumentParser()
     a.add_argument(
         "--module-compopts",
-        const=compopts.get_module_compopts,
+        const=project.get_module_compopts,
         dest="action",
         action="store_const",
-        default=compopts.get_compopts,
+        default=project.get_compopts,
     )
     a.add_argument(
         "--base-compopts",
-        const=compopts.get_mason_compopts,
+        const=project.get_mason_compopts,
         dest="action",
         action="store_const",
-        default=compopts.get_compopts,
+        default=project.get_compopts,
     )
     a.add_argument(
         "--arch-compopts",
-        const=compopts.get_arch_compopts,
+        const=project.get_arch_compopts,
         dest="action",
         action="store_const",
-        default=compopts.get_compopts,
+        default=project.get_compopts,
     )
     a.add_argument(
         "--all-compopts",
-        const=compopts.get_compopts,
+        const=project.get_compopts,
         dest="action",
         action="store_const",
-        default=compopts.get_compopts,
+        default=project.get_compopts,
     )
     a.add_argument(
         "--docopts",
-        const=compopts.get_docopts,
+        const=project.get_docopts,
         dest="action",
         action="store_const",
-        default=compopts.get_compopts,
+        default=project.get_compopts,
     )
+    a.add_argument("--list-tests",
+                   const=project.get_tests,
+                   dest="action",
+                   action="store_const",
+                   default=project.get_compopts)
     args = a.parse_args()
 
     print(args.action())

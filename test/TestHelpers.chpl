@@ -49,9 +49,14 @@ proc compareOutput(test: borrowed Test,
     }
   }
 
-  test.assertEqual(goodFileContents.size, actualOutputLines.size);
-  for (good, actual) in zip(goodFileContents, actualOutputLines) {
-    test.assertEqual(good, actual);
+  try {
+    test.assertEqual(goodFileContents.size, actualOutputLines.size);
+    for (good, actual) in zip(goodFileContents, actualOutputLines) {
+      test.assertEqual(good, actual);
+    }
+  } catch e: TestError.AssertionError {
+    if !dumpActual then
+      throw e;
   }
 }
 

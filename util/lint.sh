@@ -2,8 +2,9 @@
 
 PROJECT_DIR=$(cd $(dirname $0); cd ..; pwd)
 
-(set -x && chplcheck --add-rules $PROJECT_DIR/lint/rules.py \
-  --disable-rule IncorrectIndentation \
+set -e
+
+(set -x && chplcheck -c $PROJECT_DIR/.chplcheck.cfg \
   "$PROJECT_DIR/src/**/*.chpl" \
   "$PROJECT_DIR/test/**/*.chpl"
   $@ \

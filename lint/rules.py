@@ -168,8 +168,8 @@ def rules(driver):
             return True
 
         # we only consider 'use' statements that aren't explicitly qualified
-        # as private
-        if node.visibility() == "private":
+        # as private or public
+        if node.visibility() in ("public", "private"):
             return True
 
         # if any of the vis clauses don't have 'only' as the limitation, warn

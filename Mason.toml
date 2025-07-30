@@ -13,14 +13,15 @@ compopts="--using-attribute-toolname=lint -sCVL.implementationWarnings=false --n
 docopts="--using-attribute-toolname=lint"
 
 # TODO
-# "BitTest.chpl"
 # "IterTest.chpl"
 tests = [
   "ArrTest.chpl",
+  "BitTest.chpl",
   "CmpTest.chpl",
   "FmaTest.chpl",
   "GatherTest.chpl",
   "InitTest.chpl",
+  "IsAllTest.chpl",
   "MaskLoadTest.chpl",
   "MathFuncs.chpl",
   "MathTest.chpl",

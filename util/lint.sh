@@ -6,3 +6,4 @@ set -e
 
 (set -x && chplcheck -c $PROJECT_DIR/Mason.toml $@)
 
+(set -x && $PROJECT_DIR/lint/EverythingTested.py)

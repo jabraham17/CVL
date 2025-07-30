@@ -77,7 +77,7 @@ record outputManager: contextManager {
     return actualWriter;
   }
 
-  proc exitContext(in err: owned Error?) {
+  proc exitContext(in err: owned Error?) throws {
     actualWriter.close();
     if err then test.assertTrue(false);
     compareOutput(test, goodFile.reader(), actualFile.reader());

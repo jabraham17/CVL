@@ -41,6 +41,6 @@ compopts = ""
 module-dir = ["src"]
 
 [tool.chplcheck]
-file = ["src/*.chpl"]
+file = ["src/**/*.chpl", "test/**/*.chpl"]
 add-rules = ["lint/rules.py"]
 disable-rule = ["IncorrectIndentation"]

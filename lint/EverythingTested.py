@@ -12,6 +12,7 @@ TEST_DIR = PROJECT_DIR / "test"
 
 # list all tests from mason
 import compile as ProjectScript
+
 mason_tests = ProjectScript.Project(PROJECT_DIR).get_tests()
 mason_tests = [TEST_DIR / t for t in mason_tests]
 
@@ -20,7 +21,9 @@ files = TEST_DIR.glob("**/*.chpl")
 
 # exclude cmake dir
 cmake_dir = TEST_DIR / "cmake"
-files = [f for f in files if os.path.commonprefix((cmake_dir, f)) != str(cmake_dir)]
+files = [
+    f for f in files if os.path.commonprefix((cmake_dir, f)) != str(cmake_dir)
+]
 
 # exclude TestHelpers.chpl
 TestHelpers = TEST_DIR / "TestHelpers.chpl"

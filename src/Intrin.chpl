@@ -244,6 +244,8 @@ module Intrin {
                   x: vectorType(eltType, numElts)):
                   x.type do
     return implType(eltType, numElts).not(x);
+  
+  /* ``(~x) & y`` */
   inline proc andNot(type eltType,
                      param numElts: int,
                      x: vectorType(eltType, numElts),

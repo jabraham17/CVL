@@ -602,6 +602,41 @@ module IntrinX86_128 {
       }
     }
 
+    inline proc type isAllZeros(x: vecType): bool {
+      if canResolveTypeMethod(extensionType, "isAllZeros", x) then
+        return extensionType.isAllZeros(x);
+      else {
+        if CVL.implementationWarnings then
+          compilerWarning("isAllZeros is unimplemented");
+        return false;
+      }
+    }
+    inline proc type allOnes(): vecType {
+      if canResolveTypeMethod(extensionType, "allOnes") then
+        return extensionType.allOnes();
+      else {
+        const zero = this.allZeros();
+        return this.andNot(zero, zero);
+      }
+    }
+    inline proc type allZeros(): vecType {
+      if canResolveTypeMethod(extensionType, "allZeros") then
+        return extensionType.allZeros();
+      else {
+        if isIntegralType(laneType) {
+          param name = mmPrefix + "_setzero_si" + vecType.numBits:string;
+          pragma "fn synchronization free"
+          extern name proc setZero(): vecType;
+          return setZero(x, y);
+        } else {
+          return doSimpleOp(mmPrefix+"_setzero_", vecType);
+        }
+      }
+    }
+
+    // TODO: moveMask?
+    inline proc type moveMask(x: vecType): c_int do return 0;
+
     inline proc type min(x: vecType, y: vecType): vecType {
       if canResolveTypeMethod(extensionType, "min", x, y) then
         return extensionType.min(x, y);

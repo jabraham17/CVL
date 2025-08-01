@@ -611,6 +611,8 @@ module Vector {
     return Intrin.isAllZeros(eltType, numElts, this.data);
   }
   inline proc vector.moveMask(): c_int {
+    if CVL.implementationWarnings then
+      compilerWarning("moveMask is not implemented properly yet");
     return Intrin.moveMask(eltType, numElts, this.data);
   }
   inline proc type vector.ones(): this {

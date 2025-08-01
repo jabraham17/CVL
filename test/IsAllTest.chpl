@@ -57,30 +57,29 @@ proc isAll(of, type eltType, param numElts: int) {
     var r = a.isZero();
     of.writeln("  a.isZero(): ", r);
   }
+}
 
-  {
-    for param i in 0..#numElts {
-      var c = a.type.zeros();
-      c.set(i, a.type.ones()[i]);
-      of.withSerializer(vecSerializer).writeln("  c: ", toHex(c));
-      var mm = c.moveMask();
-      of.writef("  c.moveMask(): %@0"+numBits(mm.type):string+"bu\n", mm);
-    }
+proc moveMask(of, type eltType, param numElts: int) {
+  of.writeln("moveMask functions for ", eltType:string, " ", numElts);
+
+  for param i in 0..#numElts {
+    var c = a.type.zeros();
+    c.set(i, a.type.ones()[i]);
+    of.withSerializer(vecSerializer).writeln("  c: ", toHex(c));
+    var mm = c.moveMask();
+    of.writef("  c.moveMask(): %@0"+numBits(mm.type):string+"bu\n", mm);
   }
-
+  of.withSerializer(vecSerializer).writeln("  a: ", a);
 }
 
 
-
 proc isAllReal128(test: borrowed Test) throws {
-  test.skip("moveMask does't work yet");
   manage new outputManager(test, getGoodFile(".real-128")) as actualOutput {
     isAll(actualOutput, real(32), 4);
     isAll(actualOutput, real(64), 2);
   }
 }
 proc isAllReal256(test: borrowed Test) throws {
-  test.skip("moveMask does't work yet");
   manage new outputManager(test, getGoodFile(".real-256")) as actualOutput {
     isAll(actualOutput, real(32), 8);
     isAll(actualOutput, real(64), 4);
@@ -100,6 +99,26 @@ proc isAllInt256(test: borrowed Test) throws {
     isAll(actualOutput, int(16), 16);
     isAll(actualOutput, int(32), 8);
     isAll(actualOutput, int(64), 4);
+  }
+}
+
+proc testMoveMask(test: borrowed Test) throws {
+  test.skip("moveMask does't work yet");
+  manage new outputManager(test, getGoodFile("-moveMask")) as actualOutput {
+    moveMask(actualOutput, real(32), 4);
+    moveMask(actualOutput, real(64), 2);
+    moveMask(actualOutput, real(32), 8);
+    moveMask(actualOutput, real(64), 4);
+
+    moveMask(actualOutput, int(8), 16);
+    moveMask(actualOutput, int(16), 8);
+    moveMask(actualOutput, int(32), 4);
+    moveMask(actualOutput, int(64), 2);
+
+    moveMask(actualOutput, int(8), 32);
+    moveMask(actualOutput, int(16), 16);
+    moveMask(actualOutput, int(32), 8);
+    moveMask(actualOutput, int(64), 4);
   }
 }
 

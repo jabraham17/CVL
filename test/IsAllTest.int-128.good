@@ -7,7 +7,6 @@ isAll* functions for int(8) 16
   zeros.isZero(): true
   ones.isZero(): false
   a.isZero(): false
-  a.moveMask():
   temp:     0,    18,    19,    20,    21,    22,    23,    24,    25,    26,    27,    28,    29,    30,    31,    32
   temp.isZero(): true
   temp.moveMask():

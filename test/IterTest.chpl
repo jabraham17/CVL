@@ -273,7 +273,7 @@ proc testZippering(test: borrowed Test) throws {
     //   actualOutput.writeln("arr: ", arr);
     //   actualOutput.writeln("arr2: ", arr2);
     //   forall (v, v2) in zip(vecType.vectors(arr), vecType.vectorsRef(arr2)) {
-    //     // v2 = v; // can;t assign because i can't actualOutput.write an init=
+    //    // v2 = v; // can;t assign because i can't actualOutput.write an init=
     //     v2.set(v);
     //   }
     //   actualOutput.writeln("arr2: ", arr2);

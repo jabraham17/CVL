@@ -7,7 +7,6 @@ isAll* functions for real(32) 4
   zeros.isZero(): true
   ones.isZero(): false
   a.isZero(): false
-  a.moveMask():
 isAll* functions for real(64) 2
   a:  1.00,  2.00
   b:  3.00,  4.00
@@ -17,4 +16,3 @@ isAll* functions for real(64) 2
   zeros.isZero(): true
   ones.isZero(): false
   a.isZero(): false
-  a.moveMask():

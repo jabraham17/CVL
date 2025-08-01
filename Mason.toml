@@ -12,8 +12,6 @@ type="library"
 compopts="--using-attribute-toolname=lint -sCVL.implementationWarnings=false --no-overload-sets-checks"
 docopts="--using-attribute-toolname=lint"
 
-# TODO
-# "IterTest.chpl"
 tests = [
   "ArrTest.chpl",
   "BitTest.chpl",
@@ -22,6 +20,7 @@ tests = [
   "GatherTest.chpl",
   "InitTest.chpl",
   "IsAllTest.chpl",
+  "IterTest.chpl",
   "MaskLoadTest.chpl",
   "MathFuncs.chpl",
   "MathTest.chpl",

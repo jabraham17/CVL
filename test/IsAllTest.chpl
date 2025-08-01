@@ -37,7 +37,7 @@ proc isAll(of, type eltType, param numElts: int) {
   of.withSerializer(vecSerializer).writeln("  b: ", b);
   of.withSerializer(vecSerializer).writeln("  -----------------");
 
-  
+
   var ones = a.type.ones();
   of.writeln("  ones(): ", toHex(ones));
   var zeros = a.type.zeros();

@@ -412,11 +412,11 @@ module Vector {
 
 
 
-    inline proc type indices(rng: range(?)): range(?) do
+    inline proc type indices(rng: range(?)): range(strides=strideKind.positive) do
       return rng by numElts;
     inline proc type indices(dom: domain(?)): domain(?) do
       return dom by numElts;
-    inline proc type indices(container: ?): range(?)
+    inline proc type indices(container: ?): range(strides=strideKind.positive)
     where isHomogeneousTuple(container) do
       return 0..#container.size by numElts;
     inline proc type indices(container: ?): domain(?)
@@ -508,7 +508,6 @@ module Vector {
       // this should iterate over a range, and pad the extra with 'pad'
       // so that the last iteration is a full vector
       for i in arr.domain by numElts {
-        writeln("i: ", i);
         if i+numElts <= arr.domain.high then
           yield this.load(arr, i, aligned=aligned);
         else {

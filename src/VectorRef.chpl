@@ -52,7 +52,7 @@ module VectorRef {
     //
     inline operator+(lhs: ?lhsType,
                      rhs: ?rhsType): returnTypeForOpTypes(lhsType, rhsType)
-    where returnTypeForOpTypes(lhsType, rhsType) != nothing do
+    where validTypesForOp(lhsType, rhsType) do
       return getValue(lhs) + getValue(rhs);
     inline operator+=(ref lhs: vectorRef(?), rhs: ?rhsType)
       where validEqOperatorTypes(lhs.type, rhsType) do
@@ -60,7 +60,7 @@ module VectorRef {
 
     inline operator-(lhs: ?lhsType,
                      rhs: ?rhsType): returnTypeForOpTypes(lhsType, rhsType)
-    where returnTypeForOpTypes(lhsType, rhsType) != nothing do
+    where validTypesForOp(lhsType, rhsType) do
       return getValue(lhs) + getValue(rhs);
     inline operator-=(ref lhs: vectorRef(?), rhs: ?rhsType)
       where validEqOperatorTypes(lhs.type, rhsType) do
@@ -68,7 +68,7 @@ module VectorRef {
 
     inline operator*(lhs: ?lhsType,
                      rhs: ?rhsType): returnTypeForOpTypes(lhsType, rhsType)
-    where returnTypeForOpTypes(lhsType, rhsType) != nothing do
+    where validTypesForOp(lhsType, rhsType) do
       return getValue(lhs) * getValue(rhs);
     inline operator*=(ref lhs: vectorRef(?), rhs: ?rhsType)
     where validEqOperatorTypes(lhs.type, rhsType) do
@@ -110,6 +110,17 @@ module VectorRef {
   private inline proc getRef(ref x: vectorRef(?)) ref: x.vectorType do
     return x.vec;
   private inline proc getRef(ref x: ?t) ref: t do return x;
+
+  private proc validTypesForOp(type lhsType, type rhsType) param: bool {
+    if returnTypeForOpTypes(lhsType, rhsType) == nothing {
+      return false;
+    }
+    // both types cannot be 'vector', because that's already defined elsewhere
+    if isSubtype(lhsType, vector) && isSubtype(rhsType, vector) {
+      return false;
+    }
+    return true;
+  }
 
   private proc returnTypeForOpTypes(type lhsType, type rhsType) type {
     // one of the types can be scalar, but not both

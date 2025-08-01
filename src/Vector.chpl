@@ -727,5 +727,6 @@ module Vector {
     === END OPERATORS ===
   */
   include module Operators;
+  public use Operators;
 
 }

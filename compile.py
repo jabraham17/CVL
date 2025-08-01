@@ -66,7 +66,7 @@ class Project:
     def get_tests(self):
         tests = self.data["brick"].get("tests", "")
         return tests
-    
+
     def generate_ops(self):
         sys.path.insert(0, str(self.workspace / "util"))
         from generate_ops import Parser, BinaryOpsGenerator
@@ -117,16 +117,20 @@ def main():
         action="store_const",
         default=project.get_compopts,
     )
-    a.add_argument("--list-tests",
-                   const=project.get_tests,
-                   dest="action",
-                   action="store_const",
-                   default=project.get_compopts)
-    a.add_argument('--generate-ops',
-                   const=project.generate_ops,
-                   dest="action",
-                   action="store_const",
-                   default=project.get_compopts)
+    a.add_argument(
+        "--list-tests",
+        const=project.get_tests,
+        dest="action",
+        action="store_const",
+        default=project.get_compopts,
+    )
+    a.add_argument(
+        "--generate-ops",
+        const=project.generate_ops,
+        dest="action",
+        action="store_const",
+        default=project.get_compopts,
+    )
     args = a.parse_args()
 
     res = args.action()

@@ -52,7 +52,6 @@ class OperatorType(Enum):
     COMPARE_GT = (">", "cmpGt", False)
     COMPARE_GE = (">=", "cmpGe", False)
 
-
     def is_assign_op(self):
         return self.is_assign
 
@@ -100,8 +99,9 @@ class Expression:
     def __str__(self):
         if self.is_unary():
             return f"{self.operator.value} {self.lhs_type.value}"
-        return f"{self.lhs_type.value} {self.operator.value} {self.rhs_type.value}"
-
+        return (
+            f"{self.lhs_type.value} {self.operator.value} {self.rhs_type.value}"
+        )
 
 
 class Parser:
@@ -138,7 +138,9 @@ class Parser:
         if start == -1 or end == -1:
             raise ValueError("Operator section not found in the file.")
 
-        operator_section = content[start + len(self.START_OPS_MARKER) : end].strip()
+        operator_section = content[
+            start + len(self.START_OPS_MARKER) : end
+        ].strip()
 
         lines = operator_section.splitlines()
         expressions = self._parse_lines(lines)
@@ -210,7 +212,6 @@ module @@{mod_name} {
 """
 
 
-
 class BinaryOpsGenerator:
 
     class Template(string.Template):
@@ -254,7 +255,7 @@ class BinaryOpsGenerator:
             output.append(self._convert_expression(expr))
 
         contents = "".join(output)
-        contents = textwrap.indent(contents, " "*2)
+        contents = textwrap.indent(contents, " " * 2)
 
         mod_name = output_file.stem
         module_content = self.Template(MODULE_TEMPLATE).substitute(
@@ -268,11 +269,21 @@ class BinaryOpsGenerator:
 
 if __name__ == "__main__":
 
-    parser = ap.ArgumentParser(description="Generate binary operations for vectors.")
-    parser.add_argument(
-        "--filename", type=Path, help="Path to the Chapel file containing operator definitions.", required=True
+    parser = ap.ArgumentParser(
+        description="Generate binary operations for vectors."
     )
-    parser.add_argument("--output", type=Path, help="Path to save the generated code.", required=True)
+    parser.add_argument(
+        "--filename",
+        type=Path,
+        help="Path to the Chapel file containing operator definitions.",
+        required=True,
+    )
+    parser.add_argument(
+        "--output",
+        type=Path,
+        help="Path to save the generated code.",
+        required=True,
+    )
     args = parser.parse_args()
 
     expressions = Parser(args.filename).parse()

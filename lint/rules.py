@@ -7,7 +7,7 @@ from rule_types import BasicRuleResult, AdvancedRuleResult
 from fixits import Fixit, Edit
 import sys
 import os
-import typing
+
 
 def log(*args, **kwargs):
     print(*args, **kwargs, file=sys.stderr)
@@ -15,7 +15,8 @@ def log(*args, **kwargs):
 
 def is_in_lib(node: chapel.AstNode) -> bool:
     """
-    These are custom checks for this library that should only be applied to library code, not tests
+    These are custom checks for this library that should only be applied to
+    library code, not tests
     """
     workspace = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     folders = ["src"]
@@ -28,24 +29,22 @@ def is_in_lib(node: chapel.AstNode) -> bool:
     return False
 
 
-
 def rules(driver):
 
     @driver.basic_rule(chapel.Function)
     def OnlyInlineProc(_, node: chapel.Function):
         """
-        functions should be inline or resolved at compile time (type or param intent)
+        functions should be inline or resolved at compile time(type/param)
         extern functions and init/deinit cannot be inlined
         serialize is ok
         """
         if not is_in_lib(node):
             return True
 
-        is_compile_time =  node.return_intent() in ("param", "type")
+        is_compile_time = node.return_intent() in ("param", "type")
         is_extern = node.linkage() in ("extern", "export")
         is_serialize = node.name() in ("serialize", "deserialize")
         return node.is_inline() or is_compile_time or is_extern or is_serialize
-
 
     @driver.fixit(OnlyInlineProc)
     def FixOnlyInlineProc(context: chapel.Context, result: BasicRuleResult):
@@ -53,34 +52,37 @@ def rules(driver):
         loc = result.node.location()
         proc_text = chapel.range_to_text(loc, lines)
         proc_text = "inline " + proc_text
-        # TODO: this works only because private/public is not included in location
+        # TODO: this works only because private/public is
+        # not included in location
         fixit = Fixit.build(Edit.build(loc, proc_text))
         fixit.description = "Add inline keyword"
         return fixit
 
-
     @driver.basic_rule(chapel.Function)
     def NoInlineAtCompileTime(_, node: chapel.Function):
         """
-        compile time functions (type/param return intent) do not need to be marked inline
+        compile time functions (type/param return intent) do not need to be
+        marked inline
         """
         if not is_in_lib(node):
             return True
 
-        is_compile_time =  node.return_intent() in ("param", "type")
+        is_compile_time = node.return_intent() in ("param", "type")
         return not (node.is_inline() and is_compile_time)
 
     @driver.fixit(NoInlineAtCompileTime)
-    def FixNoInlineAtCompileTime(context: chapel.Context, result: BasicRuleResult):
+    def FixNoInlineAtCompileTime(
+        context: chapel.Context, result: BasicRuleResult
+    ):
         lines = chapel.get_file_lines(context, result.node)
         loc = result.node.location()
         proc_text = chapel.range_to_text(loc, lines)
         proc_text = proc_text.removeprefix("inline").lstrip()
-        # TODO: this works only because private/public is not included in location
+        # TODO: this works only because private/public is
+        # not included in location
         fixit = Fixit.build(Edit.build(loc, proc_text))
         fixit.description = "Remove inline keyword"
         return fixit
-
 
     @driver.basic_rule(chapel.Function)
     def MissingSynchronizationFree(_, node: chapel.Function):
@@ -95,7 +97,9 @@ def rules(driver):
         return not (is_extern and not has_pragma)
 
     @driver.fixit(MissingSynchronizationFree)
-    def FixMissingSynchronizationFree(context: chapel.Context, result: BasicRuleResult):
+    def FixMissingSynchronizationFree(
+        context: chapel.Context, result: BasicRuleResult
+    ):
         lines = chapel.get_file_lines(context, result.node)
         loc: chapel.Location = result.node.location()
         proc_text = chapel.range_to_text(loc, lines)
@@ -126,9 +130,7 @@ def rules(driver):
         is_this = node.name() == "this" and parent_func.is_method()
         is_serialize = parent_func.name() in ("serialize", "deserialize")
 
-
         has_where = parent_func.where_clause() is not None
-
 
         return is_type or type_expr or is_this or is_serialize or has_where
 
@@ -150,10 +152,19 @@ def rules(driver):
         is_serialize = node.name() in ("serialize", "deserialize")
         is_cast = node.name() == ":"
 
-        rets_and_yields = chapel.each_matching(node, set([chapel.Return, chapel.Yield]))
+        rets_and_yields = chapel.each_matching(
+            node, set([chapel.Return, chapel.Yield])
+        )
         has_no_ret = len(list(rets_and_yields)) == 0
 
-        return ret_type or returns_type or is_init_deinit or is_serialize or has_no_ret or is_cast
+        return (
+            ret_type
+            or returns_type
+            or is_init_deinit
+            or is_serialize
+            or has_no_ret
+            or is_cast
+        )
 
     @driver.basic_rule(chapel.Use)
     def NoUnqualifiedImport(_, node: chapel.Use):
@@ -173,14 +184,18 @@ def rules(driver):
             return True
 
         # if any of the vis clauses don't have 'only' as the limitation, warn
-        return all([vis.limitation_kind() == 'only' for vis in node.visibility_clauses()])
-
-
+        return all(
+            [
+                vis.limitation_kind() == "only"
+                for vis in node.visibility_clauses()
+            ]
+        )
 
     @driver.advanced_rule
     def TypeOnlyRecord(_, root: chapel.AstNode):
         """
-        if a record is marked '@lint.typeOnly', there should only be type fields, type methods, param fields, and param methods
+        if a record is marked '@lint.typeOnly', there should only be type
+        fields, type methods, param fields, and param methods
         """
         # TODO: this lint rule does not handle secondary methods
         if isinstance(root, chapel.Comment):
@@ -204,9 +219,17 @@ def rules(driver):
                     this = nd.this_formal()
                     assert isinstance(this, chapel.Formal)
                     if this.intent() not in ("type", "param"):
-                        type_fixit = Fixit.build(Edit.build(nd.name_location(), "type {}".format(nd.name())))
+                        type_fixit = Fixit.build(
+                            Edit.build(
+                                nd.name_location(), "type {}".format(nd.name())
+                            )
+                        )
                         type_fixit.description = "Make this a type method"
-                        param_fixit = Fixit.build(Edit.build(nd.name_location(), "param {}".format(nd.name())))
+                        param_fixit = Fixit.build(
+                            Edit.build(
+                                nd.name_location(), "param {}".format(nd.name())
+                            )
+                        )
                         param_fixit.description = "Make this a param method"
                         fixits = [type_fixit, param_fixit]
                         yield AdvancedRuleResult(nd, anchor=nd, fixits=fixits)
@@ -214,4 +237,3 @@ def rules(driver):
                     assert nd.is_field()
                     if nd.intent() not in ("type", "param"):
                         yield nd
-

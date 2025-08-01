@@ -63,13 +63,12 @@ proc moveMask(of, type eltType, param numElts: int) {
   of.writeln("moveMask functions for ", eltType:string, " ", numElts);
 
   for param i in 0..#numElts {
-    var c = a.type.zeros();
-    c.set(i, a.type.ones()[i]);
+    var c = vector(eltType, numElts).zeros();
+    c.set(i, c.type.ones()[i]);
     of.withSerializer(vecSerializer).writeln("  c: ", toHex(c));
     var mm = c.moveMask();
     of.writef("  c.moveMask(): %@0"+numBits(mm.type):string+"bu\n", mm);
   }
-  of.withSerializer(vecSerializer).writeln("  a: ", a);
 }
 
 

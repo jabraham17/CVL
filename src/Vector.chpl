@@ -130,224 +130,6 @@ module Vector {
       return this:tupType;
     }
 
-    /* VECTOR + VECTOR */
-    inline operator+(x: vector(?eltType, ?numElts), y: x.type): x.type {
-      var result: x.type;
-      result.data = Intrin.add(eltType, numElts, x.data, y.data);
-      return result;
-    }
-    inline operator+=(ref x: vector(?eltType, ?numElts), y: x.type) do
-      x.data = Intrin.add(eltType, numElts, x.data, y.data);
-
-    /* VECTOR + SCALAR */
-    inline operator+(x: vector(?eltType, ?numElts), y: ?scalarType): x.type
-      where isCoercible(scalarType, eltType) {
-      var result: x.type;
-      result.data = Intrin.add(eltType, numElts, x.data,
-                      Intrin.splat(eltType, numElts, y));
-      return result;
-    }
-    inline operator+=(ref x: vector(?eltType, ?numElts), y: ?scalarType)
-      where isCoercible(scalarType, eltType) do
-      x.data = Intrin.add(eltType, numElts, x.data,
-                      Intrin.splat(eltType, numElts, y));
-
-    /* SCALAR + VECTOR */
-    inline operator+(x: ?scalarType, y: vector(?eltType, ?numElts)): y.type
-    where isCoercible(scalarType, eltType) {
-      var result: y.type;
-      result.data = Intrin.add(eltType, numElts,
-                      Intrin.splat(eltType, numElts, x), y.data);
-      return result;
-    }
-
-    /* VECTOR - VECTOR */
-    inline operator-(x: vector(?eltType, ?numElts), y: x.type): x.type {
-      var result: x.type;
-      result.data = Intrin.sub(eltType, numElts, x.data, y.data);
-      return result;
-    }
-    inline operator-=(ref x: vector(?eltType, ?numElts), y: x.type) do
-      x.data = Intrin.sub(eltType, numElts, x.data, y.data);
-
-    /* VECTOR - SCALAR */
-    inline operator-(x: vector(?eltType, ?numElts), y: ?scalarType): x.type
-    where isCoercible(scalarType, eltType) {
-      var result: x.type;
-      result.data = Intrin.sub(eltType, numElts, x.data,
-                      Intrin.splat(eltType, numElts, y));
-      return result;
-    }
-    inline operator-=(ref x: vector(?eltType, ?numElts), y: ?scalarType)
-    where isCoercible(scalarType, eltType) do
-      x.data = Intrin.sub(eltType, numElts, x.data,
-                      Intrin.splat(eltType, numElts, y));
-
-    /* SCALAR - VECTOR */
-    inline operator-(x: ?scalarType, y: vector(?eltType, ?numElts)): y.type
-    where isCoercible(scalarType, eltType) {
-      var result: y.type;
-      result.data = Intrin.sub(eltType, numElts,
-                      Intrin.splat(eltType, numElts, x), y.data);
-      return result;
-    }
-
-    inline operator-(x: vector(?eltType, ?numElts)): x.type {
-      var result: x.type;
-      result.data = Intrin.neg(eltType, numElts, x.data);
-      return result;
-    }
-
-    /* VECTOR * VECTOR */
-    inline operator*(x: vector(?eltType, ?numElts), y: x.type): x.type {
-      var result: x.type;
-      result.data = Intrin.mul(eltType, numElts, x.data, y.data);
-      return result;
-    }
-    inline operator*=(ref x:vector(?eltType, ?numElts), y: x.type) do
-      x.data = Intrin.mul(eltType, numElts, x.data, y.data);
-
-    /* VECTOR * SCALAR */
-    inline operator*(x: vector(?eltType, ?numElts), y: ?scalarType): x.type
-    where isCoercible(scalarType, eltType) {
-      var result: x.type;
-      result.data = Intrin.mul(eltType, numElts, x.data,
-                      Intrin.splat(eltType, numElts, y));
-      return result;
-    }
-    inline operator*=(ref x: vector(?eltType, ?numElts), y: ?scalarType)
-    where isCoercible(scalarType, eltType) do
-      x.data = Intrin.mul(eltType, numElts, x.data,
-                      Intrin.splat(eltType, numElts, y));
-
-    /* SCALAR * VECTOR */
-    inline operator*(x: ?scalarType, y: vector(?eltType, ?numElts)): y.type
-    where isCoercible(scalarType, eltType) {
-      var result: y.type;
-      result.data = Intrin.mul(eltType, numElts,
-                      Intrin.splat(eltType, numElts, x), y.data);
-      return result;
-    }
-
-    /* VECTOR / VECTOR */
-    inline operator/(x: vector(?eltType, ?numElts), y: x.type): x.type {
-      var result: x.type;
-      result.data = Intrin.div(eltType, numElts, x.data, y.data);
-      return result;
-    }
-    inline operator/=(ref x: vector(?eltType, ?numElts), y: x.type) do
-      x.data = Intrin.div(eltType, numElts, x.data, y.data);
-
-    /* VECTOR / SCALAR */
-    inline operator/(x: vector(?eltType, ?numElts), y: ?scalarType): x.type
-    where isCoercible(scalarType, eltType) {
-      var result: x.type;
-      result.data = Intrin.div(eltType, numElts, x.data,
-                      Intrin.splat(eltType, numElts, y));
-      return result;
-    }
-    inline operator/=(ref x: vector(?eltType, ?numElts), y: ?scalarType)
-    where isCoercible(scalarType, eltType) do
-      x.data = Intrin.div(eltType, numElts, x.data,
-                      Intrin.splat(eltType, numElts, y));
-
-    /* SCALAR / VECTOR */
-    inline operator/(x: ?scalarType, y: vector(?eltType, ?numElts)): y.type
-    where isCoercible(scalarType, eltType) {
-      var result: y.type;
-      result.data = Intrin.div(eltType, numElts,
-                      Intrin.splat(eltType, numElts, x), y.data);
-      return result;
-    }
-
-
-    /* VECTOR & VECTOR */
-    inline operator&(x: vector(?eltType, ?numElts), y: x.type): x.type {
-      var result: x.type;
-      result.data = Intrin.and(eltType, numElts, x.data, y.data);
-      return result;
-    }
-    inline operator&=(ref x: vector(?eltType, ?numElts), y: x.type) do
-      x.data = Intrin.and(eltType, numElts, x.data, y.data);
-    /* VECTOR & SCALAR */
-    inline operator&(x: vector(?eltType, ?numElts), y: ?scalarType): x.type
-    where isCoercible(scalarType, eltType) {
-      var result: x.type;
-      result.data = Intrin.and(eltType, numElts, x.data,
-                      Intrin.splat(eltType, numElts, y));
-      return result;
-    }
-    inline operator&=(ref x: vector(?eltType, ?numElts), y: ?scalarType)
-    where isCoercible(scalarType, eltType) do
-      x.data = Intrin.and(eltType, numElts, x.data,
-                      Intrin.splat(eltType, numElts, y));
-    /* SCALAR & VECTOR */
-    inline operator&(x: ?scalarType, y: vector(?eltType, ?numElts)): y.type
-    where isCoercible(scalarType, eltType) {
-      var result: y.type;
-      result.data = Intrin.and(eltType, numElts,
-                      Intrin.splat(eltType, numElts, x), y.data);
-      return result;
-    }
-
-    /* VECTOR | VECTOR */
-    inline operator|(x: vector(?eltType, ?numElts), y: x.type): x.type {
-      var result: x.type;
-      result.data = Intrin.or(eltType, numElts, x.data, y.data);
-      return result;
-    }
-    inline operator|=(ref x: vector(?eltType, ?numElts), y: x.type) do
-      x.data = Intrin.or(eltType, numElts, x.data, y.data);
-    /* VECTOR | SCALAR */
-    inline operator|(x: vector(?eltType, ?numElts), y: ?scalarType): x.type
-    where isCoercible(scalarType, eltType) {
-      var result: x.type;
-      result.data = Intrin.or(eltType, numElts, x.data,
-                      Intrin.splat(eltType, numElts, y));
-      return result;
-    }
-    inline operator|=(ref x: vector(?eltType, ?numElts), y: ?scalarType)
-    where isCoercible(scalarType, eltType) do
-      x.data = Intrin.or(eltType, numElts, x.data,
-                      Intrin.splat(eltType, numElts, y));
-    /* SCALAR | VECTOR */
-    inline operator|(x: ?scalarType, y: vector(?eltType, ?numElts)): y.type
-    where isCoercible(scalarType, eltType) {
-      var result: y.type;
-      result.data = Intrin.or(eltType, numElts,
-                      Intrin.splat(eltType, numElts, x), y.data);
-      return result;
-    }
-
-    /* VECTOR ^ VECTOR */
-    inline operator^(x: vector(?eltType, ?numElts), y: x.type): x.type {
-      var result: x.type;
-      result.data = Intrin.xor(eltType, numElts, x.data, y.data);
-      return result;
-    }
-    inline operator^=(ref x: vector(?eltType, ?numElts), y: x.type) do
-      x.data = Intrin.xor(eltType, numElts, x.data, y.data);
-    /* VECTOR ^ SCALAR */
-    inline operator^(x: vector(?eltType, ?numElts), y: ?scalarType): x.type
-    where isCoercible(scalarType, eltType) {
-      var result: x.type;
-      result.data = Intrin.xor(eltType, numElts, x.data,
-                      Intrin.splat(eltType, numElts, y));
-      return result;
-    }
-    inline operator^=(ref x: vector(?eltType, ?numElts), y: ?scalarType)
-    where isCoercible(scalarType, eltType) do
-      x.data = Intrin.xor(eltType, numElts, x.data,
-                      Intrin.splat(eltType, numElts, y));
-    /* SCALAR ^ VECTOR */
-    inline operator^(x: ?scalarType, y: vector(?eltType, ?numElts)): y.type
-    where isCoercible(scalarType, eltType) {
-      var result: y.type;
-      result.data = Intrin.xor(eltType, numElts,
-                      Intrin.splat(eltType, numElts, x), y.data);
-      return result;
-    }
-
     /* ~VECTOR */
     inline operator~(x: vector(?eltType, ?numElts)): x.type {
       var result: x.type;
@@ -356,106 +138,6 @@ module Vector {
     }
 
     // TODO shifts
-
-
-    /* VECTOR == VECTOR */
-    inline operator==(x: vector(?eltType, ?numElts), y: x.type): x.type {
-      var result: x.type;
-      result.data = Intrin.cmpEq(eltType, numElts, x.data, y.data);
-      return result;
-    }
-    /* VECTOR == SCALAR */
-    inline operator==(x: vector(?eltType, ?), y: ?scalarType): x.type
-    where isCoercible(scalarType, eltType) {
-      return x == (y:x.type);
-    }
-    /* SCALAR == VECTOR */
-    inline operator==(x: ?scalarType, y: vector(?eltType, ?)): y.type
-    where isCoercible(scalarType, eltType) {
-      return (x:y.type) == y;
-    }
-    /* VECTOR != VECTOR */
-    inline operator!=(x: vector(?eltType, ?numElts), y: x.type): x.type {
-      var result: x.type;
-      result.data = Intrin.cmpNe(eltType, numElts, x.data, y.data);
-      return result;
-    }
-    /* VECTOR != SCALAR */
-    inline operator!=(x: vector(?eltType, ?), y: ?scalarType): x.type
-    where isCoercible(scalarType, eltType) {
-      return x != (y:x.type);
-    }
-    /* SCALAR != VECTOR */
-    inline operator!=(x: ?scalarType, y: vector(?eltType, ?)): y.type
-    where isCoercible(scalarType, eltType) {
-      return (x:y.type) != y;
-    }
-    /* VECTOR < VECTOR */
-    inline operator<(x: vector(?eltType, ?numElts), y: x.type): x.type {
-      var result: x.type;
-      result.data = Intrin.cmpLt(eltType, numElts, x.data, y.data);
-      return result;
-    }
-    /* VECTOR < SCALAR */
-    inline operator<(x: vector(?eltType, ?), y: ?scalarType): x.type
-    where isCoercible(scalarType, eltType) {
-      return x < (y:x.type);
-    }
-    /* SCALAR < VECTOR */
-    inline operator<(x: ?scalarType, y: vector(?eltType, ?)): y.type
-    where isCoercible(scalarType, eltType) {
-      return (x:y.type) < y;
-    }
-    /* VECTOR <= VECTOR */
-    inline operator<=(x: vector(?eltType, ?numElts), y: x.type): x.type {
-      var result: x.type;
-      result.data = Intrin.cmpLe(eltType, numElts, x.data, y.data);
-      return result;
-    }
-    /* VECTOR <= SCALAR */
-    inline operator<=(x: vector(?eltType, ?), y: ?scalarType): x.type
-    where isCoercible(scalarType, eltType) {
-      return x <= (y:x.type);
-    }
-    /* SCALAR <= VECTOR */
-    inline operator<=(x: ?scalarType, y: vector(?eltType, ?)): y.type
-    where isCoercible(scalarType, eltType) {
-      return (x:y.type) <= y;
-    }
-    /* VECTOR > VECTOR */
-    inline operator>(x: vector(?eltType, ?numElts), y: x.type): x.type {
-      var result: x.type;
-      result.data = Intrin.cmpGt(eltType, numElts, x.data, y.data);
-      return result;
-    }
-    /* VECTOR > SCALAR */
-    inline operator>(x: vector(?eltType, ?), y: ?scalarType): x.type
-    where isCoercible(scalarType, eltType) {
-      return x > (y:x.type);
-    }
-    /* SCALAR > VECTOR */
-    inline operator>(x: ?scalarType, y: vector(?eltType, ?)): y.type
-    where isCoercible(scalarType, eltType) {
-      return (x:y.type) > y;
-    }
-    /* VECTOR >= VECTOR */
-    inline operator>=(x: vector(?eltType, ?numElts), y: x.type): x.type {
-      var result: x.type;
-      result.data = Intrin.cmpGe(eltType, numElts, x.data, y.data);
-      return result;
-    }
-    /* VECTOR >= SCALAR */
-    inline operator>=(x: vector(?eltType, ?), y: ?scalarType): x.type
-    where isCoercible(scalarType, eltType) {
-      return x >= (y:x.type);
-    }
-    /* SCALAR >= VECTOR */
-    inline operator>=(x: ?scalarType, y: vector(?eltType, ?)): y.type
-    where isCoercible(scalarType, eltType) {
-      return (x:y.type) >= y;
-    }
-
-
 
     inline proc ref set(value)
     where isCoercible(value.type, eltType) do
@@ -1019,4 +701,31 @@ module Vector {
     result.data = Intrin.abs(eltType, numElts, x.data);
     return result;
   }
+
+
+  /*
+    === START OPERATORS ===
+
+    V + V  ;  V += V  ;  V + S  ;  V += S  ;  S + V
+    V - V  ;  V -= V  ;  V - S  ;  V -= S  ;  S - V
+    V * V  ;  V *= V  ;  V * S  ;  V *= S  ;  S * V
+    V / V  ;  V /= V  ;  V / S  ;  V /= S  ;  S / V
+    NEG V
+
+    V & V  ;  V &= V  ;  V & S  ;  V &= S  ;  S & V
+    V | V  ;  V |= V  ;  V | S  ; V |= S  ;  S | V
+    V ^ V  ;  V ^= V  ;  V ^ S  ;  V ^= S  ;  S ^ V
+    ~ V
+
+    V == V  ;  V == S  ;  S == V
+    V != V  ;  V != S  ;  S != V
+    V < V  ;  V < S  ;  S < V
+    V <= V  ;  V <= S  ;  S <= V
+    V > V  ;  V > S  ;  S > V
+    V >= V  ;  V >= S  ;  S >= V
+
+    === END OPERATORS ===
+  */
+  include module Operators;
+
 }

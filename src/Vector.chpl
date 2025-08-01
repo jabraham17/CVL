@@ -405,7 +405,9 @@ module Vector {
 
 
 
-    inline proc type indices(rng: range(?)): range(strides=strideKind.positive) do
+    inline proc type indices(
+      rng: range(?)
+    ): range(strides=strideKind.positive) do
       return rng by numElts;
     inline proc type indices(dom: domain(?)): domain(?) do
       return dom by numElts;

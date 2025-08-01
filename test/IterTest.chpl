@@ -98,19 +98,28 @@ proc testBasicIterators(of, type eltType, param numElts: int) {
 
 
 proc testBasicIteratorsReal128(test: borrowed Test) throws {
-  manage new outputManager(test, getGoodFile(".basic-real-128")) as actualOutput {
+  manage new outputManager(
+    test,
+    getGoodFile(".basic-real-128")
+  ) as actualOutput {
     testBasicIterators(actualOutput, real(32), 4);
     testBasicIterators(actualOutput, real(64), 2);
   }
 }
 proc testBasicIteratorsReal256(test: borrowed Test) throws {
-  manage new outputManager(test, getGoodFile(".basic-real-256")) as actualOutput {
+  manage new outputManager(
+    test,
+    getGoodFile(".basic-real-256")
+  ) as actualOutput {
     testBasicIterators(actualOutput, real(32), 8);
     testBasicIterators(actualOutput, real(64), 4);
   }
 }
 proc testBasicIteratorsInt128(test: borrowed Test) throws {
-  manage new outputManager(test, getGoodFile(".basic-int-128")) as actualOutput {
+  manage new outputManager(
+    test,
+    getGoodFile(".basic-int-128")
+  ) as actualOutput {
     testBasicIterators(actualOutput, int(8), 16);
     testBasicIterators(actualOutput, int(16), 8);
     testBasicIterators(actualOutput, int(32), 4);
@@ -118,7 +127,10 @@ proc testBasicIteratorsInt128(test: borrowed Test) throws {
   }
 }
 proc testBasicIteratorsInt256(test: borrowed Test) throws {
-  manage new outputManager(test, getGoodFile(".basic-int-256")) as actualOutput {
+  manage new outputManager(
+    test,
+    getGoodFile(".basic-int-256")
+  ) as actualOutput {
     testBasicIterators(actualOutput, int(8), 32);
     testBasicIterators(actualOutput, int(16), 16);
     testBasicIterators(actualOutput, int(32), 8);
@@ -145,19 +157,28 @@ proc testJaggedIterator(of, type eltType, param numElts: int) {
 }
 
 proc testJaggedIteratorReal128(test: borrowed Test) throws {
-  manage new outputManager(test, getGoodFile(".jagged-real-128")) as actualOutput {
+  manage new outputManager(
+    test,
+    getGoodFile(".jagged-real-128")
+  ) as actualOutput {
     testJaggedIterator(actualOutput, real(32), 4);
     testJaggedIterator(actualOutput, real(64), 2);
   }
 }
 proc testJaggedIteratorReal256(test: borrowed Test) throws {
-  manage new outputManager(test, getGoodFile(".jagged-real-256")) as actualOutput {
+  manage new outputManager(
+    test,
+    getGoodFile(".jagged-real-256")
+  ) as actualOutput {
     testJaggedIterator(actualOutput, real(32), 8);
     testJaggedIterator(actualOutput, real(64), 4);
   }
 }
 proc testJaggedIteratorInt128(test: borrowed Test) throws {
-  manage new outputManager(test, getGoodFile(".jagged-int-128")) as actualOutput {
+  manage new outputManager(
+    test,
+    getGoodFile(".jagged-int-128")
+  ) as actualOutput {
     testJaggedIterator(actualOutput, int(8), 16);
     testJaggedIterator(actualOutput, int(16), 8);
     testJaggedIterator(actualOutput, int(32), 4);
@@ -165,7 +186,10 @@ proc testJaggedIteratorInt128(test: borrowed Test) throws {
   }
 }
 proc testJaggedIteratorInt256(test: borrowed Test) throws {
-  manage new outputManager(test, getGoodFile(".jagged-int-256")) as actualOutput {
+  manage new outputManager(
+    test,
+    getGoodFile(".jagged-int-256")
+  ) as actualOutput {
     testJaggedIterator(actualOutput, int(8), 32);
     testJaggedIterator(actualOutput, int(16), 16);
     testJaggedIterator(actualOutput, int(32), 8);

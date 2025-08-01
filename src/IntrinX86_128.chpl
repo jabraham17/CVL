@@ -636,7 +636,10 @@ module IntrinX86_128 {
     }
 
     // TODO: moveMask?
-    inline proc type moveMask(x: vecType): c_int do return 0;
+    inline proc type moveMask(x: vecType): c_int {
+      x;
+      return 0;
+    }
 
     inline proc type min(x: vecType, y: vecType): vecType {
       if canResolveTypeMethod(extensionType, "min", x, y) then

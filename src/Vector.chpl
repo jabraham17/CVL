@@ -130,13 +130,6 @@ module Vector {
       return this:tupType;
     }
 
-    /* ~VECTOR */
-    inline operator~(x: vector(?eltType, ?numElts)): x.type {
-      var result: x.type;
-      result.data = Intrin.not(eltType, numElts, x.data);
-      return result;
-    }
-
     // TODO shifts
 
     inline proc ref set(value)

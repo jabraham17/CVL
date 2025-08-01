@@ -66,6 +66,14 @@ class Project:
     def get_tests(self):
         tests = self.data["brick"].get("tests", "")
         return tests
+    
+    def generate_ops(self):
+        sys.path.insert(0, str(self.workspace / "util"))
+        from generate_ops import Parser, BinaryOpsGenerator
+
+        expressions = Parser(self.workspace / "src" / "Vector.chpl").parse()
+        generator = BinaryOpsGenerator(expressions)
+        generator.generate(self.workspace / "src" / "Vector" / "Operators.chpl")
 
 
 def main():
@@ -114,9 +122,16 @@ def main():
                    dest="action",
                    action="store_const",
                    default=project.get_compopts)
+    a.add_argument('--generate-ops',
+                   const=project.generate_ops,
+                   dest="action",
+                   action="store_const",
+                   default=project.get_compopts)
     args = a.parse_args()
 
-    print(args.action())
+    res = args.action()
+    if res:
+        print(res)
 
 
 if __name__ == "__main__":

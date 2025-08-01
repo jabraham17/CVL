@@ -55,19 +55,17 @@ proc isAll(of, type eltType, param numElts: int) {
 
   {
     var r = a.isZero();
-    var mm = a.moveMask();
     of.writeln("  a.isZero(): ", r);
-    of.writef("  a.moveMask(): %@0xu\n", mm);
   }
 
   {
-    var temp = b;
-    temp.set(0, 0:temp.eltType);
-    var r = temp.isZero();
-    var mm = temp.moveMask();
-    of.withSerializer(vecSerializer).writeln("  temp: ", temp);
-    of.writeln("  temp.isZero(): ", r);
-    of.writef("  temp.moveMask(): %@0xu\n", mm);
+    for param i in 0..#numElts {
+      var c = a.type.zeros();
+      c.set(i, a.type.ones()[i]);
+      of.withSerializer(vecSerializer).writeln("  c: ", toHex(c));
+      var mm = c.moveMask();
+      of.writef("  c.moveMask(): %@0"+numBits(mm.type):string+"bu\n", mm);
+    }
   }
 
 }

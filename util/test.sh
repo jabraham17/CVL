@@ -3,7 +3,7 @@
 PROJECT_DIR=$(cd $(dirname $0); cd ..; pwd)
 
 (cd $PROJECT_DIR && set -x && \
-  mason test --show -- \
+  mason test --show --keep-binary -- \
     $@ \
     $(./compile.py --arch-compopts) \
   | tee $PROJECT_DIR/test.log \

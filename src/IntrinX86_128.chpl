@@ -510,16 +510,13 @@ module IntrinX86_128 {
       if canResolveTypeMethod(extensionType, "andNot", x, y) then
         return extensionType.andNot(x, y);
       else {
-        if vecType.numBits == 128 {
+        if isIntegralType(laneType) {
+          param name = mmPrefix + "_andnot_si" + vecType.numBits:string;
           pragma "fn synchronization free"
-          extern proc _mm_andnot_si128(x: vecType, y: vecType): vecType;
-          return _mm_andnot_si128(x, y);
-        } else if vecType.numBits == 256 {
-          pragma "fn synchronization free"
-          extern proc _mm256_andnot_si256(x: vecType, y: vecType): vecType;
-          return _mm256_andnot_si256(x, y);
+          extern name proc setZero(x: vecType, y: vecType): vecType;
+          return setZero();
         } else {
-          compilerError("unsupported vector size");
+          return doSimpleOp(mmPrefix+"_andnot_", x, y);
         }
       }
     }
@@ -630,7 +627,10 @@ module IntrinX86_128 {
           extern name proc setZero(): vecType;
           return setZero();
         } else {
-          return doSimpleOp(mmPrefix+"_setzero_", vecType);
+          param name = mmPrefix + "_setzero_" + vecType.typeSuffix;
+          pragma "fn synchronization free"
+          extern name proc setZero(): vecType;
+          return setZero();
         }
       }
     }

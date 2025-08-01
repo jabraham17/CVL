@@ -6,19 +6,31 @@ module Operators {
   use Vector only vector;
   import Intrin;
 
-  /* VECTOR + VECTOR */
+  /*
+    Implements ``VECTOR + VECTOR``
+
+    See :proc:`Intrin.add` for the intrinsic used.
+  */
   inline operator+(x: vector(?eltType, ?numElts), y: x.type): x.type {
     var result: x.type;
     result.data = Intrin.add(eltType, numElts, x.data, y.data);
     return result;
   }
 
-  /* VECTOR += VECTOR */
+  /*
+    Implements ``VECTOR += VECTOR``
+
+    See :proc:`Intrin.add` for the intrinsic used.
+  */
   inline operator+=(x: vector(?eltType, ?numElts), y: x.type): x.type {
     x.data = Intrin.add(eltType, numElts, x.data, y.data);
   }
 
-  /* VECTOR + SCALAR */
+  /*
+    Implements ``VECTOR + SCALAR``
+
+    See :proc:`Intrin.add` for the intrinsic used.
+  */
   inline operator+(x: vector(?eltType, ?numElts), y: ?scalarType): x.type
     where isCoercible(scalarType, eltType) {
     var result: x.type;
@@ -27,14 +39,22 @@ module Operators {
     return result;
   }
 
-  /* VECTOR += SCALAR */
+  /*
+    Implements ``VECTOR += SCALAR``
+
+    See :proc:`Intrin.add` for the intrinsic used.
+  */
   inline operator+=(x: vector(?eltType, ?numElts), y: ?scalarType): x.type
     where isCoercible(scalarType, eltType) {
     x.data = Intrin.add(eltType, numElts, x.data,
                     Intrin.splat(eltType, numElts, y));
   }
 
-  /* SCALAR + VECTOR */
+  /*
+    Implements ``SCALAR + VECTOR``
+
+    See :proc:`Intrin.add` for the intrinsic used.
+  */
   inline operator+(x: ?scalarType, y: vector(?eltType, ?numElts)): y.type
     where isCoercible(scalarType, eltType) {
     var result: y.type;
@@ -43,19 +63,31 @@ module Operators {
     return result;
   }
 
-  /* VECTOR - VECTOR */
+  /*
+    Implements ``VECTOR - VECTOR``
+
+    See :proc:`Intrin.sub` for the intrinsic used.
+  */
   inline operator-(x: vector(?eltType, ?numElts), y: x.type): x.type {
     var result: x.type;
     result.data = Intrin.sub(eltType, numElts, x.data, y.data);
     return result;
   }
 
-  /* VECTOR -= VECTOR */
+  /*
+    Implements ``VECTOR -= VECTOR``
+
+    See :proc:`Intrin.sub` for the intrinsic used.
+  */
   inline operator-=(x: vector(?eltType, ?numElts), y: x.type): x.type {
     x.data = Intrin.sub(eltType, numElts, x.data, y.data);
   }
 
-  /* VECTOR - SCALAR */
+  /*
+    Implements ``VECTOR - SCALAR``
+
+    See :proc:`Intrin.sub` for the intrinsic used.
+  */
   inline operator-(x: vector(?eltType, ?numElts), y: ?scalarType): x.type
     where isCoercible(scalarType, eltType) {
     var result: x.type;
@@ -64,14 +96,22 @@ module Operators {
     return result;
   }
 
-  /* VECTOR -= SCALAR */
+  /*
+    Implements ``VECTOR -= SCALAR``
+
+    See :proc:`Intrin.sub` for the intrinsic used.
+  */
   inline operator-=(x: vector(?eltType, ?numElts), y: ?scalarType): x.type
     where isCoercible(scalarType, eltType) {
     x.data = Intrin.sub(eltType, numElts, x.data,
                     Intrin.splat(eltType, numElts, y));
   }
 
-  /* SCALAR - VECTOR */
+  /*
+    Implements ``SCALAR - VECTOR``
+
+    See :proc:`Intrin.sub` for the intrinsic used.
+  */
   inline operator-(x: ?scalarType, y: vector(?eltType, ?numElts)): y.type
     where isCoercible(scalarType, eltType) {
     var result: y.type;
@@ -80,19 +120,31 @@ module Operators {
     return result;
   }
 
-  /* VECTOR * VECTOR */
+  /*
+    Implements ``VECTOR * VECTOR``
+
+    See :proc:`Intrin.mul` for the intrinsic used.
+  */
   inline operator*(x: vector(?eltType, ?numElts), y: x.type): x.type {
     var result: x.type;
     result.data = Intrin.mul(eltType, numElts, x.data, y.data);
     return result;
   }
 
-  /* VECTOR *= VECTOR */
+  /*
+    Implements ``VECTOR *= VECTOR``
+
+    See :proc:`Intrin.mul` for the intrinsic used.
+  */
   inline operator*=(x: vector(?eltType, ?numElts), y: x.type): x.type {
     x.data = Intrin.mul(eltType, numElts, x.data, y.data);
   }
 
-  /* VECTOR * SCALAR */
+  /*
+    Implements ``VECTOR * SCALAR``
+
+    See :proc:`Intrin.mul` for the intrinsic used.
+  */
   inline operator*(x: vector(?eltType, ?numElts), y: ?scalarType): x.type
     where isCoercible(scalarType, eltType) {
     var result: x.type;
@@ -101,14 +153,22 @@ module Operators {
     return result;
   }
 
-  /* VECTOR *= SCALAR */
+  /*
+    Implements ``VECTOR *= SCALAR``
+
+    See :proc:`Intrin.mul` for the intrinsic used.
+  */
   inline operator*=(x: vector(?eltType, ?numElts), y: ?scalarType): x.type
     where isCoercible(scalarType, eltType) {
     x.data = Intrin.mul(eltType, numElts, x.data,
                     Intrin.splat(eltType, numElts, y));
   }
 
-  /* SCALAR * VECTOR */
+  /*
+    Implements ``SCALAR * VECTOR``
+
+    See :proc:`Intrin.mul` for the intrinsic used.
+  */
   inline operator*(x: ?scalarType, y: vector(?eltType, ?numElts)): y.type
     where isCoercible(scalarType, eltType) {
     var result: y.type;
@@ -117,19 +177,31 @@ module Operators {
     return result;
   }
 
-  /* VECTOR / VECTOR */
+  /*
+    Implements ``VECTOR / VECTOR``
+
+    See :proc:`Intrin.div` for the intrinsic used.
+  */
   inline operator/(x: vector(?eltType, ?numElts), y: x.type): x.type {
     var result: x.type;
     result.data = Intrin.div(eltType, numElts, x.data, y.data);
     return result;
   }
 
-  /* VECTOR /= VECTOR */
+  /*
+    Implements ``VECTOR /= VECTOR``
+
+    See :proc:`Intrin.div` for the intrinsic used.
+  */
   inline operator/=(x: vector(?eltType, ?numElts), y: x.type): x.type {
     x.data = Intrin.div(eltType, numElts, x.data, y.data);
   }
 
-  /* VECTOR / SCALAR */
+  /*
+    Implements ``VECTOR / SCALAR``
+
+    See :proc:`Intrin.div` for the intrinsic used.
+  */
   inline operator/(x: vector(?eltType, ?numElts), y: ?scalarType): x.type
     where isCoercible(scalarType, eltType) {
     var result: x.type;
@@ -138,14 +210,22 @@ module Operators {
     return result;
   }
 
-  /* VECTOR /= SCALAR */
+  /*
+    Implements ``VECTOR /= SCALAR``
+
+    See :proc:`Intrin.div` for the intrinsic used.
+  */
   inline operator/=(x: vector(?eltType, ?numElts), y: ?scalarType): x.type
     where isCoercible(scalarType, eltType) {
     x.data = Intrin.div(eltType, numElts, x.data,
                     Intrin.splat(eltType, numElts, y));
   }
 
-  /* SCALAR / VECTOR */
+  /*
+    Implements ``SCALAR / VECTOR``
+
+    See :proc:`Intrin.div` for the intrinsic used.
+  */
   inline operator/(x: ?scalarType, y: vector(?eltType, ?numElts)): y.type
     where isCoercible(scalarType, eltType) {
     var result: y.type;
@@ -154,26 +234,42 @@ module Operators {
     return result;
   }
 
-  /* - VECTOR */
+  /*
+    Implements ``VECTOR -``
+
+    See :proc:`Intrin.neg` for the intrinsic used.
+  */
   inline operator-(x: vector(?eltType, ?numElts)): x.type {
     var result: x.type;
     result.data = Intrin.neg(eltType, numElts, x.data);
     return result;
   }
 
-  /* VECTOR & VECTOR */
+  /*
+    Implements ``VECTOR & VECTOR``
+
+    See :proc:`Intrin.and` for the intrinsic used.
+  */
   inline operator&(x: vector(?eltType, ?numElts), y: x.type): x.type {
     var result: x.type;
     result.data = Intrin.and(eltType, numElts, x.data, y.data);
     return result;
   }
 
-  /* VECTOR &= VECTOR */
+  /*
+    Implements ``VECTOR &= VECTOR``
+
+    See :proc:`Intrin.and` for the intrinsic used.
+  */
   inline operator&=(x: vector(?eltType, ?numElts), y: x.type): x.type {
     x.data = Intrin.and(eltType, numElts, x.data, y.data);
   }
 
-  /* VECTOR & SCALAR */
+  /*
+    Implements ``VECTOR & SCALAR``
+
+    See :proc:`Intrin.and` for the intrinsic used.
+  */
   inline operator&(x: vector(?eltType, ?numElts), y: ?scalarType): x.type
     where isCoercible(scalarType, eltType) {
     var result: x.type;
@@ -182,14 +278,22 @@ module Operators {
     return result;
   }
 
-  /* VECTOR &= SCALAR */
+  /*
+    Implements ``VECTOR &= SCALAR``
+
+    See :proc:`Intrin.and` for the intrinsic used.
+  */
   inline operator&=(x: vector(?eltType, ?numElts), y: ?scalarType): x.type
     where isCoercible(scalarType, eltType) {
     x.data = Intrin.and(eltType, numElts, x.data,
                     Intrin.splat(eltType, numElts, y));
   }
 
-  /* SCALAR & VECTOR */
+  /*
+    Implements ``SCALAR & VECTOR``
+
+    See :proc:`Intrin.and` for the intrinsic used.
+  */
   inline operator&(x: ?scalarType, y: vector(?eltType, ?numElts)): y.type
     where isCoercible(scalarType, eltType) {
     var result: y.type;
@@ -198,19 +302,31 @@ module Operators {
     return result;
   }
 
-  /* VECTOR | VECTOR */
+  /*
+    Implements ``VECTOR | VECTOR``
+
+    See :proc:`Intrin.or` for the intrinsic used.
+  */
   inline operator|(x: vector(?eltType, ?numElts), y: x.type): x.type {
     var result: x.type;
     result.data = Intrin.or(eltType, numElts, x.data, y.data);
     return result;
   }
 
-  /* VECTOR |= VECTOR */
+  /*
+    Implements ``VECTOR |= VECTOR``
+
+    See :proc:`Intrin.or` for the intrinsic used.
+  */
   inline operator|=(x: vector(?eltType, ?numElts), y: x.type): x.type {
     x.data = Intrin.or(eltType, numElts, x.data, y.data);
   }
 
-  /* VECTOR | SCALAR */
+  /*
+    Implements ``VECTOR | SCALAR``
+
+    See :proc:`Intrin.or` for the intrinsic used.
+  */
   inline operator|(x: vector(?eltType, ?numElts), y: ?scalarType): x.type
     where isCoercible(scalarType, eltType) {
     var result: x.type;
@@ -219,14 +335,22 @@ module Operators {
     return result;
   }
 
-  /* VECTOR |= SCALAR */
+  /*
+    Implements ``VECTOR |= SCALAR``
+
+    See :proc:`Intrin.or` for the intrinsic used.
+  */
   inline operator|=(x: vector(?eltType, ?numElts), y: ?scalarType): x.type
     where isCoercible(scalarType, eltType) {
     x.data = Intrin.or(eltType, numElts, x.data,
                     Intrin.splat(eltType, numElts, y));
   }
 
-  /* SCALAR | VECTOR */
+  /*
+    Implements ``SCALAR | VECTOR``
+
+    See :proc:`Intrin.or` for the intrinsic used.
+  */
   inline operator|(x: ?scalarType, y: vector(?eltType, ?numElts)): y.type
     where isCoercible(scalarType, eltType) {
     var result: y.type;
@@ -235,19 +359,31 @@ module Operators {
     return result;
   }
 
-  /* VECTOR ^ VECTOR */
+  /*
+    Implements ``VECTOR ^ VECTOR``
+
+    See :proc:`Intrin.xor` for the intrinsic used.
+  */
   inline operator^(x: vector(?eltType, ?numElts), y: x.type): x.type {
     var result: x.type;
     result.data = Intrin.xor(eltType, numElts, x.data, y.data);
     return result;
   }
 
-  /* VECTOR ^= VECTOR */
+  /*
+    Implements ``VECTOR ^= VECTOR``
+
+    See :proc:`Intrin.xor` for the intrinsic used.
+  */
   inline operator^=(x: vector(?eltType, ?numElts), y: x.type): x.type {
     x.data = Intrin.xor(eltType, numElts, x.data, y.data);
   }
 
-  /* VECTOR ^ SCALAR */
+  /*
+    Implements ``VECTOR ^ SCALAR``
+
+    See :proc:`Intrin.xor` for the intrinsic used.
+  */
   inline operator^(x: vector(?eltType, ?numElts), y: ?scalarType): x.type
     where isCoercible(scalarType, eltType) {
     var result: x.type;
@@ -256,14 +392,22 @@ module Operators {
     return result;
   }
 
-  /* VECTOR ^= SCALAR */
+  /*
+    Implements ``VECTOR ^= SCALAR``
+
+    See :proc:`Intrin.xor` for the intrinsic used.
+  */
   inline operator^=(x: vector(?eltType, ?numElts), y: ?scalarType): x.type
     where isCoercible(scalarType, eltType) {
     x.data = Intrin.xor(eltType, numElts, x.data,
                     Intrin.splat(eltType, numElts, y));
   }
 
-  /* SCALAR ^ VECTOR */
+  /*
+    Implements ``SCALAR ^ VECTOR``
+
+    See :proc:`Intrin.xor` for the intrinsic used.
+  */
   inline operator^(x: ?scalarType, y: vector(?eltType, ?numElts)): y.type
     where isCoercible(scalarType, eltType) {
     var result: y.type;
@@ -272,21 +416,33 @@ module Operators {
     return result;
   }
 
-  /* ~ VECTOR */
+  /*
+    Implements ``VECTOR ~``
+
+    See :proc:`Intrin.not` for the intrinsic used.
+  */
   inline operator~(x: vector(?eltType, ?numElts)): x.type {
     var result: x.type;
     result.data = Intrin.not(eltType, numElts, x.data);
     return result;
   }
 
-  /* VECTOR == VECTOR */
+  /*
+    Implements ``VECTOR == VECTOR``
+
+    See :proc:`Intrin.cmpEq` for the intrinsic used.
+  */
   inline operator==(x: vector(?eltType, ?numElts), y: x.type): x.type {
     var result: x.type;
     result.data = Intrin.cmpEq(eltType, numElts, x.data, y.data);
     return result;
   }
 
-  /* VECTOR == SCALAR */
+  /*
+    Implements ``VECTOR == SCALAR``
+
+    See :proc:`Intrin.cmpEq` for the intrinsic used.
+  */
   inline operator==(x: vector(?eltType, ?numElts), y: ?scalarType): x.type
     where isCoercible(scalarType, eltType) {
     var result: x.type;
@@ -295,7 +451,11 @@ module Operators {
     return result;
   }
 
-  /* SCALAR == VECTOR */
+  /*
+    Implements ``SCALAR == VECTOR``
+
+    See :proc:`Intrin.cmpEq` for the intrinsic used.
+  */
   inline operator==(x: ?scalarType, y: vector(?eltType, ?numElts)): y.type
     where isCoercible(scalarType, eltType) {
     var result: y.type;
@@ -304,14 +464,22 @@ module Operators {
     return result;
   }
 
-  /* VECTOR != VECTOR */
+  /*
+    Implements ``VECTOR != VECTOR``
+
+    See :proc:`Intrin.cmpNe` for the intrinsic used.
+  */
   inline operator!=(x: vector(?eltType, ?numElts), y: x.type): x.type {
     var result: x.type;
     result.data = Intrin.cmpNe(eltType, numElts, x.data, y.data);
     return result;
   }
 
-  /* VECTOR != SCALAR */
+  /*
+    Implements ``VECTOR != SCALAR``
+
+    See :proc:`Intrin.cmpNe` for the intrinsic used.
+  */
   inline operator!=(x: vector(?eltType, ?numElts), y: ?scalarType): x.type
     where isCoercible(scalarType, eltType) {
     var result: x.type;
@@ -320,7 +488,11 @@ module Operators {
     return result;
   }
 
-  /* SCALAR != VECTOR */
+  /*
+    Implements ``SCALAR != VECTOR``
+
+    See :proc:`Intrin.cmpNe` for the intrinsic used.
+  */
   inline operator!=(x: ?scalarType, y: vector(?eltType, ?numElts)): y.type
     where isCoercible(scalarType, eltType) {
     var result: y.type;
@@ -329,14 +501,22 @@ module Operators {
     return result;
   }
 
-  /* VECTOR < VECTOR */
+  /*
+    Implements ``VECTOR < VECTOR``
+
+    See :proc:`Intrin.cmpLt` for the intrinsic used.
+  */
   inline operator<(x: vector(?eltType, ?numElts), y: x.type): x.type {
     var result: x.type;
     result.data = Intrin.cmpLt(eltType, numElts, x.data, y.data);
     return result;
   }
 
-  /* VECTOR < SCALAR */
+  /*
+    Implements ``VECTOR < SCALAR``
+
+    See :proc:`Intrin.cmpLt` for the intrinsic used.
+  */
   inline operator<(x: vector(?eltType, ?numElts), y: ?scalarType): x.type
     where isCoercible(scalarType, eltType) {
     var result: x.type;
@@ -345,7 +525,11 @@ module Operators {
     return result;
   }
 
-  /* SCALAR < VECTOR */
+  /*
+    Implements ``SCALAR < VECTOR``
+
+    See :proc:`Intrin.cmpLt` for the intrinsic used.
+  */
   inline operator<(x: ?scalarType, y: vector(?eltType, ?numElts)): y.type
     where isCoercible(scalarType, eltType) {
     var result: y.type;
@@ -354,14 +538,22 @@ module Operators {
     return result;
   }
 
-  /* VECTOR <= VECTOR */
+  /*
+    Implements ``VECTOR <= VECTOR``
+
+    See :proc:`Intrin.cmpLe` for the intrinsic used.
+  */
   inline operator<=(x: vector(?eltType, ?numElts), y: x.type): x.type {
     var result: x.type;
     result.data = Intrin.cmpLe(eltType, numElts, x.data, y.data);
     return result;
   }
 
-  /* VECTOR <= SCALAR */
+  /*
+    Implements ``VECTOR <= SCALAR``
+
+    See :proc:`Intrin.cmpLe` for the intrinsic used.
+  */
   inline operator<=(x: vector(?eltType, ?numElts), y: ?scalarType): x.type
     where isCoercible(scalarType, eltType) {
     var result: x.type;
@@ -370,7 +562,11 @@ module Operators {
     return result;
   }
 
-  /* SCALAR <= VECTOR */
+  /*
+    Implements ``SCALAR <= VECTOR``
+
+    See :proc:`Intrin.cmpLe` for the intrinsic used.
+  */
   inline operator<=(x: ?scalarType, y: vector(?eltType, ?numElts)): y.type
     where isCoercible(scalarType, eltType) {
     var result: y.type;
@@ -379,14 +575,22 @@ module Operators {
     return result;
   }
 
-  /* VECTOR > VECTOR */
+  /*
+    Implements ``VECTOR > VECTOR``
+
+    See :proc:`Intrin.cmpGt` for the intrinsic used.
+  */
   inline operator>(x: vector(?eltType, ?numElts), y: x.type): x.type {
     var result: x.type;
     result.data = Intrin.cmpGt(eltType, numElts, x.data, y.data);
     return result;
   }
 
-  /* VECTOR > SCALAR */
+  /*
+    Implements ``VECTOR > SCALAR``
+
+    See :proc:`Intrin.cmpGt` for the intrinsic used.
+  */
   inline operator>(x: vector(?eltType, ?numElts), y: ?scalarType): x.type
     where isCoercible(scalarType, eltType) {
     var result: x.type;
@@ -395,7 +599,11 @@ module Operators {
     return result;
   }
 
-  /* SCALAR > VECTOR */
+  /*
+    Implements ``SCALAR > VECTOR``
+
+    See :proc:`Intrin.cmpGt` for the intrinsic used.
+  */
   inline operator>(x: ?scalarType, y: vector(?eltType, ?numElts)): y.type
     where isCoercible(scalarType, eltType) {
     var result: y.type;
@@ -404,14 +612,22 @@ module Operators {
     return result;
   }
 
-  /* VECTOR >= VECTOR */
+  /*
+    Implements ``VECTOR >= VECTOR``
+
+    See :proc:`Intrin.cmpGe` for the intrinsic used.
+  */
   inline operator>=(x: vector(?eltType, ?numElts), y: x.type): x.type {
     var result: x.type;
     result.data = Intrin.cmpGe(eltType, numElts, x.data, y.data);
     return result;
   }
 
-  /* VECTOR >= SCALAR */
+  /*
+    Implements ``VECTOR >= SCALAR``
+
+    See :proc:`Intrin.cmpGe` for the intrinsic used.
+  */
   inline operator>=(x: vector(?eltType, ?numElts), y: ?scalarType): x.type
     where isCoercible(scalarType, eltType) {
     var result: x.type;
@@ -420,7 +636,11 @@ module Operators {
     return result;
   }
 
-  /* SCALAR >= VECTOR */
+  /*
+    Implements ``SCALAR >= VECTOR``
+
+    See :proc:`Intrin.cmpGe` for the intrinsic used.
+  */
   inline operator>=(x: ?scalarType, y: vector(?eltType, ?numElts)): y.type
     where isCoercible(scalarType, eltType) {
     var result: y.type;

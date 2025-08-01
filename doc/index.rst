@@ -8,6 +8,8 @@ Core Library
    :maxdepth: 1
 
    CVL
+   Vector
+   VectorRef
 
 Intrinsics
 **********

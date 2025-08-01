@@ -148,7 +148,11 @@ class Parser:
 
 
 VECTOR_X_VECTOR_TEMPLATE = """
-/* VECTOR @@{op} VECTOR */
+/*
+  Implements ``VECTOR @@{op} VECTOR``
+
+  See :proc:`Intrin.@@{intrin}` for the intrinsic used.
+*/
 inline operator@@{op}(x: vector(?eltType, ?numElts), y: x.type): x.type {
   var result: x.type;
   result.data = Intrin.@@{intrin}(eltType, numElts, x.data, y.data);
@@ -156,13 +160,21 @@ inline operator@@{op}(x: vector(?eltType, ?numElts), y: x.type): x.type {
 }
 """
 VECTOR_X_VECTOR_ASSIGN_TEMPLATE = """
-/* VECTOR @@{op} VECTOR */
+/*
+  Implements ``VECTOR @@{op} VECTOR``
+
+  See :proc:`Intrin.@@{intrin}` for the intrinsic used.
+*/
 inline operator@@{op}(x: vector(?eltType, ?numElts), y: x.type): x.type {
   x.data = Intrin.@@{intrin}(eltType, numElts, x.data, y.data);
 }
 """
 VECTOR_X_SCALAR_TEMPLATE = """
-/* VECTOR @@{op} SCALAR */
+/*
+  Implements ``VECTOR @@{op} SCALAR``
+
+  See :proc:`Intrin.@@{intrin}` for the intrinsic used.
+*/
 inline operator@@{op}(x: vector(?eltType, ?numElts), y: ?scalarType): x.type
   where isCoercible(scalarType, eltType) {
   var result: x.type;
@@ -172,7 +184,11 @@ inline operator@@{op}(x: vector(?eltType, ?numElts), y: ?scalarType): x.type
 }
 """
 VECTOR_X_SCALAR_ASSIGN_TEMPLATE = """
-/* VECTOR @@{op} SCALAR */
+/*
+  Implements ``VECTOR @@{op} SCALAR``
+
+  See :proc:`Intrin.@@{intrin}` for the intrinsic used.
+*/
 inline operator@@{op}(x: vector(?eltType, ?numElts), y: ?scalarType): x.type
   where isCoercible(scalarType, eltType) {
   x.data = Intrin.@@{intrin}(eltType, numElts, x.data,
@@ -180,7 +196,11 @@ inline operator@@{op}(x: vector(?eltType, ?numElts), y: ?scalarType): x.type
 }
 """
 SCALAR_X_VECTOR_TEMPLATE = """
-/* SCALAR @@{op} VECTOR */
+/*
+  Implements ``SCALAR @@{op} VECTOR``
+
+  See :proc:`Intrin.@@{intrin}` for the intrinsic used.
+*/
 inline operator@@{op}(x: ?scalarType, y: vector(?eltType, ?numElts)): y.type
   where isCoercible(scalarType, eltType) {
   var result: y.type;
@@ -190,7 +210,11 @@ inline operator@@{op}(x: ?scalarType, y: vector(?eltType, ?numElts)): y.type
 }
 """
 VECTOR_UNARY_TEMPLATE = """
-/* @@{op} VECTOR */
+/*
+  Implements ``VECTOR @@{op}``
+
+  See :proc:`Intrin.@@{intrin}` for the intrinsic used.
+*/
 inline operator@@{op}(x: vector(?eltType, ?numElts)): x.type {
   var result: x.type;
   result.data = Intrin.@@{intrin}(eltType, numElts, x.data);

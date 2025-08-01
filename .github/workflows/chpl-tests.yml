@@ -93,14 +93,14 @@ jobs:
         run: |
           ./util/testAll.sh
 
-  chplcheck:
+  lint:
     runs-on: ubuntu-latest
     container:
       image: chapel/chapel:${{ inputs.chapel_version }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Run chplcheck
+      - name: Run lints
         run: |
           ./util/lint.sh
 

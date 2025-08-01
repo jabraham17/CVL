@@ -606,6 +606,7 @@ module IntrinX86_128 {
       if canResolveTypeMethod(extensionType, "isAllZeros", x) then
         return extensionType.isAllZeros(x);
       else {
+        import CVL;
         if CVL.implementationWarnings then
           compilerWarning("isAllZeros is unimplemented");
         return false;
@@ -627,7 +628,7 @@ module IntrinX86_128 {
           param name = mmPrefix + "_setzero_si" + vecType.numBits:string;
           pragma "fn synchronization free"
           extern name proc setZero(): vecType;
-          return setZero(x, y);
+          return setZero();
         } else {
           return doSimpleOp(mmPrefix+"_setzero_", vecType);
         }

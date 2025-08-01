@@ -940,8 +940,13 @@ module IntrinX86_128 {
 
     inline proc type set(xs...): vecType {
       pragma "fn synchronization free"
-      extern proc _mm_set_epi64x(x: int(64), y: int(64)): vec64x2i;
+      extern proc _mm_set_epi64x(x: laneType, y: laneType): vecType;
       return _mm_set_epi64x(xs(1), xs(0));
+    }
+    inline proc type splat(x: laneType): vecType {
+      pragma "fn synchronization free"
+      extern proc _mm_set1_epi64x(x: laneType): vecType;
+      return _mm_set1_epi64x(x);
     }
 
     inline proc type swapLowHigh(x: vecType): vecType do

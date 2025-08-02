@@ -93,7 +93,7 @@ proc toHex(tup) {
     var bits = if isRealType(elmType)
                 then tup[i].transmute(uint(numBits(elmType)))
                 else tup[i]:uint(numBits(elmType));
-    res[i] = "%@0xu".format(bits);
+    res[i] = ("%@0"+(numBits(elmType)/4):string+"xu").format(bits);
   }
   return res;
 }

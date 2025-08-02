@@ -83,3 +83,20 @@ record outputManager: contextManager {
     compareOutput(test, goodFile.reader(), actualFile.reader());
   }
 }
+
+
+proc toHex(tup) {
+  use IO;
+  var res: tup.size * string;
+  for param i in 0..<tup.size {
+    type elmType = tup[i].type;
+    var bits = if isRealType(elmType)
+                then tup[i].transmute(uint(numBits(elmType)))
+                else tup[i]:uint(numBits(elmType));
+    res[i] = "%@0xu".format(bits);
+  }
+  return res;
+}
+proc toHex(x: vector(?)) {
+  return toHex(x.toTuple());
+}

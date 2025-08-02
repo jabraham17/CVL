@@ -85,7 +85,7 @@ record outputManager: contextManager {
 }
 
 
-proc toHex(tup) {
+proc toHex(tup, param filled = false) {
   use IO;
   var res: tup.size * string;
   for param i in 0..<tup.size {
@@ -93,7 +93,9 @@ proc toHex(tup) {
     var bits = if isRealType(elmType)
                 then tup[i].transmute(uint(numBits(elmType)))
                 else tup[i]:uint(numBits(elmType));
-    res[i] = ("%@0"+(numBits(elmType)/4):string+"xu").format(bits);
+    param fmt = if filled then "%@0"+(numBits(elmType)/4):string+"xu"
+                          else "%@0xu";
+    res[i] = fmt.format(bits);
   }
   return res;
 }

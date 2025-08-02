@@ -31,7 +31,8 @@ proc gatherTest(of, type eltType, param numElts: int) {
 
   proc testInnerMasked(indices, ref src, startIdx, mask) {
     of.writeln("  gathering at ", startIdx,
-               ", masked by ", mask, ", using indices: ", indices);
+               ", masked by ", toHex(mask,filled=true),
+               ", using indices: ", indices);
     of.withSerializer(vecSerializer).writeln("  original vector: ", src);
     src.gather(arr, startIdx, indices, mask=mask);
     of.withSerializer(vecSerializer).writeln("  gathered vector: ", src);

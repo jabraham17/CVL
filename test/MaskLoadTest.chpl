@@ -22,7 +22,7 @@ proc maskLoadTest(of, type eltType, param numElts: int) {
   var mask = new vector(int(numBits(eltType)), numElts, 0);
   mask = ~mask;
   mask.set(mask.numElts-1, 0:mask.eltType); // last lane is zero
-  of.withSerializer(vecSerializer).writeln("  mask: ", mask);
+  of.withSerializer(vecSerializer).writeln("  mask: ", toHex(mask,filled=true));
 
   for i in a.type.indices(arr.domain) {
     a.loadMasked(mask, arr, i);

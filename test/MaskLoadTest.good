@@ -13,7 +13,7 @@ maskLoadTest for real(32) 4
   vec at    16: 16.00, 17.00, 18.00,  0.00
 maskLoadTest for real(64) 2
   arr:  0.00  1.00  2.00  3.00  4.00  5.00  6.00  7.00  8.00
-  mask: -4616189618054758400,     0
+  mask:    -1,     0
   vec at     0:  0.00,  0.00
   vec at     0:  0.00,  0.00
   vec at     2:  2.00,  0.00
@@ -65,7 +65,7 @@ maskLoadTest for int(32) 4
   vec at    16:    16,    17,    18,     0
 maskLoadTest for int(64) 2
   arr:     0     1     2     3     4     5     6     7     8
-  mask: -4616189618054758400,     0
+  mask:    -1,     0
   vec at     0:     0,     0
   vec at     0:     0,     0
   vec at     2:     2,     0

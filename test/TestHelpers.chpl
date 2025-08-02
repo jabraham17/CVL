@@ -100,6 +100,6 @@ proc toHex(tup, param filled = false) {
   return res;
 }
 import Vector.vector;
-proc toHex(x: vector(?)) {
-  return toHex(x.toTuple());
+proc toHex(x: vector(?), param filled = false) {
+  return toHex(x.toTuple(), filled=filled);
 }

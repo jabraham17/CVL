@@ -103,6 +103,14 @@ module IntrinX86_256 {
   proc type vec32x8u.isIntegralVector param : bool do return true;
   proc type vec64x4u.isIntegralVector param : bool do return true;  
 
+  proc type vec32x8r.bitMaskType type do return vec32x8i;
+  proc type vec64x4r.bitMaskType type do return vec64x4i;
+  proc type vec8x32i.bitMaskType type do return vec8x32i;
+  proc type vec16x16i.bitMaskType type do return vec16x16i;
+  proc type vec32x8i.bitMaskType type do return vec32x8i;
+  proc type vec64x4i.bitMaskType type do return vec64x4i;
+  
+
   proc halfVectorHW(type t) type {
          if t == vec32x8r  then return vec32x4r;
     else if t == vec64x4r  then return vec64x2r;

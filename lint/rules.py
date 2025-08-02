@@ -157,14 +157,16 @@ def rules(driver):
         )
         has_no_ret = len(list(rets_and_yields)) == 0
 
-        return (
+        if not (
             ret_type
             or returns_type
             or is_init_deinit
             or is_serialize
             or has_no_ret
             or is_cast
-        )
+        ):
+            return BasicRuleResult(node, ignorable=True)
+        return True
 
     @driver.basic_rule(chapel.Use)
     def NoUnqualifiedImport(_, node: chapel.Use):

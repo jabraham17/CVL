@@ -97,6 +97,7 @@ proc toHex(tup) {
   }
   return res;
 }
+import Vector.vector;
 proc toHex(x: vector(?)) {
   return toHex(x.toTuple());
 }

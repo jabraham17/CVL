@@ -18,7 +18,7 @@
   static inline __m128d op##128##pd(__m128d x, __m128d y) { \
     return _mm_cmp_pd(x, y, cmp); \
   } \
-  static inline __m256 op##256##p(__m256 x, __m256 y) { \
+  static inline __m256 op##256##ps(__m256 x, __m256 y) { \
     return _mm256_cmp_ps(x, y, cmp); \
   } \
   static inline __m256d op##256##pd(__m256d x, __m256d y) { \

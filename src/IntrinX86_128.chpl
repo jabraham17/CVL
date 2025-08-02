@@ -84,6 +84,17 @@ module IntrinX86_128 {
   proc type vec32x4u.typeStr param : string do return vecTypeStr(this);
   proc type vec64x2u.typeStr param : string do return vecTypeStr(this);
 
+  proc type vec32x4r.isIntegralVector param : bool do return false;
+  proc type vec64x2r.isIntegralVector param : bool do return false;
+  proc type vec8x16i.isIntegralVector param : bool do return true;
+  proc type vec16x8i.isIntegralVector param : bool do return true;
+  proc type vec32x4i.isIntegralVector param : bool do return true;
+  proc type vec64x2i.isIntegralVector param : bool do return true;
+  proc type vec8x16u.isIntegralVector param : bool do return true;
+  proc type vec16x8u.isIntegralVector param : bool do return true;
+  proc type vec32x4u.isIntegralVector param : bool do return true;
+  proc type vec64x2u.isIntegralVector param : bool do return true;
+
   /*
     Call a simple op on a vector type
     x must be a vector type and also specifies the return type
@@ -476,10 +487,14 @@ module IntrinX86_128 {
       if canResolveTypeMethod(extensionType, "or", x, y) then
         return extensionType.or(x, y);
       else {
-        // // TODO: use proper xor for ps, pd, and si128, and si256
-        pragma "fn synchronization free"
-        extern proc _mm_or_si128(x: vecType, y: vecType): vecType;
-        return _mm_or_si128(x, y);
+        if isIntegralType(laneType) {
+          param name = mmPrefix + "_or_si" + vecType.numBits:string;
+          pragma "fn synchronization free"
+          extern name proc mmOr(x: vecType, y: vecType): vecType;
+          return mmOr(x, y);
+        } else {
+          return doSimpleOp(mmPrefix+"_or_", x, y);
+        }
       }
     }
     inline proc type xor(x: vecType, y: vecType): vecType {
@@ -513,8 +528,8 @@ module IntrinX86_128 {
         if isIntegralType(laneType) {
           param name = mmPrefix + "_andnot_si" + vecType.numBits:string;
           pragma "fn synchronization free"
-          extern name proc setZero(x: vecType, y: vecType): vecType;
-          return setZero();
+          extern name proc andNot(x: vecType, y: vecType): vecType;
+          return andNot(x, y);
         } else {
           return doSimpleOp(mmPrefix+"_andnot_", x, y);
         }
@@ -552,23 +567,28 @@ module IntrinX86_128 {
       else if isRealType(laneType) then
         return doSimpleOp("cmpNe"+vecType.numBits:string, x, y);
       else
-        return doSimpleOp(mmPrefix+"_cmpne_", x, y);
+        return this.not(doSimpleOp(mmPrefix+"_cmpeq_", x, y));
     }
     inline proc type cmpLt(x: vecType, y: vecType): vecType {
       if canResolveTypeMethod(extensionType, "cmpLt", x, y) then
         return extensionType.cmpLt(x, y);
       else if isRealType(laneType) then
         return doSimpleOp("cmpLt"+vecType.numBits:string, x, y);
-      else
-        return doSimpleOp(mmPrefix+"_cmplt_", x, y);
+      else {
+        const gt = this.cmpGt(x, y); 
+        const eq = this.cmpEq(x, y);
+        return this.not(this.or(gt, eq));
+      }
     }
     inline proc type cmpLe(x: vecType, y: vecType): vecType {
       if canResolveTypeMethod(extensionType, "cmpLe", x, y) then
         return extensionType.cmpLe(x, y);
       else if isRealType(laneType) then
         return doSimpleOp("cmpLe"+vecType.numBits:string, x, y);
-      else
-        return doSimpleOp(mmPrefix+"_cmple_", x, y);
+      else {
+        const gt = this.cmpGt(x, y);
+        return this.not(gt);
+      }
     }
     inline proc type cmpGt(x: vecType, y: vecType): vecType {
       if canResolveTypeMethod(extensionType, "cmpGt", x, y) then
@@ -583,19 +603,31 @@ module IntrinX86_128 {
         return extensionType.cmpGe(x, y);
       else if isRealType(laneType) then
         return doSimpleOp("cmpGe"+vecType.numBits:string, x, y);
-      else
-        return doSimpleOp(mmPrefix+"_cmpge_", x, y);
+      else {
+        const eq = this.cmpEq(x, y);
+        return this.or(eq, this.cmpGt(x, y));
+      }
     }
     inline proc type bitSelect(mask: ?, x: vecType, y: vecType): vecType
-      where numBits(mask.type) == numBits(vecType) {
+      where mask.type.numBits == vecType.numBits {
       if canResolveTypeMethod(extensionType, "bitSelect", mask, x, y) then
         return extensionType.bitSelect(mask, x, y);
       else {
-        import CVL;
-        if CVL.implementationWarnings then
-          compilerWarning("bitSelect is unimplemented");
-        // _mm_or_si128(_mm_and_si128(mask, a), _mm_andnot_si128(mask, b));
-        return x; // TODO
+        const a_ = reinterpretCast(mask.type, x);
+        const b_ = reinterpretCast(mask.type, y);
+
+        param or = mmPrefix + "_or_si" + mask.type.numBits:string;
+        param and = mmPrefix + "_and_si" + mask.type.numBits:string;
+        param andnot = mmPrefix + "_andnot_si" + mask.type.numBits:string;
+        pragma "fn synchronization free"
+        extern or proc mmOr(a: mask.type, b: mask.type): mask.type;
+        pragma "fn synchronization free"
+        extern and proc mmAnd(a: mask.type, b: mask.type): mask.type;
+        pragma "fn synchronization free"
+        extern andnot proc mmAndNot(a: mask.type, b: mask.type): mask.type;
+
+        return mmOr(
+          mmAnd(a_, x), mmAndNot(b_, y));
       }
     }
 
@@ -603,10 +635,17 @@ module IntrinX86_128 {
       if canResolveTypeMethod(extensionType, "isAllZeros", x) then
         return extensionType.isAllZeros(x);
       else {
-        import CVL;
-        if CVL.implementationWarnings then
-          compilerWarning("isAllZeros is unimplemented");
-        return false;
+        if isIntegralType(laneType) {
+          param name = mmPrefix + "_testnzc_si" + vecType.numBits:string;
+          pragma "fn synchronization free"
+          extern name proc testZero(x: vecType, y: vecType): bool;
+          return testZero(x, x);
+        } else {
+          param name = mmPrefix + "_testnzc_" + vecType.typeSuffix;
+          pragma "fn synchronization free"
+          extern name proc testZero(x: vecType, y: vecType): bool;
+          return testZero(x, x);
+        }
       }
     }
     inline proc type allOnes(): vecType {
@@ -691,16 +730,22 @@ module IntrinX86_128 {
         return doSimpleOp(mmPrefix+"_fmsub_", x, y, z);
     }
 
-    inline proc type reinterpretCast(type toVecType, x: vecType): toVecType {
-      // TODO
-      // _mm256_castps_si256
-      // return x;
-      import CVL;
-      if CVL.implementationWarnings then
-        compilerWarning("reinterpretCast is unimplemented");
-      x;
-      var y: toVecType;
-      return y;
+    inline proc type reinterpretCast(type toVecType, x: vecType) {
+      param toSuffix =
+        if toVecType.isIntegralVector then "si" + toVecType.numBits:string
+                                      else toVecType.typeSuffix;
+      param fromSuffix =
+        if vecType.isIntegralVector then "si" + vecType.numBits:string
+                                    else vecType.typeSuffix;
+      
+      if toSuffix == fromSuffix then
+        return x;
+      else {
+        param name = mmPrefix + "_cast" + fromSuffix + "_" + toSuffix;
+        pragma "fn synchronization free"
+        extern name proc cast(x: vecType): toVecType;
+        return cast(x);
+      }
     }
 
   }

@@ -91,6 +91,18 @@ module IntrinX86_256 {
   proc type vec32x8u.typeStr  param : string do return vecTypeStr(this);
   proc type vec64x4u.typeStr  param : string do return vecTypeStr(this);
 
+
+  proc type vec32x8r.isIntegralVector param : bool do return false;
+  proc type vec64x4r.isIntegralVector param : bool do return false;
+  proc type vec8x32i.isIntegralVector param : bool do return true;
+  proc type vec16x16i.isIntegralVector param : bool do return true;
+  proc type vec32x8i.isIntegralVector param : bool do return true;
+  proc type vec64x4i.isIntegralVector param : bool do return true;
+  proc type vec8x32u.isIntegralVector param : bool do return true;
+  proc type vec16x16u.isIntegralVector param : bool do return true;
+  proc type vec32x8u.isIntegralVector param : bool do return true;
+  proc type vec64x4u.isIntegralVector param : bool do return true;  
+
   proc halfVectorHW(type t) type {
          if t == vec32x8r  then return vec32x4r;
     else if t == vec64x4r  then return vec64x2r;

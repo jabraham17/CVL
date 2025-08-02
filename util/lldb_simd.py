@@ -3,7 +3,7 @@
 # Author: Bartosz Taudul <wolf@nereid.pl>
 # Made available under the BSD 3-clause license
 
-import lldb
+# import lldb
 
 
 class Simd128Printer:
@@ -1034,13 +1034,16 @@ class Simd512Printer:
 
 def __lldb_init_module(debugger, dict):
     debugger.HandleCommand(
-        "type synthetic add --category simd --python-class lldb_simd.Simd128Printer __m128i"
+        "type synthetic add --category simd "
+        + "--python-class lldb_simd.Simd128Printer __m128i"
     )
     debugger.HandleCommand(
-        "type synthetic add --category simd --python-class lldb_simd.Simd256Printer __m256i"
+        "type synthetic add --category simd "
+        + "--python-class lldb_simd.Simd256Printer __m256i"
     )
     debugger.HandleCommand(
-        "type synthetic add --category simd --python-class lldb_simd.Simd512Printer __m512i"
+        "type synthetic add --category simd "
+        + "--python-class lldb_simd.Simd512Printer __m512i"
     )
     debugger.HandleCommand("type category enable simd")
     debugger.HandleCommand("type category disable VectorTypes")

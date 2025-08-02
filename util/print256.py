@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import lldb
+# import lldb
 
 
 class M256iSynthProvider:
@@ -53,7 +53,8 @@ def __lldb_init_module(debugger, internal_dict):
         "type synthetic add -l print256.M256iSynthProvider __m256i -w simd"
     )
     debugger.HandleCommand(
-        "type summary add __m256i -F print256.M256iSynthProvider.get_summary -w simd"
+        "type summary add __m256i "
+        + "-F print256.M256iSynthProvider.get_summary -w simd"
     )
     debugger.HandleCommand("type category enable simd")
     debugger.HandleCommand("type category disable VectorTypes")

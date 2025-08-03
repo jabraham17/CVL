@@ -12,7 +12,6 @@ type="library"
 compopts="--using-attribute-toolname=lint -sCVL.implementationWarnings=false --no-overload-sets-checks"
 docopts="--using-attribute-toolname=lint"
 
-tests = [
   # "ArrTest.chpl",
   # "BitTest.chpl",
   # "CmpTest.chpl",
@@ -24,9 +23,10 @@ tests = [
   # "MaskLoadTest.chpl",
   # "MathFuncs.chpl",
   # "MathTest.chpl",
+tests = [
   "ShuffleTest.chpl",
-  # "SqrtTest.chpl"
 ]
+  # "SqrtTest.chpl"
 
 [dependencies]
 

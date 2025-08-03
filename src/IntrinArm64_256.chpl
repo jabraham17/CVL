@@ -124,12 +124,13 @@ module IntrinArm64_256 {
 
       type halfType = implVecType.vecType;
       param name =
-        ("extractVector"+vecTypeStr(halfType)+(implVecType.numLanes-1):string);
+        ("extractVector"+vecTypeStr(halfType)+1:string);
       pragma "fn synchronization free"
       extern name proc extractVector(x: halfType, y: halfType): halfType;
       
-      const mask = extractVector(implVecType.allZeros(),
-                                implVecType.allOnes());
+      const mask = implVecType.not(
+                    extractVector(implVecType.allOnes(),
+                                  implVecType.allZeros()));
       const C = implVecType.and(x.lo, mask);
       const D = implVecType.and(x.hi, mask);
 

@@ -46,11 +46,11 @@ class BenchmarkVersion(BaseModel):
     compopts: List[str] = Field(default_factory=list)
     execopts: List[str] = Field(default_factory=list)
 
-    def resolve_compopts(self, cvl_options: Optional[List[str]] = None):
+    def resolve_compopts(self, cvl_options: Optional[str] = None):
         # if CVL_OPTIONS in the compopts, remove it and add the CVL_OPTIONS
         if cvl_options and "CVL_OPTIONS" in self.compopts:
             self.compopts.remove("CVL_OPTIONS")
-            self.compopts.extend(cvl_options)
+            self.compopts.extend(cvl_options.split())
         return self.compopts
 
 

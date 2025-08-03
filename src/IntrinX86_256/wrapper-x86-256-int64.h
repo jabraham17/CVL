@@ -35,4 +35,13 @@ static inline __m256i interleaveUpper_256epi64(__m256i x, __m256i y) {
   return _mm256_permute2f128_si256(t0, t1, 0x31);
 }
 
+static inline __m256i compat_abs_256epi64(__m256i x) {
+  // compare with 0, use the result to conditionally negate the value
+  __m256i zero = _mm256_setzero_si256();
+  __m256i sign_mask = _mm256_cmpgt_epi64(zero, x);
+  __m256i t0 = _mm256_xor_si256(x, sign_mask);
+  __m256i t1 = _mm256_sub_epi64(t0, sign_mask);
+  return t1;
+}
+
 #endif

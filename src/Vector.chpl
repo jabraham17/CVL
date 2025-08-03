@@ -312,11 +312,18 @@ module Vector {
     // TODO: store mask
 
     // TODO: for simplicity, gather requires an index vector of type int(32)
-    @chpldoc.nodoc
     proc type indexVectorType type {
-      type idxEltType = int(32);
-      return vector(idxEltType, ?);
+      type indexType = int(32);
+      if numBits(this) == 256 {
+        return vector(indexType, numBits(this)/numBits(eltType));
+      } else if numBits(this) == 128 {
+        return vector(indexType, 4);
+      } else {
+        compilerError("unknown vector type for indexVectorType: " +
+                      this:string);
+      }
     }
+
     /* gather is not bounds checked */
     inline proc type gather(
       container: ?,

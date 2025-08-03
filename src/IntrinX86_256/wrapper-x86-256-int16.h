@@ -4,7 +4,7 @@
 #include <x86intrin.h>
 
 static inline __m256i swapPairs_256epi16(__m256i x) {
-  return x;
+  return _mm256_shuffle_epi32(x, 0b10110001);
 }
 static inline __m256i swapLowHigh_256epi16(__m256i x) {
   return _mm256_permute2f128_si256(x, x, 1);

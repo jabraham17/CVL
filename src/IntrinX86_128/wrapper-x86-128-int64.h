@@ -26,6 +26,15 @@ static inline __m128i blendLowHigh_epi64(__m128i x, __m128i y) {
   return _mm_blend_epi32(x, y, 0b1100);
 }
 
+static inline __m128i compat_abs_epi64(__m128i x) {
+  // compare with 0, use the result to conditionally negate the value
+  __m128i zero = _mm_setzero_si128();
+  __m128i sign_mask = _mm_cmpgt_epi64(zero, x);
+  __m128i t0 = _mm_xor_si128(x, sign_mask);
+  __m128i t1 = _mm_sub_epi64(t0, sign_mask);
+  return t1;
+}
+
 #undef LANES
 
 #endif

@@ -18,8 +18,6 @@ proc gatherTest(of, type eltType, param numElts: int) {
 
   type VT = vector(eltType, numElts);
 
-  param nIndices = numBits(VT)/numBits(int(32));
-
   proc testInner(indices, ref src, startIdx) {
     of.writeln("  gathering at ", startIdx, " using indices: ", indices);
     of.withSerializer(vecSerializer).writeln("  original vector: ", src);
@@ -41,8 +39,8 @@ proc gatherTest(of, type eltType, param numElts: int) {
 
 
   {
-    var indices = new vector(int(32), nIndices);
-    for param i in 0..#nIndices do indices.set(i, i:int(32));
+    var indices = new VT.indexVectorType();
+    for param i in 0..#indices.numElts do indices.set(i, i:int(32));
 
     var a = new VT();
     testInner(indices, a, 0);
@@ -54,8 +52,8 @@ proc gatherTest(of, type eltType, param numElts: int) {
   }
 
   {
-    var indices = new vector(int(32), nIndices);
-    for param i in 0..#nIndices do indices.set(i, (i+i):int(32));
+    var indices = new VT.indexVectorType();
+    for param i in 0..#indices.numElts do indices.set(i, (i+i):int(32));
 
     var a = new VT();
     testInner(indices, a, 0);

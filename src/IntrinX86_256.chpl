@@ -536,6 +536,28 @@ module IntrinX86_256 {
       return base.add(base.mul(x, y), z);
     inline proc type fmsub(x: vecType, y: vecType, z: vecType): vecType do
       return base.sub(base.mul(x, y), z);
+
+    inline proc type max(x: vecType, y: vecType): vecType {
+      pragma "fn synchronization free"
+      extern proc _mm256_cmpgt_epi64(x: vecType, y: vecType): vecType;
+      pragma "fn synchronization free"
+      extern proc _mm256_blendv_epi8(x:vecType,
+                                     y:vecType, mask:vecType):vecType;
+      const mask = _mm256_cmpgt_epi64(x, y);
+      return _mm256_blendv_epi8(y, x, mask);
+    }
+    inline proc type min(x: vecType, y: vecType): vecType {
+      pragma "fn synchronization free"
+      extern proc _mm256_cmpgt_epi64(x: vecType, y: vecType): vecType;
+      pragma "fn synchronization free"
+      extern proc _mm256_blendv_epi8(x:vecType,
+                                     y:vecType, mask:vecType):vecType;
+      const mask = _mm256_cmpgt_epi64(x, y);
+      return _mm256_blendv_epi8(x, y, mask);
+    }
+    inline proc type abs(x: vecType): vecType {
+      return doSimpleOp("compat_abs_256", x);
+    }
   }
 
 

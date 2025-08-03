@@ -247,21 +247,48 @@ module IntrinX86_128 {
       }
     }
 
-    inline proc type loada(x: c_ptrConst(laneType)): vecType do
-      return doSimpleOp(mmPrefix+"_load_", vecType, x);
-    inline proc type loadu(x: c_ptrConst(laneType)): vecType do
-      return doSimpleOp(mmPrefix+"_loadu_", vecType, x);
+    inline proc type loada(x: c_ptrConst(laneType)): vecType {
+      if isIntegralType(laneType) {
+        param name = mmPrefix+"_load_si" + vecType.numBits:string;
+        pragma "fn synchronization free"
+        extern name proc loada(x: c_ptrConst(vecType)): vecType;
+        return loada(x:c_ptrConst(void):c_ptrConst(vecType));
+      } else
+        return doSimpleOp(mmPrefix+"_load_", vecType, x);
+    }
+    inline proc type loadu(x: c_ptrConst(laneType)): vecType {
+      if isIntegralType(laneType) {
+        param name = mmPrefix+"_loadu_si" + vecType.numBits:string;
+        pragma "fn synchronization free"
+        extern name proc loadu(x: c_ptrConst(vecType)): vecType;
+        return loadu(x:c_ptrConst(void):c_ptrConst(vecType));
+      } else
+        return doSimpleOp(mmPrefix+"_loadu_", vecType, x);
+    }
     inline proc type storea(x: c_ptr(laneType), y: vecType): void {
-      param externName = mmPrefix+"_store_" + vecType.typeSuffix;
+      type ptrType = if vecType.isIntegralVector then c_ptrConst(vecType)
+                                                 else c_ptrConst(laneType);
+      param nameSuffix =
+        if vecType.isIntegralVector then "si" + vecType.numBits:string
+                                    else vecType.typeSuffix;
+
+
+      param externName = mmPrefix+"_store_" + nameSuffix;
       pragma "fn synchronization free"
-      extern externName proc store(x: c_ptr(laneType), y: vecType): void;
-      store(x, y);
+      extern externName proc store(x: ptrType, y: vecType): void;
+      store(x:c_ptr(void):ptrType, y);
     }
     inline proc type storeu(x: c_ptr(laneType), y: vecType): void {
-      param externName = mmPrefix+"_storeu_" + vecType.typeSuffix;
+      type ptrType = if vecType.isIntegralVector then c_ptrConst(vecType)
+                                                 else c_ptrConst(laneType);
+      param nameSuffix =
+        if vecType.isIntegralVector then "si" + vecType.numBits:string
+                                    else vecType.typeSuffix;
+
+      param externName = mmPrefix+"_storeu_" + nameSuffix;
       pragma "fn synchronization free"
-      extern externName proc store(x: c_ptr(laneType), y: vecType): void;
-      store(x, y);
+      extern externName proc store(x: ptrType, y: vecType): void;
+      store(x:c_ptr(void):ptrType, y);
     }
 
     @chplcheck.ignore("UnusedFormal")
@@ -1042,5 +1069,25 @@ module IntrinX86_128 {
       return base.add(base.mul(x, y), z);
     inline proc type fmsub(x: vecType, y: vecType, z: vecType): vecType do
       return base.sub(base.mul(x, y), z);
+
+    inline proc type max(x: vecType, y: vecType): vecType {
+      pragma "fn synchronization free"
+      extern proc _mm_cmpgt_epi64(x: vecType, y: vecType): vecType;
+      pragma "fn synchronization free"
+      extern proc _mm_blendv_epi8(x:vecType, y:vecType, mask:vecType):vecType;
+      const mask = _mm_cmpgt_epi64(x, y);
+      return _mm_blendv_epi8(y, x, mask);
+    }
+    inline proc type min(x: vecType, y: vecType): vecType {
+      pragma "fn synchronization free"
+      extern proc _mm_cmpgt_epi64(x: vecType, y: vecType): vecType;
+      pragma "fn synchronization free"
+      extern proc _mm_blendv_epi8(x:vecType, y:vecType, mask:vecType):vecType;
+      const mask = _mm_cmpgt_epi64(x, y);
+      return _mm_blendv_epi8(x, y, mask);
+    }
+    inline proc type abs(x: vecType): vecType {
+      return doSimpleOp("compat_abs_", x);
+    }
   }
 }

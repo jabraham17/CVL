@@ -266,8 +266,8 @@ module IntrinX86_128 {
         return doSimpleOp(mmPrefix+"_loadu_", vecType, x);
     }
     inline proc type storea(x: c_ptr(laneType), y: vecType): void {
-      type ptrType = if vecType.isIntegralVector then c_ptrConst(vecType)
-                                                 else c_ptrConst(laneType);
+      type ptrType = if vecType.isIntegralVector then c_ptr(vecType)
+                                                 else c_ptr(laneType);
       param nameSuffix =
         if vecType.isIntegralVector then "si" + vecType.numBits:string
                                     else vecType.typeSuffix;
@@ -279,8 +279,8 @@ module IntrinX86_128 {
       store(x:c_ptr(void):ptrType, y);
     }
     inline proc type storeu(x: c_ptr(laneType), y: vecType): void {
-      type ptrType = if vecType.isIntegralVector then c_ptrConst(vecType)
-                                                 else c_ptrConst(laneType);
+      type ptrType = if vecType.isIntegralVector then c_ptr(vecType)
+                                                 else c_ptr(laneType);
       param nameSuffix =
         if vecType.isIntegralVector then "si" + vecType.numBits:string
                                     else vecType.typeSuffix;

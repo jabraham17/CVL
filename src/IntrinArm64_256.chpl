@@ -117,7 +117,7 @@ module IntrinArm64_256 {
     inline proc type rotateLeft(x: vecType): vecType {
       // rotate each half left (A, B)
       // mask out everything but the first lane (C, D)
-      // OR A and C and B and D
+      // OR A and D and B and C
 
       const A = implVecType.rotateLeft(x.lo);
       const B = implVecType.rotateLeft(x.hi);

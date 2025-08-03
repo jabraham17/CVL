@@ -128,7 +128,10 @@ module IntrinArm64_256 {
       // pragma "fn synchronization free"
       // extern name proc extractVector(x: halfType, y: halfType): halfType;
       type laneType = implVecType.laneType;
-      param ones = ((-1):uint(numBits(laneType))).transmute(laneType);
+      param ones =
+        if isIntegralType(laneType)
+          then (-1):uint(numBits(laneType))
+          else ((-1):uint(numBits(laneType))).transmute(laneType);
       const mask = implVecType.insert(implVecType.allZeros(), ones, 0);
       const C = implVecType.reverse(implVecType.and(x.lo, mask));
       const D = implVecType.reverse(implVecType.and(x.hi, mask));

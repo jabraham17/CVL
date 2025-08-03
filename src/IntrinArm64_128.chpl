@@ -720,7 +720,7 @@ module IntrinArm64_128 {
       // convert back to int8
       extern "float16x8_t" type vec16x8r;
       pragma "fn synchronization free"
-      extern proc vmovl_s8(x: vecType): vec16x8i;
+      extern proc vmovl_s8(x: vec8x8i): vec16x8i;
       pragma "fn synchronization free"
       extern proc vmovl_high_s8(x: vecType): vec16x8i;
       pragma "fn synchronization free"
@@ -743,7 +743,10 @@ module IntrinArm64_128 {
         return vcvtq_s16_f16(result16f);
       }
 
-      var res_low = inner(vmovl_s8(x), vmovl_s8(y));
+      var res_low = inner(
+        vmovl_s8(doSimpleOp("vget_low", vec8x8i, x)),
+        vmovl_s8(doSimpleOp("vget_low", vec8x8i, y))
+      );
       var res_high = inner(vmovl_high_s8(x), vmovl_high_s8(y));
       var res = vmovn_high_s16(vmovn_s16(res_low), res_high);
       return res;
@@ -812,7 +815,7 @@ module IntrinArm64_128 {
       // convert back to int32
       // convert back to int16
       pragma "fn synchronization free"
-      extern proc vmovl_s16(x: vecType): vec32x4i;
+      extern proc vmovl_s16(x: vec16x4i): vec32x4i;
       pragma "fn synchronization free"
       extern proc vmovl_high_s16(x: vecType): vec32x4i;
       pragma "fn synchronization free"
@@ -835,7 +838,10 @@ module IntrinArm64_128 {
         return vcvtq_s32_f32(result32f);
       }
 
-      var res_low = inner(vmovl_s16(x), vmovl_s16(y));
+      var res_low = inner(
+        vmovl_s16(doSimpleOp("vget_low", vec16x4i, x)),
+        vmovl_s16(doSimpleOp("vget_low", vec16x4i, y))
+      );
       var res_high = inner(vmovl_high_s16(x), vmovl_high_s16(y));
       var res = vmovn_high_s32(vmovn_s32(res_low), res_high);
       return res;

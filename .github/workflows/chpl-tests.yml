@@ -41,6 +41,33 @@ jobs:
         run: |
           ./util/test.sh
 
+  mason-test-linux-arm:
+    if: ${{ inputs.chapel_version == 'nightly' || inputs.chapel_version == 'latest' }}
+    runs-on: ubuntu-24.04-arm
+    strategy:
+      fail-fast: false
+      matrix:
+        backend:
+          - llvm
+          - gnu
+    env:
+      CHPL_TARGET_COMPILER: ${{ matrix.backend }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Homebrew
+        uses: Homebrew/actions/setup-homebrew@master
+      - name: Install Chapel
+        run: |
+          if [ "${{ inputs.chapel_version }}" = "nightly" ]; then
+            brew install --HEAD chapel
+          else
+            brew install chapel
+          fi
+      - name: Run Tests
+        run: |
+          ./util/test.sh
+
   # brew only supports nightly and latest
   mason-test-macos-arm:
     if: ${{ inputs.chapel_version == 'nightly' || inputs.chapel_version == 'latest' }}
@@ -68,7 +95,6 @@ jobs:
           ./util/test.sh
 
   mason-test-docker:
-    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
@@ -79,6 +105,10 @@ jobs:
         backend:
           - llvm
           - gnu
+        os:
+          - ubuntu-latest
+          - ubuntu-24.04-arm
+    runs-on: ubuntu-latest
     container:
       image: ${{ matrix.image }}
     env:

@@ -130,7 +130,7 @@ module IntrinArm64_256 {
       type laneType = implVecType.laneType;
       param ones =
         if isIntegralType(laneType)
-          then (-1):uint(numBits(laneType))
+          then (-1):int(numBits(laneType))
           else ((-1):uint(numBits(laneType))).transmute(laneType);
       const mask = implVecType.insert(implVecType.allZeros(), ones, 0);
       const C = implVecType.reverse(implVecType.and(x.lo, mask));

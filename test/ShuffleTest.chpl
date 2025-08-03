@@ -85,13 +85,11 @@ proc shuffleTestReverse(test: borrowed Test) throws {
   }
 }
 proc shuffleTestRotate(test: borrowed Test) throws {
-  test.skip("");
   manage new outputManager(test, getGoodFile(".rotate")) as actualOutput {
     shuffleTest(actualOutput, "rotate");
   }
 }
 proc shuffleTestInterleave(test: borrowed Test) throws {
-  test.skip("");
   manage new outputManager(test, getGoodFile(".interleave")) as actualOutput {
     shuffleTest(actualOutput, "interleave");
   }

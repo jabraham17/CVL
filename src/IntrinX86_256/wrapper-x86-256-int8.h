@@ -26,10 +26,28 @@ static inline __m256i reverse_256epi8(__m256i x) {
   return _mm256_shuffle_epi8(swapLowHigh_256epi8(x), mask);
 }
 static inline __m256i rotateLeft_256epi8(__m256i x) {
-  return x; // TODO
+  __m256i t1 = _mm256_bsrli_epi128(x, 1);
+  // mask out everything but the lowest 8 bits of each 128-bit half
+  __m256i t2 = _mm256_and_si256(x, _mm256_set_epi8(
+    0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0xFF,
+    0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0xFF
+  ));
+  // shift the mask right by 15 bytes and swap
+  __m256i t3 = swapLowHigh_256epi8(_mm256_bslli_epi128(t2, 15));
+  return _mm256_or_si256(t1, t3);
 }
 static inline __m256i rotateRight_256epi8(__m256i x) {
-  return x; // TODO
+  __m256i t1 = _mm256_bslli_epi128(x, 1);
+  __m256i t2 = _mm256_and_si256(x, _mm256_set_epi8(
+    0xFF, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,
+    0xFF, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0
+  ));
+  __m256i t3 = swapLowHigh_256epi8(_mm256_bsrli_epi128(t2, 15));
+  return _mm256_or_si256(t1, t3);
 }
 static inline __m256i blendLowHigh_256epi8(__m256i x, __m256i y) {
   return _mm256_blend_epi32(x, y, 0xf0);

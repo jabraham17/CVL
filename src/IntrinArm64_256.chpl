@@ -124,7 +124,7 @@ module IntrinArm64_256 {
 
       type halfType = implVecType.vecType;
       param name =
-        ("extractVector"+vecTypeStr(halfType)+(implVecType.numLanes-1):string);
+        ("extractVector"+vecTypeStr(halfType)+(1):string);
       pragma "fn synchronization free"
       extern name proc extractVector(x: halfType, y: halfType): halfType;
       
@@ -133,7 +133,8 @@ module IntrinArm64_256 {
       const C = implVecType.and(x.lo, mask);
       const D = implVecType.and(x.hi, mask);
 
-      return new vecType(implVecType.or(A, D), implVecType.or(B, C));
+      // return new vecType(implVecType.or(A, D), implVecType.or(B, C));
+      return new vecType(C, D);
     }
     inline proc type rotateRight(x: vecType): vecType {
       import CVL;

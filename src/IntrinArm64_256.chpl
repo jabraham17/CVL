@@ -116,7 +116,7 @@ module IntrinArm64_256 {
       return new vecType(implVecType.reverse(x.hi), implVecType.reverse(x.lo));
     inline proc type rotateLeft(x: vecType): vecType {
       // rotate each half left (A, B)
-      // mask out everything but the last lane (C, D)
+      // mask out everything but the first lane (C, D)
       // OR A and D and B and C
 
       const A = implVecType.rotateLeft(x.lo);
@@ -130,11 +130,10 @@ module IntrinArm64_256 {
       
       const mask = implVecType.insert(
         implVecType.allZeros(), (-1):implVecType.laneType, 0);
-      const C = implVecType.and(x.lo, mask);
-      const D = implVecType.and(x.hi, mask);
+      const C = implVecType.reverse(implVecType.and(x.lo, mask));
+      const D = implVecType.reverse(implVecType.and(x.hi, mask));
 
-      // return new vecType(implVecType.or(A, D), implVecType.or(B, C));
-      return new vecType(C, D);
+      return new vecType(implVecType.or(A, D), implVecType.or(B, C));
     }
     inline proc type rotateRight(x: vecType): vecType {
       import CVL;

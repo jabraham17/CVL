@@ -122,9 +122,10 @@ module IntrinArm64_256 {
       const A = implVecType.rotateLeft(x.lo);
       const B = implVecType.rotateLeft(x.hi);
 
+      type halfType = implVecType.vecType;
       pragma "fn synchronization free"
-      extern ("extractVector" + vecTypeStr(implVecType) + "1")
-      proc extractVector(x: implVecType, y: implVecType): implVecType;
+      extern ("extractVector" + vecTypeStr(halfType) + "1")
+      proc extractVector(x: halfType, y: halfType): halfType;
       
       const mask = extractVector(implVecType.allZeros(),
                                 implVecType.allOnes());

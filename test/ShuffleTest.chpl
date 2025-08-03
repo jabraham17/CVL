@@ -101,7 +101,6 @@ proc shuffleTestDeinterleave(test: borrowed Test) throws {
   }
 }
 proc shuffleTestBlend(test: borrowed Test) throws {
-  test.skip("");
   manage new outputManager(test, getGoodFile(".blend")) as actualOutput {
     shuffleTest(actualOutput, "blend");
   }

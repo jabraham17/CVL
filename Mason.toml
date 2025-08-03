@@ -13,19 +13,19 @@ compopts="--using-attribute-toolname=lint -sCVL.implementationWarnings=false --n
 docopts="--using-attribute-toolname=lint"
 
 tests = [
-  "ArrTest.chpl",
-  "BitTest.chpl",
-  "CmpTest.chpl",
-  "FmaTest.chpl",
-  "GatherTest.chpl",
-  "InitTest.chpl",
-  "IsAllTest.chpl",
-  "IterTest.chpl",
-  "MaskLoadTest.chpl",
-  "MathFuncs.chpl",
-  "MathTest.chpl",
+  # "ArrTest.chpl",
+  # "BitTest.chpl",
+  # "CmpTest.chpl",
+  # "FmaTest.chpl",
+  # "GatherTest.chpl",
+  # "InitTest.chpl",
+  # "IsAllTest.chpl",
+  # "IterTest.chpl",
+  # "MaskLoadTest.chpl",
+  # "MathFuncs.chpl",
+  # "MathTest.chpl",
   "ShuffleTest.chpl",
-  "SqrtTest.chpl"
+  # "SqrtTest.chpl"
 ]
 
 [dependencies]

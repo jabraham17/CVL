@@ -26,6 +26,7 @@ proc newOutputFile(): IO.file {
 }
 
 proc compareOutput(test: borrowed Test,
+                   goodFileName: string,
                    goodFile: IO.fileReader(?),
                    actualOutput: IO.fileReader(?)) throws {
   var goodFileContents = goodFile.lines(stripNewline=true);
@@ -53,12 +54,12 @@ proc compareOutput(test: borrowed Test,
     test.assertEqual(goodFileContents.size, actualOutputLines.size);
     for (good, actual, lineno) in
         zip(goodFileContents, actualOutputLines, 1..) {
-      try {
-        test.assertEqual(good, actual);
-      } catch e: TestError.AssertionError {
+      if good != actual {
         throw new TestError.AssertionError(
-          ("Line % 4i:\nExpected '%s'\n"+
-                       "but got  '%s'").format(lineno, good, actual));
+          ("\n"+
+           "in %s:%i:\n"+
+           "expected '%s'\n"+
+           "actual   '%s'").format(goodFileName, lineno, good, actual));
       }
     }
   } catch e: TestError.AssertionError {
@@ -69,13 +70,15 @@ proc compareOutput(test: borrowed Test,
 
 record outputManager: contextManager {
   var test: borrowed Test;
+  var goodFileName: string;
   var goodFile: IO.file;
   var actualFile: IO.file;
   var actualWriter: IO.fileWriter(false);
 
   proc init(test: borrowed Test, goodFileName: string) {
     this.test = test;
-    this.goodFile = getGoodFile(goodFileName);
+    this.goodFileName = goodFileName;
+    this.goodFile = getGoodFile(this.goodFileName);
     this.actualFile = newOutputFile();
   }
 
@@ -87,7 +90,7 @@ record outputManager: contextManager {
   proc exitContext(in err: owned Error?) throws {
     actualWriter.close();
     if err then test.assertTrue(false);
-    compareOutput(test, goodFile.reader(), actualFile.reader());
+    compareOutput(test, goodFileName, goodFile.reader(), actualFile.reader());
   }
 }
 

@@ -914,6 +914,11 @@ module IntrinX86_128 {
       return base.add(base.mul(x, y), z);
     inline proc type fmsub(x: vecType, y: vecType, z: vecType): vecType do
       return base.sub(base.mul(x, y), z);
+
+    inline proc type deinterleaveLower(x: vecType, y: vecType): vecType do
+      return doSimpleOp("deinterleaveLower_", x, y);
+    inline proc type deinterleaveUpper(x: vecType, y: vecType): vecType do
+      return doSimpleOp("deinterleaveUpper_", x, y);
   }
 
   @chplcheck.ignore("CamelCaseRecords")
@@ -956,6 +961,11 @@ module IntrinX86_128 {
       return base.add(base.mul(x, y), z);
     inline proc type fmsub(x: vecType, y: vecType, z: vecType): vecType do
       return base.sub(base.mul(x, y), z);
+    
+    inline proc type deinterleaveLower(x: vecType, y: vecType): vecType do
+      return doSimpleOp("deinterleaveLower_", x, y);
+    inline proc type deinterleaveUpper(x: vecType, y: vecType): vecType do
+      return doSimpleOp("deinterleaveUpper_", x, y);
   }
 
   @chplcheck.ignore("CamelCaseRecords")

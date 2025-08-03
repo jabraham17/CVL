@@ -65,6 +65,33 @@ static inline __m256i interleaveUpper_256epi16(__m256i x, __m256i y) {
   return _mm256_permute2f128_si256(t0, t1, 0x31);
 }
 
+static inline __m256i deinterleaveLower_256epi16(__m256i x, __m256i y) {
+  __m256i mask = _mm256_set_epi8(
+    13, 12, 9, 8, 5, 4, 1, 0,
+    13, 12, 9, 8, 5, 4, 1, 0,
+    13, 12, 9, 8, 5, 4, 1, 0,
+    13, 12, 9, 8, 5, 4, 1, 0
+  );
+  __m256i t0 = _mm256_permute4x64_epi64(
+    _mm256_shuffle_epi8(x, mask), _MM_SHUFFLE(3, 1, 2, 0));
+  __m256i t1 = _mm256_permute4x64_epi64(
+    _mm256_shuffle_epi8(y, mask), _MM_SHUFFLE(3, 1, 2, 0));
+  return _mm256_blend_epi32(t0, t1, 0b11110000);
+}
+static inline __m256i deinterleaveUpper_256epi16(__m256i x, __m256i y) {
+  __m256i mask = _mm256_set_epi8(
+    15, 14, 11, 10, 7, 6, 3, 2,
+    15, 14, 11, 10, 7, 6, 3, 2,
+    15, 14, 11, 10, 7, 6, 3, 2,
+    15, 14, 11, 10, 7, 6, 3, 2
+  );
+  __m256i t0 = _mm256_permute4x64_epi64(
+    _mm256_shuffle_epi8(x, mask), _MM_SHUFFLE(3, 1, 2, 0));
+  __m256i t1 = _mm256_permute4x64_epi64(
+    _mm256_shuffle_epi8(y, mask), _MM_SHUFFLE(3, 1, 2, 0));
+  return _mm256_blend_epi32(t0, t1, 0b11110000);
+}
+
 static inline __m256i hadd_256epi16(__m256i x, __m256i y) {
   //  what we want is:
   //    [x0, x1, x2, x3, x4, x5, x6, x7, x8, x9, xa, xb, xc, xd, xe, xf]

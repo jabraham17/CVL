@@ -315,6 +315,10 @@ module IntrinX86_256 {
       return doSimpleOp("interleaveLower_256", x, y);
     inline proc type interleaveUpper(x: vecType, y: vecType): vecType do
       return doSimpleOp("interleaveUpper_256", x, y);
+    inline proc type deinterleaveLower(x: vecType, y: vecType): vecType do
+      return doSimpleOp("deinterleaveLower_256", x, y);
+    inline proc type deinterleaveUpper(x: vecType, y: vecType): vecType do
+      return doSimpleOp("deinterleaveUpper_256", x, y);
 
     inline proc type mul(x: vecType, y: vecType): vecType {
       import CVL;
@@ -379,6 +383,10 @@ module IntrinX86_256 {
       return doSimpleOp("interleaveLower_256", x, y);
     inline proc type interleaveUpper(x: vecType, y: vecType): vecType do
       return doSimpleOp("interleaveUpper_256", x, y);
+    inline proc type deinterleaveLower(x: vecType, y: vecType): vecType do
+      return doSimpleOp("deinterleaveLower_256", x, y);
+    inline proc type deinterleaveUpper(x: vecType, y: vecType): vecType do
+      return doSimpleOp("deinterleaveUpper_256", x, y);
 
     inline proc type mul(x: vecType, y: vecType): vecType {
       import CVL;

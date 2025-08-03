@@ -95,7 +95,6 @@ proc shuffleTestInterleave(test: borrowed Test) throws {
   }
 }
 proc shuffleTestDeinterleave(test: borrowed Test) throws {
-  test.skip("");
   manage new outputManager(test, getGoodFile(".deinterleave")) as actualOutput {
     shuffleTest(actualOutput, "deinterleave");
   }

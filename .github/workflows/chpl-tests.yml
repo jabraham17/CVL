@@ -7,7 +7,7 @@ on:
         required: true
         type: string
       run_optional_tests:
-        description: 'Whether to run additional tests (CMake and Python)'
+        description: 'Whether to run additional tests (Python)'
         required: false
         type: boolean
         default: true
@@ -37,8 +37,9 @@ jobs:
           else
             brew install chapel
           fi
-      - name: Set up CMake
-        uses: jwlawson/actions-setup-cmake@v2.0.2
+      - name: Install CMake
+        run: |
+          brew install cmake
       - name: Run Tests
         run: |
           ./util/testAll.sh
@@ -65,8 +66,9 @@ jobs:
           else
             brew install chapel
           fi
-      - name: Set up CMake
-        uses: jwlawson/actions-setup-cmake@v2.0.2
+      - name: Install CMake
+        run: |
+          brew install cmake
       - name: Run Tests
         run: |
           ./util/testAll.sh

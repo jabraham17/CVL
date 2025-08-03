@@ -84,13 +84,11 @@ jobs:
       - name: Install dependencies
         run: |
           python3 -m venv .venv
-          source .venv/bin/activate
-          python3 -m pip --upgrade pip
-          python3 -m pip install pydantic
+          ./.venv/bin/python3 -m pip --upgrade pip
+          ./.venv/bin/python3 -m pip install pydantic
       - name: Run Benchmarks
         run: |
-          source .venv/bin/activate
-          ./util/bench.py --schema benchmarks/benchmarks.json --cvl-options $(./compile.py)
+          ./.venv/bin/python3 ./util/bench.py --schema benchmarks/benchmarks.json --cvl-options $(./compile.py)
 
   lint:
     runs-on: ubuntu-latest

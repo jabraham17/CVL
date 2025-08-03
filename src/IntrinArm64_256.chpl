@@ -136,7 +136,7 @@ module IntrinArm64_256 {
       const C = implVecType.reverse(implVecType.and(x.lo, mask));
       const D = implVecType.reverse(implVecType.and(x.hi, mask));
 
-      return new vecType(implVecType.or(A, C), implVecType.or(B, D));
+      return new vecType(implVecType.or(A, D), implVecType.or(B, C));
     }
     inline proc type rotateRight(x: vecType): vecType {
       import CVL;

@@ -55,7 +55,7 @@ jobs:
           - chapel/chapel-gasnet:${{ inputs.chapel_version }}
           - chapel/chapel-gasnet-smp:${{ inputs.chapel_version }}
         backend: [llvm, gnu]
-        os: [ubuntu-latest, ubuntu-24.04-arm]
+        os: [ubuntu-latest]
     runs-on: ${{ matrix.os }}
     container:
       image: ${{ matrix.image }}

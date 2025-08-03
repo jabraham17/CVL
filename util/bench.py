@@ -109,7 +109,7 @@ class BenchmarkRun:
             [compiler] + compopts + files + ["-o", str(executable_path)]
         )
 
-        cc_str = "{" ".join(compile_cmd)}"
+        cc_str = f"{" ".join(compile_cmd)}"
         print(f"Compiling {self.config.name}::{self.version.name} ({cc_str})")
 
         try:
@@ -126,7 +126,7 @@ class BenchmarkRun:
         run_cmd += execopts
 
         run_str = " ".join(run_cmd)
-        print(f"Running {self.config.name}::{self.version.name} ('{run_str}')")
+        print(f"Running {self.config.name}::{self.version.name} ({run_str})")
 
         try:
             trials = self.config.trials if trials is None else trials

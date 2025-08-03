@@ -109,7 +109,7 @@ class BenchmarkRun:
             [compiler] + compopts + files + ["-o", str(executable_path)]
         )
 
-        cc_str = f"{" ".join(compile_cmd)}"
+        cc_str = " ".join(compile_cmd)
         print(f"Compiling {self.config.name}::{self.version.name} ({cc_str})")
 
         try:

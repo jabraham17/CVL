@@ -4,7 +4,13 @@
 #include <x86intrin.h>
 
 static inline __m256i swapPairs_256epi8(__m256i x) {
-  return x; // TODO
+  const __m256i mask = _mm256_set_epi8(
+    30, 31, 28, 29, 26, 27, 24, 25,
+    22, 23, 20, 21, 18, 19, 16, 17,
+    14, 15, 12, 13, 10, 11, 8, 9,
+    6, 7, 4, 5, 2, 3, 0, 1
+  );
+  return _mm256_shuffle_epi8(x, mask);
 }
 static inline __m256i swapLowHigh_256epi8(__m256i x) {
   return _mm256_permute2f128_si256(x, x, 1);

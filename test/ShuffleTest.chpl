@@ -80,7 +80,6 @@ proc shuffleTestSwap(test: borrowed Test) throws {
   }
 }
 proc shuffleTestReverse(test: borrowed Test) throws {
-  test.skip("");
   manage new outputManager(test, getGoodFile(".reverse")) as actualOutput {
     shuffleTest(actualOutput, "reverse");
   }

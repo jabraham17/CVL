@@ -17,7 +17,13 @@ static inline __m256i swapLowHigh_256epi16(__m256i x) {
 }
 
 static inline __m256i reverse_256epi16(__m256i x) {
-  return x; // TODO
+  const __m256i mask = _mm256_set_epi8(
+    17, 16, 19, 18, 21, 20, 23, 22,
+    25, 24, 27, 26, 29, 28, 31, 30,
+    1, 0, 3, 2, 5, 4, 7, 6,
+    9, 8, 11, 10, 13, 12, 15, 14
+  );
+  return _mm256_shuffle_epi8(swapLowHigh_256epi16(x), mask);
 }
 static inline __m256i rotateLeft_256epi16(__m256i x) {
   return x; // TODO

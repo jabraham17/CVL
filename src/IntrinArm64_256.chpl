@@ -128,9 +128,8 @@ module IntrinArm64_256 {
       pragma "fn synchronization free"
       extern name proc extractVector(x: halfType, y: halfType): halfType;
       
-      const mask = implVecType.not(
-                    extractVector(implVecType.allZeros(),
-                                  implVecType.allOnes()));
+      const mask = implVecType.insert(
+        implVecType.allZeros(), (-1):implVecType.laneType, 0);
       const C = implVecType.and(x.lo, mask);
       const D = implVecType.and(x.hi, mask);
 

@@ -13,7 +13,7 @@ function build() {
   set -x
 
   mkdir -p "${BUILD_DIR}"
-  cmake -v -B "${BUILD_DIR}" "${EXAMPLE_PROJECT_DIR}" ${cmake_cfg_args}
+  cmake -B "${BUILD_DIR}" "${EXAMPLE_PROJECT_DIR}" ${cmake_cfg_args}
   cmake --build "${BUILD_DIR}" ${cmake_build_args}
   cmake --install "${BUILD_DIR}" --prefix "${INSTALL_DIR}"
 

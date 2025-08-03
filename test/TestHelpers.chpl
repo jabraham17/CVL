@@ -51,8 +51,15 @@ proc compareOutput(test: borrowed Test,
 
   try {
     test.assertEqual(goodFileContents.size, actualOutputLines.size);
-    for (good, actual) in zip(goodFileContents, actualOutputLines) {
-      test.assertEqual(good, actual);
+    for (good, actual, lineno) in
+        zip(goodFileContents, actualOutputLines, 1..) {
+      try {
+        test.assertEqual(good, actual);
+      } catch e: TestError.AssertionError {
+        throw new TestError.AssertionError(
+          "Line % 4i:\nExpected '%s'\n"+
+                      "but got  '%s'".format(lineno, good, actual));
+      }
     }
   } catch e: TestError.AssertionError {
     if !dumpActual then

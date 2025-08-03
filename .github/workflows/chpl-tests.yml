@@ -30,9 +30,6 @@ jobs:
         uses: actions/checkout@v4
       - name: Set up Homebrew
         uses: Homebrew/actions/setup-homebrew@master
-      - name: Install CMake
-        run: |
-          brew install cmake
       - name: Install Chapel
         run: |
           if [ "${{ inputs.chapel_version }}" = "nightly" ]; then
@@ -42,7 +39,7 @@ jobs:
           fi
       - name: Run Tests
         run: |
-          ./util/testAll.sh
+          ./util/test.sh
 
   # brew only supports nightly and latest
   mason-test-macos-arm:
@@ -59,9 +56,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Install CMake
-        run: |
-          brew install cmake
       - name: Install Chapel
         run: |
           if [ "${{ inputs.chapel_version }}" = "nightly" ]; then
@@ -71,7 +65,7 @@ jobs:
           fi
       - name: Run Tests
         run: |
-          ./util/testAll.sh
+          ./util/test.sh
 
   mason-test-docker:
     runs-on: ubuntu-latest
@@ -96,7 +90,10 @@ jobs:
         uses: jwlawson/actions-setup-cmake@v2.0.2
       - name: Run Tests
         run: |
-          ./util/testAll.sh
+          ./util/test.sh
+      - name: Run CMake Tests
+        run: |
+          ./util/testCMake.sh
 
   lint:
     runs-on: ubuntu-latest

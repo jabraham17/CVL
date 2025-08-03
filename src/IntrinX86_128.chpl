@@ -175,18 +175,6 @@ module IntrinX86_128 {
     return func((...xs));
   }
 
-
-  // inline operator:(x: vec128d, type t: vec128) {
-  //   pragma "fn synchronization free"
-  //   extern proc _mm_castpd_ps(x: vec128d): vec128;
-  //   return _mm_castpd_ps(x);
-  // }
-  // inline operator:(x: vec128, type t: vec128d) {
-  //   pragma "fn synchronization free"
-  //   extern proc _mm_castps_pd(x: vec128): vec128d;
-  //   return _mm_castps_pd(x);
-  // }
-
   @chplcheck.ignore("CamelCaseRecords")
   @lint.typeOnly
   record x8664_NxM {
@@ -505,7 +493,7 @@ module IntrinX86_128 {
       if canResolveTypeMethod(extensionType, "neg", x) then
         return extensionType.neg(x);
       else {
-        return this.sub(this.splat(0), x);
+        return this.sub(this.allZeros(), x);
       }
     }
 
@@ -820,8 +808,7 @@ module IntrinX86_128 {
 
     inline proc type abs(x: vecType): vecType {
       var mask = base.splat(-0.0:laneType);
-      var cast = doSimpleOp(base.mmPrefix+"_castsi128_", vecType, mask);
-      return base.andNot(cast, x);
+      return base.andNot(mask, x);
     }
   }
 
@@ -868,9 +855,8 @@ module IntrinX86_128 {
       return res;
     }
     inline proc type abs(x: vecType): vecType {
-      var mask = base.splat(-0.0:laneType);
-      var cast = doSimpleOp(base.mmPrefix+"_castsi128_", vecType, mask);
-      return base.andNot(cast, x);
+      const mask = base.splat(-0.0:laneType);
+      return base.andNot(mask, x);
     }
   }
 

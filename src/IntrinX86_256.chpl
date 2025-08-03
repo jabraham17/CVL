@@ -247,8 +247,7 @@ module IntrinX86_256 {
 
     inline proc type abs(x: vecType): vecType {
       var mask = base.splat(-0.0:laneType);
-      var cast = doSimpleOp(base.mmPrefix+"_castsi256_", vecType, mask);
-      return base.andNot(cast, x);
+      return base.andNot(mask, x);
     }
   }
 
@@ -293,8 +292,7 @@ module IntrinX86_256 {
 
     inline proc type abs(x: vecType): vecType {
       var mask = base.splat(-0.0:laneType);
-      var cast = doSimpleOp(base.mmPrefix+"_castsi256_", vecType, mask);
-      return base.andNot(cast, x);
+      return base.andNot(mask, x);
     }
   }
 

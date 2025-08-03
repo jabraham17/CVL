@@ -57,8 +57,8 @@ proc compareOutput(test: borrowed Test,
         test.assertEqual(good, actual);
       } catch e: TestError.AssertionError {
         throw new TestError.AssertionError(
-          "Line % 4i:\nExpected '%s'\n"+
-                      "but got  '%s'".format(lineno, good, actual));
+          ("Line % 4i:\nExpected '%s'\n"+
+                      "but got  '%s'").format(lineno, good, actual));
       }
     }
   } catch e: TestError.AssertionError {

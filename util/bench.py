@@ -131,7 +131,7 @@ class BenchmarkRun:
         try:
             trials = self.config.trials if trials is None else trials
             for trial in range(trials):
-                print(f"Trial {trial + 1}/{self.config.trials}")
+                print(f"Trial {trial + 1}/{trials}")
                 start_time = time.time()
                 subprocess.run(run_cmd, check=True, capture_output=True)
                 end_time = time.time()

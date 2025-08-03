@@ -73,6 +73,22 @@ jobs:
         run: |
           ./util/testCMake.sh
 
+  # this just runs the benchmarks to make sure they compile and run
+  test-benchmarks:
+    runs-on: ubuntu-latest
+    container:
+      image: chapel/chapel:${{ inputs.chapel_version }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install dependencies
+        run: |
+          python3 -m pip install --upgrade pip
+          python3 -m pip install pydantic
+      - name: Run Benchmarks
+        run: |
+          ./util/bench.py --schema benchmarks/benchmarks.json --cvl-options $(./compile.py)
+
   lint:
     runs-on: ubuntu-latest
     container:

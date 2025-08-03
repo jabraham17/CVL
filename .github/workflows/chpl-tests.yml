@@ -18,6 +18,7 @@ jobs:
     if: ${{ inputs.chapel_version == 'nightly' || inputs.chapel_version == 'latest' }}
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         backend:
           - llvm
@@ -47,6 +48,7 @@ jobs:
     if: ${{ inputs.chapel_version == 'nightly' || inputs.chapel_version == 'latest' }}
     runs-on: macos-latest
     strategy:
+      fail-fast: false
       matrix:
         backend:
           - llvm
@@ -72,6 +74,7 @@ jobs:
   mason-test-docker:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         image:
           - chapel/chapel:${{ inputs.chapel_version }}
@@ -108,6 +111,7 @@ jobs:
     if: ${{ inputs.run_optional_tests }}
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: true
       matrix:
         python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
     steps:

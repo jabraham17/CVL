@@ -2,7 +2,7 @@
 /* There is no 256 for neon, this emulates it */
 @chplcheck.ignore("PascalCaseModules")
 module IntrinArm64_256 {
-  use IntrinArm64_128 only numBits;
+  use IntrinArm64_128 only numBits, vecTypeStr;
   use CTypes only c_ptr, c_ptrConst, c_int;
   use Reflection only getRoutineName;
 
@@ -115,10 +115,23 @@ module IntrinArm64_256 {
     inline proc type reverse(x: vecType): vecType do
       return new vecType(implVecType.reverse(x.hi), implVecType.reverse(x.lo));
     inline proc type rotateLeft(x: vecType): vecType {
-      import CVL;
-      if CVL.implementationWarnings then
-        compilerWarning("rotateLeft not implemented");
-      return x; // TODO
+      // rotate each half left (A, B)
+      // mask out everything but the last lane (C, D)
+      // OR A and D and B and C
+
+      const A = implVecType.rotateLeft(x.lo);
+      const B = implVecType.rotateLeft(x.hi);
+
+      pragma "fn synchronization free"
+      extern ("extractVector" + vecTypeStr(implVecType) + "1")
+      proc extractVector(x: implVecType, y: implVecType): implVecType;
+      
+      const mask = extractVector(implVecType.allZeros(),
+                                implVecType.allOnes());
+      const C = implVecType.and(x.lo, mask);
+      const D = implVecType.and(x.hi, mask);
+
+      return new vecType(implVecType.or(A, D), implVecType.or(B, C));
     }
     inline proc type rotateRight(x: vecType): vecType {
       import CVL;

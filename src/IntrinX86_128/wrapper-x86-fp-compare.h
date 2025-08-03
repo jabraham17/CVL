@@ -12,7 +12,7 @@
   V(cmpGe, _CMP_GE_OQ)
 
 #define DEFINE_COMPARE_OP(op, cmp) \
-  static inline __m128 op##128##ps(__m128 x, __m128d y) { \
+  static inline __m128 op##128##ps(__m128 x, __m128 y) { \
     return _mm_cmp_ps(x, y, cmp); \
   } \
   static inline __m128d op##128##pd(__m128d x, __m128d y) { \

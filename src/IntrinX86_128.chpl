@@ -175,6 +175,25 @@ module IntrinX86_128 {
     return func((...xs));
   }
 
+  @chplcheck.ignore("NoGenericReturn")
+  inline proc reinterpret(param mmPrefix: string, type toType, x: ?fromType) {
+    param toSuffix =
+      if toType.isIntegralVector then "si" + toType.numBits:string
+                                    else toType.typeSuffix;
+    param fromSuffix =
+      if fromType.isIntegralVector then "si" + fromType.numBits:string
+                                  else fromType.typeSuffix;
+    
+    if toSuffix == fromSuffix then
+      return x;
+    else {
+      param name = mmPrefix + "_cast" + fromSuffix + "_" + toSuffix;
+      pragma "fn synchronization free"
+      extern name proc cast(x: fromType): toType;
+      return cast(x);
+    }
+  }
+
   @chplcheck.ignore("CamelCaseRecords")
   @lint.typeOnly
   record x8664_NxM {
@@ -638,20 +657,22 @@ module IntrinX86_128 {
       if canResolveTypeMethod(extensionType, "bitSelect", mask, x, y) then
         return extensionType.bitSelect(mask, x, y);
       else {
-        const a_ = reinterpretCast(mask.type, x);
-        const b_ = reinterpretCast(mask.type, y);
+        const mask_ = reinterpret(mmPrefix, mask.type.bitMaskType, mask);
+        const x_ = reinterpret(mmPrefix, mask_.type, x);
+        const y_ = reinterpret(mmPrefix, mask_.type, y);
 
-        param or = mmPrefix + "_or_si" + mask.type.numBits:string;
-        param and = mmPrefix + "_and_si" + mask.type.numBits:string;
-        param andnot = mmPrefix + "_andnot_si" + mask.type.numBits:string;
+        param or = mmPrefix + "_or_si" + mask_.type.numBits:string;
+        param and = mmPrefix + "_and_si" + mask_.type.numBits:string;
+        param andnot = mmPrefix + "_andnot_si" + mask_.type.numBits:string;
         pragma "fn synchronization free"
-        extern or proc mmOr(a: mask.type, b: mask.type): mask.type;
+        extern or proc mmOr(x: mask_.type, y: mask_.type): mask_.type;
         pragma "fn synchronization free"
-        extern and proc mmAnd(a: mask.type, b: mask.type): mask.type;
+        extern and proc mmAnd(x: mask_.type, y: mask_.type): mask_.type;
         pragma "fn synchronization free"
-        extern andnot proc mmAndNot(a: mask.type, b: mask.type): mask.type;
+        extern andnot proc mmAndNot(x: mask_.type, y: mask_.type): mask_.type;
 
-        return mmOr(mmAnd(a_, mask), mmAndNot(mask, b_));
+        const res = mmOr(mmAnd(x_, mask_), mmAndNot(mask_, y_));
+        return reinterpret(mmPrefix, vecType, res);
       }
     }
 
@@ -659,7 +680,7 @@ module IntrinX86_128 {
       if canResolveTypeMethod(extensionType, "isAllZeros", x) then
         return extensionType.isAllZeros(x);
       else {
-        const x_ = reinterpretCast(vecType.bitMaskType, x);
+        const x_ = reinterpret(mmPrefix, vecType.bitMaskType, x);
         param name = mmPrefix + "_testz_si" + x_.type.numBits:string;
         pragma "fn synchronization free"
         extern name proc testZero(x: x_.type, y: x_.type): bool;
@@ -749,23 +770,8 @@ module IntrinX86_128 {
     }
 
     @chplcheck.ignore("NoGenericReturn")
-    inline proc type reinterpretCast(type toVecType, x: vecType) {
-      param toSuffix =
-        if toVecType.isIntegralVector then "si" + toVecType.numBits:string
-                                      else toVecType.typeSuffix;
-      param fromSuffix =
-        if vecType.isIntegralVector then "si" + vecType.numBits:string
-                                    else vecType.typeSuffix;
-      
-      if toSuffix == fromSuffix then
-        return x;
-      else {
-        param name = mmPrefix + "_cast" + fromSuffix + "_" + toSuffix;
-        pragma "fn synchronization free"
-        extern name proc cast(x: vecType): toVecType;
-        return cast(x);
-      }
-    }
+    inline proc type reinterpretCast(type toVecType, x: vecType) do
+      return reinterpret(mmPrefix, toVecType, x);
 
   }
 

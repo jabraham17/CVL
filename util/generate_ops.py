@@ -165,7 +165,7 @@ VECTOR_X_VECTOR_ASSIGN_TEMPLATE = """
 
   See :proc:`Intrin.@@{intrin}` for the intrinsic used.
 */
-inline operator@@{op}(x: vector(?eltType, ?numElts), y: x.type): x.type {
+inline operator@@{op}(ref x: vector(?eltType, ?numElts), y: x.type) {
   x.data = Intrin.@@{intrin}(eltType, numElts, x.data, y.data);
 }
 """
@@ -189,7 +189,7 @@ VECTOR_X_SCALAR_ASSIGN_TEMPLATE = """
 
   See :proc:`Intrin.@@{intrin}` for the intrinsic used.
 */
-inline operator@@{op}(x: vector(?eltType, ?numElts), y: ?scalarType): x.type
+inline operator@@{op}(ref x: vector(?eltType, ?numElts), y: ?scalarType)
   where isCoercible(scalarType, eltType) {
   x.data = Intrin.@@{intrin}(eltType, numElts, x.data,
                   Intrin.splat(eltType, numElts, y));

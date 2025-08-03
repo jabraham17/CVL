@@ -12,77 +12,29 @@ on:
         type: boolean
         default: true
 
-# brew only supports nightly and latest
 jobs:
-  mason-test-linux-x86:
-    if: ${{ inputs.chapel_version == 'nightly' || inputs.chapel_version == 'latest' }}
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        backend:
-          - llvm
-          - gnu
-    env:
-      CHPL_TARGET_COMPILER: ${{ matrix.backend }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Set up Homebrew
-        uses: Homebrew/actions/setup-homebrew@master
-      - name: Install Chapel
-        run: |
-          if [ "${{ inputs.chapel_version }}" = "nightly" ]; then
-            brew install --HEAD chapel
-          else
-            brew install chapel
-          fi
-      - name: Run Tests
-        run: |
-          ./util/test.sh
-
-  mason-test-linux-arm:
-    if: ${{ inputs.chapel_version == 'nightly' || inputs.chapel_version == 'latest' }}
-    runs-on: ubuntu-24.04-arm
-    strategy:
-      fail-fast: false
-      matrix:
-        backend:
-          - llvm
-          - gnu
-    env:
-      CHPL_TARGET_COMPILER: ${{ matrix.backend }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Set up Homebrew
-        uses: Homebrew/actions/setup-homebrew@master
-      - name: Install Chapel
-        run: |
-          if [ "${{ inputs.chapel_version }}" = "nightly" ]; then
-            brew install --HEAD chapel
-          else
-            brew install chapel
-          fi
-      - name: Run Tests
-        run: |
-          ./util/test.sh
-
   # brew only supports nightly and latest
-  mason-test-macos-arm:
+  # brew doesn't suppoty linux arm
+  mason-test-brew:
     if: ${{ inputs.chapel_version == 'nightly' || inputs.chapel_version == 'latest' }}
-    runs-on: macos-latest
     strategy:
       fail-fast: false
       matrix:
-        backend:
-          - llvm
-          - clang
+        backend: [llvm, gnu, clang]
+        os: [ubuntu-latest, macos-latest]
+        exclude:
+          - os: ubuntu-latest
+            backend: clang
+          - os: macos-latest
+            backend: gnu
+    runs-on: ${{ matrix.os }}  
     env:
       CHPL_TARGET_COMPILER: ${{ matrix.backend }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Set up Homebrew
+        uses: Homebrew/actions/setup-homebrew@master
       - name: Install Chapel
         run: |
           if [ "${{ inputs.chapel_version }}" = "nightly" ]; then
@@ -102,13 +54,9 @@ jobs:
           - chapel/chapel:${{ inputs.chapel_version }}
           - chapel/chapel-gasnet:${{ inputs.chapel_version }}
           - chapel/chapel-gasnet-smp:${{ inputs.chapel_version }}
-        backend:
-          - llvm
-          - gnu
-        os:
-          - ubuntu-latest
-          - ubuntu-24.04-arm
-    runs-on: ubuntu-latest
+        backend: [llvm, gnu]
+        os: [ubuntu-latest, ubuntu-24.04-arm]
+    runs-on: ${{ matrix.os }}
     container:
       image: ${{ matrix.image }}
     env:

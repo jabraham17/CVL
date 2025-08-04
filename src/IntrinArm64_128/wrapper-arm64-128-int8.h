@@ -58,4 +58,12 @@ static inline int movemask_8x16i(int8x16_t x) {
   return vgetq_lane_u8(paired64, 0) | ((int) vgetq_lane_u8(paired64, 8) << 8);
 }
 
+static inline int8x16_t reverse_8x16i(int8x16_t x) {
+  static const int8x16_t mask = {
+    15, 14, 13, 12, 11, 10, 9, 8,
+    7, 6, 5, 4, 3, 2, 1, 0
+  };
+  return vqtbl1q_s8(x, mask);
+}
+
 #endif

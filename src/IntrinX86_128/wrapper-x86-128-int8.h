@@ -49,6 +49,20 @@ static inline __m128i blendLowHigh_epi8(__m128i x, __m128i y) {
   return _mm_blend_epi32(x, y, 0b1100);
 }
 
+static inline __m128i deinterleaveLower_epi8(__m128i x, __m128i y) {
+  __m128i mask = _mm_set_epi8(30, 28, 26, 24, 22, 20, 18, 16,
+                              14, 12, 10, 8, 6, 4, 2, 0);
+  __m128i t0 = _mm_shuffle_epi8(x, mask);
+  __m128i t1 = swapLowHigh_epi8(_mm_shuffle_epi8(y, mask));
+  return _mm_blend_epi32(t0, t1, 0b1100);
+}
+static inline __m128i deinterleaveUpper_epi8(__m128i x, __m128i y) {
+  __m128i mask = _mm_set_epi8(31, 29, 27, 25, 23, 21, 19, 17,
+                              15, 13, 11, 9, 7, 5, 3, 1);
+  __m128i t0 = _mm_shuffle_epi8(x, mask);
+  __m128i t1 = swapLowHigh_epi8(_mm_shuffle_epi8(y, mask));
+  return _mm_blend_epi32(t0, t1, 0b1100);
+}
 
 #undef LANES
 

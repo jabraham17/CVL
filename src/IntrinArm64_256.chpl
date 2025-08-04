@@ -2,7 +2,7 @@
 /* There is no 256 for neon, this emulates it */
 @chplcheck.ignore("PascalCaseModules")
 module IntrinArm64_256 {
-  use IntrinArm64_128 only numBits;
+  use IntrinArm64_128 only numBits, vecTypeStr;
   use CTypes only c_ptr, c_ptrConst, c_int;
   use Reflection only getRoutineName;
 
@@ -115,16 +115,44 @@ module IntrinArm64_256 {
     inline proc type reverse(x: vecType): vecType do
       return new vecType(implVecType.reverse(x.hi), implVecType.reverse(x.lo));
     inline proc type rotateLeft(x: vecType): vecType {
-      import CVL;
-      if CVL.implementationWarnings then
-        compilerWarning("rotateLeft not implemented");
-      return x; // TODO
+      // rotate each half left (A, B)
+      // combine A and D and B and C based on the mask
+
+      const A = implVecType.rotateLeft(x.lo);
+      const B = implVecType.rotateLeft(x.hi);
+
+      type laneType = implVecType.laneType;
+      param zeros =
+        if isIntegralType(laneType)
+          then 0:int(numBits(laneType))
+          else (0:uint(numBits(laneType))).transmute(laneType);
+      const mask = implVecType.insert(implVecType.allOnes(),
+                                      zeros, implVecType.numLanes-1);
+      const C = implVecType.reverse(x.lo);
+      const D = implVecType.reverse(x.hi);
+
+      return new vecType(implVecType.bitSelect(mask, A, D),
+                         implVecType.bitSelect(mask, B, C));
     }
     inline proc type rotateRight(x: vecType): vecType {
-      import CVL;
-      if CVL.implementationWarnings then
-        compilerWarning("rotateRight not implemented");
-      return x; // TODO
+      // rotate each half right (A, B)
+      // combine A and D and B and C based on the mask
+
+      const A = implVecType.rotateRight(x.lo);
+      const B = implVecType.rotateRight(x.hi);
+
+      type laneType = implVecType.laneType;
+      param zeros =
+        if isIntegralType(laneType)
+          then 0:int(numBits(laneType))
+          else (0:uint(numBits(laneType))).transmute(laneType);
+      const mask = implVecType.insert(implVecType.allOnes(),
+                                      zeros, 0);
+      const C = implVecType.reverse(x.lo);
+      const D = implVecType.reverse(x.hi);
+
+      return new vecType(implVecType.bitSelect(mask, A, D),
+                         implVecType.bitSelect(mask, B, C));
     }
     inline proc type interleaveLower(x: vecType, y: vecType): vecType do
       return new vecType(implVecType.interleaveLower(x.lo, y.lo),

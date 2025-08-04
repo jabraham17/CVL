@@ -9,8 +9,6 @@ on:
   pull_request:
   workflow_dispatch:
 
-# TODO: add a linux-arm runner
-
 # TODO: add comm!=none jobs for brew once brew has ML chapel
 
 # TODO: add auto benchmarks for https://github.com/benchmark-action/github-action-benchmark

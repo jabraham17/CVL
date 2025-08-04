@@ -56,6 +56,20 @@ static inline __m128i hadd_epi16(__m128i x, __m128i y) {
   return _mm_unpacklo_epi16(t0, t1);
 }
 
+static inline __m128i deinterleaveLower_epi16(__m128i x, __m128i y) {
+  __m128i mask = _mm_set_epi8(29, 28, 25, 24, 21, 10, 17, 16,
+                              13, 12, 9, 8, 5, 4, 1, 0);
+  __m128i t0 = _mm_shuffle_epi8(x, mask);
+  __m128i t1 = swapLowHigh_epi16(_mm_shuffle_epi8(y, mask));
+  return _mm_blend_epi32(t0, t1, 0b1100);
+}
+static inline __m128i deinterleaveUpper_epi16(__m128i x, __m128i y) {
+  __m128i mask = _mm_set_epi8(31, 30, 27, 26, 23, 12, 19, 18,
+                              15, 14, 11, 10, 7, 6, 3, 2);
+  __m128i t0 = _mm_shuffle_epi8(x, mask);
+  __m128i t1 = swapLowHigh_epi16(_mm_shuffle_epi8(y, mask));
+  return _mm_blend_epi32(t0, t1, 0b1100);
+}
 
 #undef LANES
 

@@ -700,7 +700,9 @@ module IntrinArm64_128 {
       return extractVector8x16i8(x, x);
     }
     inline proc type reverse(x: vecType): vecType {
-      return base.swapPairs(base.swapLowHigh(x));
+      pragma "fn synchronization free"
+      extern proc reverse_8x16i(x: vecType): vecType;
+      return reverse_8x16i(x);
     }
     inline proc type rotateLeft(x: vecType): vecType {
       pragma "fn synchronization free"
@@ -796,7 +798,9 @@ module IntrinArm64_128 {
       return extractVector16x8i4(x, x);
     }
     inline proc type reverse(x: vecType): vecType {
-      return base.swapPairs(base.swapLowHigh(x));
+      pragma "fn synchronization free"
+      extern proc reverse_16x8i(x: vecType): vecType;
+      return reverse_16x8i(x);
     }
     inline proc type rotateLeft(x: vecType): vecType {
       pragma "fn synchronization free"

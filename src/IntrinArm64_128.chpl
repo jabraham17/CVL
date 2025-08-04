@@ -430,6 +430,9 @@ module IntrinArm64_128 {
       if canResolveTypeMethod(extensionType, "moveMask", x) then
         return extensionType.moveMask(x);
       else {
+        // https://branchfree.org/2019/04/01/
+        // fitting-my-head-through-the-arm-holes-or-two-sequences
+        // -to-substitute-for-the-missing-pmovmskb-instruction-on-arm-neon/
         pragma "fn synchronization free"
         extern "movemask_" + vecTypeStr(vecType)
         proc func(x: vecType): c_int;

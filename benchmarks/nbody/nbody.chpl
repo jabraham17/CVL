@@ -1,4 +1,4 @@
-use Math, SIMD;
+use Math, CVL;
 
 config const n = 10000;       // The number of timesteps to simulate
 type vecT = vector(real, 4);

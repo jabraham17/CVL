@@ -83,6 +83,14 @@ module Vector {
     //
     // init from tuple
     //
+    inline proc init(type eltType, param numElts: int, values)
+      where isHomogeneousTupleType(values.type) &&
+            isCoercible(values(0).type, eltType) &&
+            numElts == values.size {
+      this.eltType = eltType;
+      this.numElts = numElts;
+      this.data = Intrin.set(this.eltType, this.numElts, values);
+    }
     inline proc init(values) where isHomogeneousTupleType(values.type) {
       this.eltType = values(0).type;
       this.numElts = values.size;

@@ -9,35 +9,40 @@
           "files": ["nbody/nbody-baseline.chpl"],
           "language": "chpl",
           "compopts": ["--fast"],
-          "execopts": ["--n=50000000"]
+          "execopts": ["--n=50000000"],
+          "measure": ["RUNTIME"]
         },
         {
           "name": "vectorized",
           "files": ["nbody/nbody.chpl"],
           "language": "chpl",
           "compopts": ["--fast", "CVL_OPTIONS"],
-          "execopts": ["--n=50000000"]
+          "execopts": ["--n=50000000"],
+          "measure": ["RUNTIME"]
         },
         {
           "name": "vectorized-fma",
           "files": ["nbody/nbody-fma.chpl"],
           "language": "chpl",
           "compopts": ["--fast", "CVL_OPTIONS"],
-          "execopts": ["--n=50000000"]
+          "execopts": ["--n=50000000"],
+          "measure": ["RUNTIME"]
         },
         {
           "name": "nbody-gcc",
           "files": ["nbody/nbody.c"],
           "language": "c-gcc",
           "compopts": ["-O3", "-march=native"],
-          "execopts": ["50000000"]
+          "execopts": ["50000000"],
+          "measure": ["RUNTIME"]
         },
         {
           "name": "nbody-clang",
           "files": ["nbody/nbody.c"],
           "language": "c-clang",
           "compopts": ["-O3", "-march=native"],
-          "execopts": ["50000000"]
+          "execopts": ["50000000"],
+          "measure": ["RUNTIME"]
         }
       ]
     },
@@ -50,14 +55,54 @@
           "files": ["mandelbrot/mandelbrot3.chpl"],
           "language": "chpl",
           "compopts": ["--fast"],
-          "execopts": ["--n=16000"]
+          "execopts": ["--n=16000"],
+          "measure": ["RUNTIME"]
         },
         {
           "name": "vectorized",
           "files": ["mandelbrot/mandelbrot-vec.chpl"],
           "language": "chpl",
           "compopts": ["--fast", "CVL_OPTIONS"],
-          "execopts": ["--n=16000"]
+          "execopts": ["--n=16000"],
+          "measure": ["RUNTIME"]
+        }
+      ]
+    },
+    {
+      "name": "flux",
+      "trials": 10,
+      "versions": [
+        {
+          "name": "baseline",
+          "files": ["flux/flux.chpl"],
+          "language": "chpl",
+          "compopts": ["--fast"],
+          "execopts": ["--n=1000", "--m=1000", "--iterations=50", "--timing"],
+          "measure": ["Time taken: ([0-9.]+)"]
+        },
+        {
+          "name": "baseline-fast-math)",
+          "files": ["flux/flux.chpl"],
+          "language": "chpl",
+          "compopts": ["--fast", "--no-ieee-float"],
+          "execopts": ["--n=1000", "--m=1000", "--iterations=50", "--timing"],
+          "measure": ["Time taken: ([0-9.]+)"]
+        },
+        {
+          "name": "AoA",
+          "files": ["flux/flux2.chpl"],
+          "language": "chpl",
+          "compopts": ["--fast"],
+          "execopts": ["--n=1000", "--m=1000", "--iterations=50", "--timing"],
+          "measure": ["Time taken: ([0-9.]+)"]
+        },
+        {
+          "name": "AoA-vectorized",
+          "files": ["flux/flux3.chpl"],
+          "language": "chpl",
+          "compopts": ["--fast", "CVL_OPTIONS"],
+          "execopts": ["--n=1000", "--m=1000", "--iterations=50", "--timing"],
+          "measure": ["Time taken: ([0-9.]+)"]
         }
       ]
     }

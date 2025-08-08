@@ -2,6 +2,7 @@
 
 import argparse
 from enum import Enum
+import itertools
 import json
 import subprocess
 import time
@@ -11,6 +12,7 @@ from pathlib import Path
 from typing import List, Dict, Optional, Self
 from pydantic import BaseModel, Field
 import tempfile
+import re
 
 
 class Language(str, Enum):
@@ -37,6 +39,7 @@ class Stats(BaseModel):
     stddev: float
     min: float
     max: float
+    name: Optional[str] = None
 
 
 class BenchmarkVersion(BaseModel):
@@ -45,6 +48,7 @@ class BenchmarkVersion(BaseModel):
     language: Language
     compopts: List[str] = Field(default_factory=list)
     execopts: List[str] = Field(default_factory=list)
+    measure: List[str] = Field(default_factory=list)
 
     def resolve_compopts(self, cvl_options: Optional[str] = None):
         # if CVL_OPTIONS in the compopts, remove it and add the CVL_OPTIONS
@@ -52,7 +56,6 @@ class BenchmarkVersion(BaseModel):
             self.compopts.remove("CVL_OPTIONS")
             self.compopts.extend(cvl_options.split())
         return self.compopts
-
 
 class BenchmarkConfig(BaseModel):
     name: str
@@ -85,12 +88,21 @@ class BenchmarkRun:
         self.benchmark_dir = benchmark_dir
         self.config = config
         self.version = version
-        self.times = []
+        self.measurements = {}
 
     def run(
         self, scratch: Optional[Path] = None, trials: Optional[int] = None
     ) -> bool:
-        self.times = []
+        self.measurements = {}
+        measure_regexes = {}
+        for measure in self.version.measure:
+            if measure == "RUNTIME":
+                self.measurements["RUNTIME"] = []
+            else:
+                measure_regexes[measure] = re.compile(measure)
+                self.measurements[measure] = []
+
+
         files = [str(self.benchmark_dir / f) for f in self.version.files]
         compopts = self.version.compopts
         execopts = self.version.execopts
@@ -133,10 +145,20 @@ class BenchmarkRun:
             for trial in range(trials):
                 print(f"Trial {trial + 1}/{trials}")
                 start_time = time.time()
-                subprocess.run(run_cmd, check=True, capture_output=True)
+                cp = subprocess.run(run_cmd, check=True, capture_output=True, text=True)
                 end_time = time.time()
                 elapsed_time = end_time - start_time
-                self.times.append(elapsed_time)
+                if "RUNTIME" in self.measurements:
+                    self.measurements["RUNTIME"].append(elapsed_time)
+                output = cp.stdout + cp.stderr
+                for key, val in measure_regexes.items():
+                    if match := val.search(output):
+                        self.measurements[key].append(float(match.group(1)))
+                    else:
+                        print(
+                            f"Warning: Could not find measurement '{key}' in output",
+                            file=sys.stderr,
+                        )
                 print(
                     f"Trial {trial + 1} completed in {elapsed_time:.3f} seconds"
                 )
@@ -149,26 +171,24 @@ class BenchmarkRun:
 
         return True
 
-    def stats(self) -> Stats:
-        if not self.times:
-            return Stats(
-                n=0,
-                mean=float("inf"),
-                stddev=float("inf"),
-                min=float("inf"),
-                max=float("inf"),
-            )
+    def stats(self, measurement="RUNTIME") -> Stats:
 
-        mean = statistics.mean(self.times)
-        stddev = statistics.stdev(self.times) if len(self.times) > 1 else 0
-        min_time = min(self.times)
-        max_time = max(self.times)
+        if measurement not in self.measurements:
+            raise ValueError(f"Measurement '{measurement}' not found")
+
+        times = self.measurements[measurement]
+
+        mean = statistics.mean(times)
+        stddev = statistics.stdev(times) if len(times) > 1 else 0
+        min_time = min(times)
+        max_time = max(times)
         return Stats(
-            n=len(self.times),
+            n=len(times),
             mean=mean,
             stddev=stddev,
             min=min_time,
             max=max_time,
+            name=measurement if measurement != "RUNTIME" else None,
         )
 
 
@@ -223,8 +243,8 @@ def should_run_benchmark(
 
 
 def group_results_by_benchmark(
-    results: Dict[str, Stats],
-) -> Dict[str, Dict[str, Stats]]:
+    results: Dict[str, List[Stats]],
+) -> Dict[str, Dict[str, List[Stats]]]:
     grouped = {}
     for full_name, stats in results.items():
         benchmark, version = full_name.split("::")
@@ -234,7 +254,7 @@ def group_results_by_benchmark(
     return grouped
 
 
-def print_statistics(results: Dict[str, Stats]):
+def print_statistics(results: Dict[str, List[Stats]]):
     print("\nResults by Benchmark:")
     print("=" * 100)
 
@@ -245,20 +265,22 @@ def print_statistics(results: Dict[str, Stats]):
             continue
 
         print(f"\nBenchmark: {benchmark}")
-        print("-" * 100)
+        header =  (f"{'Version':<40} {'Mean (s)':<12} {'Std Dev':<12} " +
+            f"{'Min (s)':<12} {'Max (s)':<12} {'%% diff':<20}")
+        print("-" * len(header))
+        print(header
+        )
+        print("-" * len(header))
 
         # Sort versions by mean execution time
-        sorted_versions = sorted(versions.items(), key=lambda x: x[1].mean)
-
-        # Print header
-        print(
-            f"{'Version':<20} {'Mean (s)':<12} {'Std Dev':<12}",
-            f"{'Min (s)':<12} {'Max (s)':<12} {'%% diff':<20}",
+        # sorted_versions = sorted(versions.items(), key=lambda x: x[1].mean)
+        # flatten the list of Stats (one per measurement)
+        flattened_versions = itertools.chain.from_iterable(
+            [(version, stat) for stat in stats] for version, stats in versions.items()
         )
-        print("-" * 100)
+        sorted_versions = sorted(flattened_versions, key=lambda x: x[1].mean)
 
         first = sorted_versions[0]
-
         for version, stats in sorted_versions:
             # Print basic statistics
             # Calculate percent difference against first version
@@ -267,8 +289,9 @@ def print_statistics(results: Dict[str, Stats]):
                 if first[1].mean != 0
                 else float("inf")
             )
+            version_name = f"{version} - '{stats.name}'" if stats.name else version
             stats_line = (
-                f"{version:<20} {stats.mean:<12.3f} "
+                f"{version_name:<40} {stats.mean:<12.3f} "
                 + f"{stats.stddev:<12.3f} {stats.min:<12.3f} "
                 + f"{stats.max:<12.3f} {percent_diff:<20.3f}"
             )
@@ -299,7 +322,7 @@ def main():
         print(f"Running benchmark: {name}")
         if not runner.run(scratch=args.scratch, trials=args.trials):
             return 1  # error
-        results[name] = runner.stats()
+        results[name] = list([runner.stats(measurement) for measurement in runner.measurements])
 
     print_statistics(results)
 

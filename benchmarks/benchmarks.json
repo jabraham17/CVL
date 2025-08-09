@@ -105,6 +105,28 @@
           "measure": ["Time taken: ([0-9.]+)"]
         }
       ]
+    },
+    {
+      "name": "kmeans",
+      "trials": 10,
+      "versions": [
+        {
+          "name": "baseline",
+          "files": ["kmeans/kmeans.chpl"],
+          "language": "chpl",
+          "compopts": ["--fast", "--no-ieee-float"],
+          "execopts": ["--n=100_000"],
+          "measure": ["KMeans took ([0-9.]+)"]
+        },
+        {
+          "name": "vectorized",
+          "files": ["kmeans/kmeans-vector.chpl"],
+          "language": "chpl",
+          "compopts": ["--fast", "--no-ieee-float", "CVL_OPTIONS"],
+          "execopts": ["--n=100_000"],
+          "measure": ["KMeans took ([0-9.]+)"]
+        }
+      ]
     }
   ]
 }

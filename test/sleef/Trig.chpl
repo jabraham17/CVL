@@ -11,13 +11,7 @@ proc getGoodFile(suffix="") {
 }
 
 // must be a length divisible by 2, 4, and 8
-const testData = [
-  0.0, 0.5, 1.0, 1.5, 2.0,
-  Math.pi, Math.pi/2, Math.pi/4, Math.pi/3, Math.pi/6,
-  2*Math.pi, 3*Math.pi/2, 3*Math.pi/4, 5*Math.pi/4, 7*Math.pi/4,
-  4*Math.pi, 5*Math.pi/2, 11*Math.pi/6, 13*Math.pi/6, 15*Math.pi/6,
-  -0.0, -0.5, -1.0, -1.5
-];
+const testData = [i in 1..#24] i / 24.0;
 
 proc testSerial(vec, param func: string) {
   var newVec: vec.type;

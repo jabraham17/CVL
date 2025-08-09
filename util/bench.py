@@ -57,6 +57,7 @@ class BenchmarkVersion(BaseModel):
             self.compopts.extend(cvl_options.split())
         return self.compopts
 
+
 class BenchmarkConfig(BaseModel):
     name: str
     trials: int = 1
@@ -102,7 +103,6 @@ class BenchmarkRun:
                 measure_regexes[measure] = re.compile(measure)
                 self.measurements[measure] = []
 
-
         files = [str(self.benchmark_dir / f) for f in self.version.files]
         compopts = self.version.compopts
         execopts = self.version.execopts
@@ -145,7 +145,9 @@ class BenchmarkRun:
             for trial in range(trials):
                 print(f"Trial {trial + 1}/{trials}")
                 start_time = time.time()
-                cp = subprocess.run(run_cmd, check=True, capture_output=True, text=True)
+                cp = subprocess.run(
+                    run_cmd, check=True, capture_output=True, text=True
+                )
                 end_time = time.time()
                 elapsed_time = end_time - start_time
                 if "RUNTIME" in self.measurements:
@@ -156,7 +158,8 @@ class BenchmarkRun:
                         self.measurements[key].append(float(match.group(1)))
                     else:
                         print(
-                            f"Warning: Could not find measurement '{key}' in output",
+                            "Warning: Could not find measurement"
+                            + f" '{key}' in output",
                             file=sys.stderr,
                         )
                 print(
@@ -265,18 +268,20 @@ def print_statistics(results: Dict[str, List[Stats]]):
             continue
 
         print(f"\nBenchmark: {benchmark}")
-        header =  (f"{'Version':<40} {'Mean (s)':<12} {'Std Dev':<12} " +
-            f"{'Min (s)':<12} {'Max (s)':<12} {'%% diff':<20}")
-        print("-" * len(header))
-        print(header
+        header = (
+            f"{'Version':<40} {'Mean (s)':<12} {'Std Dev':<12} "
+            + f"{'Min (s)':<12} {'Max (s)':<12} {'%% diff':<20}"
         )
+        print("-" * len(header))
+        print(header)
         print("-" * len(header))
 
         # Sort versions by mean execution time
         # sorted_versions = sorted(versions.items(), key=lambda x: x[1].mean)
         # flatten the list of Stats (one per measurement)
         flattened_versions = itertools.chain.from_iterable(
-            [(version, stat) for stat in stats] for version, stats in versions.items()
+            [(version, stat) for stat in stats]
+            for version, stats in versions.items()
         )
         sorted_versions = sorted(flattened_versions, key=lambda x: x[1].mean)
 
@@ -289,7 +294,9 @@ def print_statistics(results: Dict[str, List[Stats]]):
                 if first[1].mean != 0
                 else float("inf")
             )
-            version_name = f"{version} - '{stats.name}'" if stats.name else version
+            version_name = (
+                f"{version} - '{stats.name}'" if stats.name else version
+            )
             stats_line = (
                 f"{version_name:<40} {stats.mean:<12.3f} "
                 + f"{stats.stddev:<12.3f} {stats.min:<12.3f} "
@@ -322,7 +329,9 @@ def main():
         print(f"Running benchmark: {name}")
         if not runner.run(scratch=args.scratch, trials=args.trials):
             return 1  # error
-        results[name] = list([runner.stats(measurement) for measurement in runner.measurements])
+        results[name] = list(
+            [runner.stats(measurement) for measurement in runner.measurements]
+        )
 
     print_statistics(results)
 

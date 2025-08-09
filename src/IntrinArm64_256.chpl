@@ -21,7 +21,11 @@ module IntrinArm64_256 {
       this.lo = lo;
       this.hi = hi;
     }
+
+    proc type numBits param : int do return this.vt.numBits * 2;
   }
+  proc numBits(type t) param: int where isSubtype(t, vecPair) do
+    return numBits(t.vt) * 2;
 
   // unneeded for now, nobody should be using the raw types directly
   // proc vec32x8r type do return vecPair(vec32x4r);
@@ -30,10 +34,6 @@ module IntrinArm64_256 {
   // proc vec16x16i type do return vecPair(vec16x8i);
   // proc vec32x8i type do return vecPair(vec32x4i);
   // proc vec64x4i type do return vecPair(vec64x2i);
-
-
-  proc numBits(type t) param: int where isSubtype(t, vecPair) do
-    return numBits(t.vt) * 2;
 
 
   @chplcheck.ignore("CamelCaseRecords")

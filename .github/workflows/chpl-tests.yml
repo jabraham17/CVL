@@ -42,6 +42,9 @@ jobs:
           else
             brew install chapel
           fi
+      - name: Build CVL Dependencies
+        run: |
+          ./third-party/sleef/install.sh
       - name: Run Tests
         run: |
           ./util/test.sh
@@ -66,6 +69,9 @@ jobs:
         uses: actions/checkout@v4
       - name: Set up CMake
         uses: jwlawson/actions-setup-cmake@v2.0.2
+      - name: Build CVL Dependencies
+        run: |
+          ./third-party/sleef/install.sh
       - name: Run Tests
         run: |
           ./util/test.sh
@@ -81,17 +87,20 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Install dependencies
+      - name: Install Python Dependencies
         run: |
           python3 -m venv .venv
           ./.venv/bin/python3 -m pip install --upgrade pip
           ./.venv/bin/python3 -m pip install pydantic
+      - name: Build CVL Dependencies
+        run: |
+          ./third-party/sleef/install.sh
       - name: Run Benchmarks
         run: |
           ./.venv/bin/python3 ./util/bench.py \
             --schema benchmarks/benchmarks.json \
             --trials 3 \
-            --cvl-options "$(./compile.py)"
+            --cvl-options "$(./compile.py --sleef)"
 
   lint:
     runs-on: ubuntu-latest

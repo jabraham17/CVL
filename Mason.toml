@@ -9,7 +9,7 @@ license="Apache-2.0"
 copyright="2025; Jade Abraham"
 type="library"
 # TODO: implementation still in progress, use -sSIMD.implementationWarnings=false
-compopts="--using-attribute-toolname=lint -sCVL.implementationWarnings=false --no-overload-sets-checks"
+compopts="--using-attribute-toolname=lint -sCVL.implementationWarnings=false --no-overload-sets-checks --ccflags=-Wno-strict-prototypes"
 docopts="--using-attribute-toolname=lint"
 
 tests = [
@@ -26,7 +26,8 @@ tests = [
   "MathFuncs.chpl",
   "MathTest.chpl",
   "ShuffleTest.chpl",
-  "SqrtTest.chpl"
+  "SqrtTest.chpl",
+  "sleef/Trig.chpl",
 ]
 
 [dependencies]

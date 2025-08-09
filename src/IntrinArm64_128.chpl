@@ -37,6 +37,16 @@ module IntrinArm64_128 {
           t == vec8x16i || t == vec16x8i || t == vec32x4i || t == vec64x2i ||
           t == vec8x16u || t == vec16x8u || t == vec32x4u || t == vec64x2u
     do return 128;
+  proc type vec32x4r.numBits param : int do return 128;
+  proc type vec64x2r.numBits param : int do return 128;
+  proc type vec8x16i.numBits param : int do return 128;
+  proc type vec16x8i.numBits param : int do return 128;
+  proc type vec32x4i.numBits param : int do return 128;
+  proc type vec64x2i.numBits param : int do return 128;
+  proc type vec8x16u.numBits param : int do return 128;
+  proc type vec16x8u.numBits param : int do return 128;
+  proc type vec32x4u.numBits param : int do return 128;
+  proc type vec64x2u.numBits param : int do return 128;
 
   proc getHalfType(type t) type {
          if t == vec32x4r then return vec32x2r;

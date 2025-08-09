@@ -731,6 +731,71 @@ module Vector {
     return result;
   }
 
+  inline proc sin(x: vector(?eltType, ?numElts)): x.type {
+    if !isRealType(eltType) then
+      compilerError(
+        "sin is only defined for real types, not " + eltType:string);
+
+    import SLEEF.sleef;
+    var result: x.type;
+    result.data = sleef.sin(eltType, numElts, x.data);
+    return result;
+  }
+
+  inline proc cos(x: vector(?eltType, ?numElts)): x.type {
+    if !isRealType(eltType) then
+      compilerError(
+        "cos is only defined for real types, not " + eltType:string);
+
+    import SLEEF.sleef;
+    var result: x.type;
+    result.data = sleef.cos(eltType, numElts, x.data);
+    return result;
+  }
+
+  inline proc tan(x: vector(?eltType, ?numElts)): x.type {
+    if !isRealType(eltType) then
+      compilerError(
+        "tan is only defined for real types, not " + eltType:string);
+
+    import SLEEF.sleef;
+    var result: x.type;
+    result.data = sleef.tan(eltType, numElts, x.data);
+    return result;
+  }
+
+  inline proc asin(x: vector(?eltType, ?numElts)): x.type {
+    if !isRealType(eltType) then
+      compilerError(
+        "asin is only defined for real types, not " + eltType:string);
+
+    import SLEEF.sleef;
+    var result: x.type;
+    result.data = sleef.asin(eltType, numElts, x.data);
+    return result;
+  }
+
+  inline proc acos(x: vector(?eltType, ?numElts)): x.type {
+    if !isRealType(eltType) then
+      compilerError(
+        "acos is only defined for real types, not " + eltType:string);
+
+    import SLEEF.sleef;
+    var result: x.type;
+    result.data = sleef.acos(eltType, numElts, x.data);
+    return result;
+  }
+
+  inline proc atan(x: vector(?eltType, ?numElts)): x.type {
+    if !isRealType(eltType) then
+      compilerError(
+        "atan is only defined for real types, not " + eltType:string);
+
+    import SLEEF.sleef;
+    var result: x.type;
+    result.data = sleef.atan(eltType, numElts, x.data);
+    return result;
+  }
 
   /*
     === START OPERATORS ===

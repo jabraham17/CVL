@@ -28,6 +28,7 @@ class Project:
         self.workspace = workspace
         self.Mason_toml = workspace / "Mason.toml"
         self.data = {}
+        self.sleef = False
         self.load()
 
     def load(self):
@@ -42,6 +43,26 @@ class Project:
             sys.stderr.write("Unsupported architecture: {}\n".format(arch))
         else:
             arch_compopts = arch_specific.get("compopts", "")
+
+        if self.sleef:
+            sleef_dir = (
+                self.workspace / "third-party" / "sleef" / "sleef-install"
+            )
+            if sleef_dir.exists():
+                arch_compopts += (
+                    " --set useSLEEF --set SLEEF_INSTALL='{}'".format(sleef_dir)
+                )
+            else:
+                install_script = (
+                    self.workspace / "third-party" / "sleef" / "install.sh"
+                )
+                sys.stderr.write(
+                    "Sleef directory not found: {}, try running {}`\n".format(
+                        sleef_dir, install_script
+                    )
+                )
+                exit(1)
+
         return arch_compopts
 
     def get_mason_compopts(self):
@@ -131,7 +152,14 @@ def main():
         action="store_const",
         default=project.get_compopts,
     )
+    a.add_argument(
+        "--sleef",
+        default=False,
+        action="store_true",
+        help="Use the Sleef library for vector math operations",
+    )
     args = a.parse_args()
+    project.sleef = args.sleef
 
     res = args.action()
     if res:

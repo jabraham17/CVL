@@ -270,8 +270,10 @@ module Vector {
     inline proc ref load(container: ?,
                          idx: integral = 0,
                          param aligned: bool = false)
-    where isValidContainer(container, eltType) do
-      load(this.type._computeAddressConst(container, idx), idx=0, aligned=aligned);
+    where isValidContainer(container, eltType) {
+      const ptr = this.type._computeAddressConst(container, idx);
+      load(ptr, idx=0, aligned=aligned);
+    }
 
 
     inline proc store(ptr: c_ptr(eltType),
@@ -307,28 +309,30 @@ module Vector {
     }
     /* loadMasked is not bounds checked */
     inline proc type loadMasked(mask: vector(?),
-                                  container: ?,
-                                  idx: integral = 0): this {
+                                container: ?,
+                                idx: integral = 0): this {
       var result: this;
       result.loadMasked(mask, container, idx=idx);
       return result;
     }
     /* loadMasked is not bounds checked */
     inline proc ref loadMasked(mask: vector(?),
-                                 ptr: c_ptrConst(eltType),
-                                 idx: integral = 0)
+                               ptr: c_ptrConst(eltType),
+                               idx: integral = 0)
     where this.type.isValidLoadMask(mask.type) {
       var ptr_ = ptr + idx;
       data = Intrin.loadMasked(eltType, numElts, ptr_, mask.data);
     }
     /* loadMasked is not bounds checked */
     inline proc ref loadMasked(mask: vector(?),
-                                 container: ?,
-                                 idx: integral = 0)
+                               container: ?,
+                               idx: integral = 0)
     where this.type.isValidLoadMask(mask.type) &&
-          isValidContainer(container, eltType)
-      do loadMasked(mask,
-          this.type._computeAddressConst(container, idx, checkBounds=false), idx=0);
+          isValidContainer(container, eltType) {
+      const ptr =
+        this.type._computeAddressConst(container, idx, checkBounds=false);
+      loadMasked(mask, ptr, idx=0);
+    }
 
     // TODO: store mask
 

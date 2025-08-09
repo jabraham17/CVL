@@ -5,7 +5,7 @@ PROJECT_DIR=$(cd $(dirname $0); cd ..; pwd)
 (cd $PROJECT_DIR && set -x && \
   mason test --show --keep-binary -- \
     $@ \
-    $(./compile.py --arch-compopts) \
+    $(./compile.py --arch-compopts --sleef) \
   | tee $PROJECT_DIR/test.log \
 )
 

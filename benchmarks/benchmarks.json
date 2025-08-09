@@ -127,6 +127,28 @@
           "measure": ["KMeans took ([0-9.]+)"]
         }
       ]
+    },
+    {
+      "name": "trig-sin-cos",
+      "trials": 10,
+      "versions": [
+        {
+          "name": "baseline",
+          "files": ["trig/trigBench.chpl"],
+          "language": "chpl",
+          "compopts": ["--fast", "--no-ieee-float", "-svectorize=false", "CVL_OPTIONS"],
+          "execopts": ["--n=10_000_000", "--timing"],
+          "measure": ["Time taken: ([0-9.]+)"]
+        },
+        {
+          "name": "vectorized",
+          "files": ["trig/trigBench.chpl"],
+          "language": "chpl",
+          "compopts": ["--fast", "--no-ieee-float", "-svectorize=true", "CVL_OPTIONS"],
+          "execopts": ["--n=10_000_000", "--timing"],
+          "measure": ["Time taken: ([0-9.]+)"]
+        }
+      ]
     }
   ]
 }

@@ -19,10 +19,20 @@ module Vector {
   where isHomogeneousTuple(container) {
     return container(0).type == eltType;
   }
+  private proc isValidContainer(container: ?, type eltType) param: bool
+  where container.type == bytes {
+    return eltType == int(8) || eltType == uint(8);
+  }
+
   @chplcheck.ignore("UnusedFormal")
   private proc isValidContainer(container: ?, type eltType) param: bool {
     return false;
   }
+
+  private proc isValidContainerForStore(
+    container: ?, type eltType
+  ) param: bool do
+    return isValidContainer(container, eltType) && container.type != bytes;
 
   record vector: writeSerializable {
     type eltType;
@@ -189,10 +199,10 @@ module Vector {
     inline proc type _computeAddress(ref tup,
                                      idx: integral,
                                      param checkBounds = true): c_ptr(eltType)
-    where isValidContainer(tup, eltType) {
+    where isTuple(tup) && isValidContainer(tup, eltType) {
       if checkBounds && boundsChecking {
         if idx+numElts-1 >= tup.size {
-          halt("out of bounds load");
+          halt("out of bounds address");
         }
       }
       const ptr = c_addrOf(tup(idx));
@@ -205,15 +215,47 @@ module Vector {
       idx: integral,
       param checkBounds = true
     ): c_ptrConst(eltType)
-    where isValidContainer(tup, eltType) {
+    where isTuple(tup) && isValidContainer(tup, eltType) {
       if checkBounds && boundsChecking {
         if idx+numElts-1 >= tup.size {
-          halt("out of bounds load");
+          halt("out of bounds address");
         }
       }
       const ptr = c_addrOfConst(tup(idx));
       return ptr;
     }
+
+    @chplcheck.ignore("CamelCaseFunctions")
+    @chpldoc.nodoc
+    inline proc type _computeAddress(ref bytes_: bytes,
+                                     idx: integral,
+                                     param checkBounds = true): c_ptr(eltType)
+    where isValidContainer(bytes_, eltType) {
+      if checkBounds && boundsChecking {
+        if idx+numElts-1 >= bytes_.numBytes {
+          halt("out of bounds address");
+        }
+      }
+      const ptr = c_ptrTo(bytes_) + idx;
+      return ptr:c_ptr(eltType);
+    }
+    @chplcheck.ignore("CamelCaseFunctions")
+    @chpldoc.nodoc
+    inline proc type _computeAddressConst(
+      const ref bytes_: bytes,
+      idx: integral,
+      param checkBounds = true
+    ): c_ptrConst(eltType)
+    where isValidContainer(bytes_, eltType) {
+      if checkBounds && boundsChecking {
+        if idx+numElts-1 >= bytes_.numBytes {
+          halt("out of bounds address");
+        }
+      }
+      const ptr = c_ptrToConst(bytes_) + idx;
+      return ptr:c_ptrConst(eltType);
+    }
+
 
 
     inline proc ref load(ptr: c_ptrConst(eltType),
@@ -225,15 +267,12 @@ module Vector {
       else
         data = Intrin.loadUnaligned(eltType, numElts, ptr_);
     }
-    inline proc ref load(arr: [] eltType,
+    inline proc ref load(container: ?,
                          idx: integral = 0,
                          param aligned: bool = false)
-    where isValidContainer(arr, eltType) do
-      load(this.type._computeAddressConst(arr, idx), idx=0, aligned=aligned);
+    where isValidContainer(container, eltType) do
+      load(this.type._computeAddressConst(container, idx), idx=0, aligned=aligned);
 
-    inline proc ref load(tup, idx: integral = 0, param aligned: bool = false)
-    where isValidContainer(tup, eltType) && isHomogeneousTuple(tup) do
-      load(this.type._computeAddressConst(tup, idx), idx=0, aligned=aligned);
 
     inline proc store(ptr: c_ptr(eltType),
                       idx: integral = 0,
@@ -244,21 +283,12 @@ module Vector {
       else
         Intrin.storeUnaligned(eltType, numElts, ptr_, data);
     }
-    inline proc store(ref arr: [] eltType,
-                          idx: integral = 0,
-                          param aligned: bool = false)
-    where isValidContainer(arr, eltType) do
-      store(this.type._computeAddress(arr, idx), idx=0, aligned=aligned);
+    inline proc store(ref container: ?,
+                      idx: integral = 0,
+                      param aligned: bool = false)
+    where isValidContainerForStore(container, eltType) do
+      store(this.type._computeAddress(container, idx), idx=0, aligned=aligned);
 
-    inline proc store(ref tup, idx: integral = 0, param aligned: bool = false)
-    where isValidContainer(tup, eltType) && isHomogeneousTuple(tup) {
-      if boundsChecking {
-        if idx+numElts-1 >= tup.size {
-          halt("out of bounds store");
-        }
-      }
-      store(this.type._computeAddress(tup, idx), idx=0, aligned=aligned);
-    }
     inline proc type load(container: ?,
                           idx: integral = 0,
                           param aligned: bool = false): this {
@@ -293,21 +323,12 @@ module Vector {
     }
     /* loadMasked is not bounds checked */
     inline proc ref loadMasked(mask: vector(?),
-                                 arr: [] eltType,
+                                 container: ?,
                                  idx: integral = 0)
     where this.type.isValidLoadMask(mask.type) &&
-          isValidContainer(arr, eltType)
+          isValidContainer(container, eltType)
       do loadMasked(mask,
-          this.type._computeAddressConst(arr, idx, checkBounds=false), idx=0);
-    /* loadMasked is not bounds checked */
-    inline proc ref loadMasked(mask: vector(?),
-                                 tup,
-                                 idx: integral = 0)
-    where this.type.isValidLoadMask(mask.type) &&
-          isValidContainer(tup, eltType) &&
-          isHomogeneousTuple(tup)
-      do loadMasked(mask,
-          this.type._computeAddressConst(tup, idx, checkBounds=false), idx=0);
+          this.type._computeAddressConst(container, idx, checkBounds=false), idx=0);
 
     // TODO: store mask
 

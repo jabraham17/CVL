@@ -25,8 +25,8 @@ files = [
 ]
 
 # exclude TestHelpers.chpl
-TestHelpers = TEST_DIR / "TestHelpers.chpl"
-files = [f for f in files if f != TestHelpers]
+TestHelpers =  "TestHelpers.chpl"
+files = [f for f in files if f.name != TestHelpers]
 
 # the two lists should be the same
 difference = set(mason_tests).difference(set(files))

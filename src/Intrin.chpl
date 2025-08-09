@@ -137,6 +137,38 @@ module Intrin {
     return implType(eltType, numElts)
             .gatherMasked(ptr, indexType, indices, scale, mask, src);
 
+
+  inline proc shiftLeftImm(
+    type eltType, param numElts: int,
+    x: vectorType(eltType, numElts), param shift: int
+  ): x.type do
+    return implType(eltType, numElts).shiftLeftImm(x, shift);
+  inline proc shiftLeftVec(
+    type eltType, param numElts: int,
+    x: vectorType(eltType, numElts), y: x.type
+  ): x.type do
+    return implType(eltType, numElts).shiftLeftVec(x, y);
+  inline proc shiftRightImm(
+    type eltType, param numElts: int,
+    x: vectorType(eltType, numElts), param shift: int
+  ): x.type do
+    return implType(eltType, numElts).shiftRightImm(x, shift);
+  inline proc shiftRightVec(
+    type eltType, param numElts: int,
+    x: vectorType(eltType, numElts), y: x.type
+  ): x.type do
+    return implType(eltType, numElts).shiftRightVec(x, y);
+  inline proc shiftRightArithmeticImm(
+    type eltType, param numElts: int,
+    x: vectorType(eltType, numElts), param shift: int
+  ): x.type do
+    return implType(eltType, numElts).shiftRightArithmeticImm(x, shift);
+  inline proc shiftRightArithmeticVec(
+    type eltType, param numElts: int,
+    x: vectorType(eltType, numElts), y: x.type
+  ): x.type do
+    return implType(eltType, numElts).shiftRightArithmeticVec(x, y);
+
   inline proc swapPairs(type eltType,
                         param numElts: int,
                         x: vectorType(eltType, numElts)): x.type do

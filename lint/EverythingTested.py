@@ -25,7 +25,7 @@ files = [
 ]
 
 # exclude TestHelpers.chpl
-TestHelpers =  "TestHelpers.chpl"
+TestHelpers = "TestHelpers.chpl"
 files = [f for f in files if f.name != TestHelpers]
 
 # the two lists should be the same

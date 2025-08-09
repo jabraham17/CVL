@@ -3,15 +3,18 @@ use UnitTest;
 use TestHelpers;
 import Math;
 
-proc getGoodFile(suffix="") {
-  use Reflection, Path;
-  var path = absPath(getFileName());
-  path = path[0..#path.size-5] + suffix + ".good";
-  return path;
-}
-
 // must be a length divisible by 2, 4, and 8
 const testData = [i in 1..#24] i / 24.0;
+
+proc testEqual(vec1, vec2, epsilon=1e-6) throws {
+  for param i in 0..#vec1.numElts {
+    if abs(vec1(i) - vec2(i)) > epsilon {
+      throw new TestError.AssertionError(
+        ("vec1 and vec2 differ at index %i: %r vs %r").format(
+        (i, vec1(i), vec2(i))));
+    }
+  }
+}
 
 proc testSerial(vec, param func: string) {
   var newVec: vec.type;
@@ -33,75 +36,108 @@ proc testSerial(vec, param func: string) {
   return newVec;
 }
 
-// use a vecSerializer with a higher precision than the default
-use PrecisionSerializer only precisionSerializer;
-vecSerializer = new precisionSerializer(precision=8,
-                                        padding=13);
-
-proc trigTest(of, type eltType, param numElts: int) {
-  of.writeln("trig functions for ", eltType:string, " ", numElts);
-
+proc sinTestType(type eltType, param numElts: int) throws {
   const data = testData:eltType;
-  of.withSerializer(vecSerializer).writeln(" data: ", data);
-
   type vectorType = vector(eltType, numElts);
-
   for a in vectorType.vectors(data) {
     var r = sin(a);
-    of.withSerializer(vecSerializer).writeln("  sin(a)       : ", r);
     var r2 = testSerial(a, "sin");
-    of.withSerializer(vecSerializer).writeln("  sin(a) serial: ", r2);
+    testEqual(r, r2);
   }
+}
 
+proc cosTestType(type eltType, param numElts: int) throws {
+  const data = testData:eltType;
+  type vectorType = vector(eltType, numElts);
   for a in vectorType.vectors(data) {
     var r = cos(a);
-    of.withSerializer(vecSerializer).writeln("  cos(a)       : ", r);
     var r2 = testSerial(a, "cos");
-    of.withSerializer(vecSerializer).writeln("  cos(a) serial: ", r2);
+    testEqual(r, r2);
   }
+}
 
+proc tanTestType(type eltType, param numElts: int) throws {
+  const data = testData:eltType;
+  type vectorType = vector(eltType, numElts);
   for a in vectorType.vectors(data) {
     var r = tan(a);
-    of.withSerializer(vecSerializer).writeln("  tan(a)       : ", r);
     var r2 = testSerial(a, "tan");
-    of.withSerializer(vecSerializer).writeln("  tan(a) serial: ", r2);
+    testEqual(r, r2);
   }
+}
 
+proc asinTestType(type eltType, param numElts: int) throws {
+  const data = testData:eltType;
+  type vectorType = vector(eltType, numElts);
   for a in vectorType.vectors(data) {
     var r = asin(a);
-    of.withSerializer(vecSerializer).writeln("  asin(a)       : ", r);
     var r2 = testSerial(a, "asin");
-    of.withSerializer(vecSerializer).writeln("  asin(a) serial: ", r2);
+    testEqual(r, r2);
   }
+}
 
+proc acosTestType(type eltType, param numElts: int) throws {
+  const data = testData:eltType;
+  type vectorType = vector(eltType, numElts);
   for a in vectorType.vectors(data) {
     var r = acos(a);
-    of.withSerializer(vecSerializer).writeln("  acos(a)       : ", r);
     var r2 = testSerial(a, "acos");
-    of.withSerializer(vecSerializer).writeln("  acos(a) serial: ", r2);
+    testEqual(r, r2);
   }
+}
 
+proc atanTestType(type eltType, param numElts: int) throws {
+  const data = testData:eltType;
+  type vectorType = vector(eltType, numElts);
   for a in vectorType.vectors(data) {
     var r = atan(a);
-    of.withSerializer(vecSerializer).writeln("  atan(a)       : ", r);
     var r2 = testSerial(a, "atan");
-    of.withSerializer(vecSerializer).writeln("  atan(a) serial: ", r2);
+    testEqual(r, r2);
   }
 }
 
-
-
-proc trigTestReal128(test: borrowed Test) throws {
-  manage new outputManager(test, getGoodFile(".real-128")) as actualOutput {
-    trigTest(actualOutput, real(32), 4);
-    trigTest(actualOutput, real(64), 2);
-  }
+@chplcheck.ignore("UnusedFormal")
+proc sinTest(test: borrowed Test) throws {
+  sinTestType(real(32), 4);
+  sinTestType(real(64), 2);
+  sinTestType(real(32), 8);
+  sinTestType(real(64), 4);
 }
-proc trigTestReal256(test: borrowed Test) throws {
-  manage new outputManager(test, getGoodFile(".real-256")) as actualOutput {
-    trigTest(actualOutput, real(32), 8);
-    trigTest(actualOutput, real(64), 4);
-  }
+@chplcheck.ignore("UnusedFormal")
+proc cosTest(test: borrowed Test) throws {
+  cosTestType(real(32), 4);
+  cosTestType(real(64), 2);
+  cosTestType(real(32), 8);
+  cosTestType(real(64), 4);
 }
+@chplcheck.ignore("UnusedFormal")
+proc tanTest(test: borrowed Test) throws {
+  tanTestType(real(32), 4);
+  tanTestType(real(64), 2);
+  tanTestType(real(32), 8);
+  tanTestType(real(64), 4);
+}
+@chplcheck.ignore("UnusedFormal")
+proc asinTest(test: borrowed Test) throws {
+  asinTestType(real(32), 4);
+  asinTestType(real(64), 2);
+  asinTestType(real(32), 8);
+  asinTestType(real(64), 4);
+}
+@chplcheck.ignore("UnusedFormal")
+proc acosTest(test: borrowed Test) throws {
+  acosTestType(real(32), 4);
+  acosTestType(real(64), 2);
+  acosTestType(real(32), 8);
+  acosTestType(real(64), 4);
+}
+@chplcheck.ignore("UnusedFormal")
+proc atanTest(test: borrowed Test) throws {
+  atanTestType(real(32), 4);
+  atanTestType(real(64), 2);
+  atanTestType(real(32), 8);
+  atanTestType(real(64), 4);
+}
+
 
 UnitTest.main();

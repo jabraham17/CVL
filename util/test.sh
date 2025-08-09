@@ -2,10 +2,16 @@
 
 PROJECT_DIR=$(cd $(dirname $0); cd ..; pwd)
 
+CVL_OPTIONS=$($PROJECT_DIR/compile.py --arch-compopts --sleef)
+if [[ $? -ne 0 ]]; then
+  echo "Error: Failed to determine CVL options."
+  exit 1
+fi
+
 (cd $PROJECT_DIR && set -x && \
   mason test --show --keep-binary -- \
     $@ \
-    $(./compile.py --arch-compopts --sleef) \
+    $CVL_OPTIONS \
   | tee $PROJECT_DIR/test.log \
 )
 

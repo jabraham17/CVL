@@ -27,7 +27,7 @@ jobs:
             backend: clang
           - os: macos-latest
             backend: gnu
-    runs-on: ${{ matrix.os }}  
+    runs-on: ${{ matrix.os }}
     env:
       CHPL_TARGET_COMPILER: ${{ matrix.backend }}
     steps:

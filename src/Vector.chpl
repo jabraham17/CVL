@@ -148,8 +148,6 @@ module Vector {
       return this:tupType;
     }
 
-    // TODO shifts
-
     inline proc ref set(value)
     where isCoercible(value.type, eltType) do
       data = Intrin.splat(eltType, numElts, value:eltType);
@@ -660,6 +658,43 @@ module Vector {
     var result: this;
     result.data = Intrin.allZeros(eltType, numElts);
     return result;
+  }
+
+
+  /*
+    Shift each lane left by the given amount, shifting in zeros.
+  */
+  inline proc shiftLeft(param amount: int): this.type
+  where isIntegralType(eltType) {
+    amount;
+  }
+  inline proc shiftLeft(amount: this.type): this.type
+  where isIntegralType(eltType) {
+    amount;
+  }
+
+
+  /*
+    Shift each lane right by the given amount, shifting in zeros.
+  */
+  inline proc shiftRight(param amount: int): this.type
+  where isIntegralType(eltType) {
+    amount;
+  }
+  inline proc shiftRight(amount: this.type): this.type
+  where isIntegralType(eltType) {
+    amount;
+  }
+  /*
+    Shift each lane right by the given amount, shifting in sign bits.
+  */
+  inline proc shiftRightArithmetic(param amount: int): this.type
+  where isSignedType(eltType) {
+    amount;
+  }
+  inline proc shiftRightArithmetic(amount: this.type): this.type
+  where isSignedType(eltType) {
+    amount;
   }
 
 

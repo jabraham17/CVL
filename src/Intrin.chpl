@@ -138,32 +138,32 @@ module Intrin {
             .gatherMasked(ptr, indexType, indices, scale, mask, src);
 
 
-  inline proc shiftLeftImm(
+  inline proc shiftLeft(
     type eltType, param numElts: int,
     x: vectorType(eltType, numElts), param shift: int
   ): x.type do
     return implType(eltType, numElts).shiftLeftImm(x, shift);
-  inline proc shiftLeftVec(
+  inline proc shiftLeft(
     type eltType, param numElts: int,
     x: vectorType(eltType, numElts), y: x.type
   ): x.type do
     return implType(eltType, numElts).shiftLeftVec(x, y);
-  inline proc shiftRightImm(
+  inline proc shiftRight(
     type eltType, param numElts: int,
     x: vectorType(eltType, numElts), param shift: int
   ): x.type do
     return implType(eltType, numElts).shiftRightImm(x, shift);
-  inline proc shiftRightVec(
+  inline proc shiftRight(
     type eltType, param numElts: int,
     x: vectorType(eltType, numElts), y: x.type
   ): x.type do
     return implType(eltType, numElts).shiftRightVec(x, y);
-  inline proc shiftRightArithmeticImm(
+  inline proc shiftRightArithmetic(
     type eltType, param numElts: int,
     x: vectorType(eltType, numElts), param shift: int
   ): x.type do
     return implType(eltType, numElts).shiftRightArithmeticImm(x, shift);
-  inline proc shiftRightArithmeticVec(
+  inline proc shiftRightArithmetic(
     type eltType, param numElts: int,
     x: vectorType(eltType, numElts), y: x.type
   ): x.type do

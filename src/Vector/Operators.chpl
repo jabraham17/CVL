@@ -428,6 +428,86 @@ module Operators {
   }
 
   /*
+    Implements ``VECTOR >> VECTOR``
+
+    See :proc:`Intrin.shiftRight` for the intrinsic used.
+  */
+  inline operator>>(x: vector(?eltType, ?numElts), y: x.type): x.type {
+    var result: x.type;
+    result.data = Intrin.shiftRight(eltType, numElts, x.data, y.data);
+    return result;
+  }
+
+  /*
+    Implements ``VECTOR >>= VECTOR``
+
+    See :proc:`Intrin.shiftRight` for the intrinsic used.
+  */
+  inline operator>>=(ref x: vector(?eltType, ?numElts), y: x.type) {
+    x.data = Intrin.shiftRight(eltType, numElts, x.data, y.data);
+  }
+
+  /*
+    Implements ``VECTOR >> IMMEDIATE``
+
+    See :proc:`Intrin.shiftRight` for the intrinsic used.
+  */
+  inline operator>>(x: vector(?eltType, ?numElts), param imm: int): x.type {
+    var result: x.type;
+    result.data = Intrin.shiftRight(eltType, numElts, x.data, imm);
+    return result;
+  }
+
+  /*
+    Implements ``VECTOR >>= IMMEDIATE``
+
+    See :proc:`Intrin.shiftRight` for the intrinsic used.
+  */
+  inline operator>>=(ref x: vector(?eltType, ?numElts), param imm: int) {
+    x.data = Intrin.shiftRight(eltType, numElts, x.data, imm);
+  }
+
+  /*
+    Implements ``VECTOR << VECTOR``
+
+    See :proc:`Intrin.shiftLeft` for the intrinsic used.
+  */
+  inline operator<<(x: vector(?eltType, ?numElts), y: x.type): x.type {
+    var result: x.type;
+    result.data = Intrin.shiftLeft(eltType, numElts, x.data, y.data);
+    return result;
+  }
+
+  /*
+    Implements ``VECTOR <<= VECTOR``
+
+    See :proc:`Intrin.shiftLeft` for the intrinsic used.
+  */
+  inline operator<<=(ref x: vector(?eltType, ?numElts), y: x.type) {
+    x.data = Intrin.shiftLeft(eltType, numElts, x.data, y.data);
+  }
+
+  /*
+    Implements ``VECTOR << IMMEDIATE``
+
+    See :proc:`Intrin.shiftLeft` for the intrinsic used.
+  */
+  inline operator<<(x: vector(?eltType, ?numElts), param imm: int): x.type {
+    var result: x.type;
+    result.data = Intrin.shiftLeft(eltType, numElts, x.data, imm);
+    return result;
+  }
+
+  /*
+    Implements ``VECTOR <<= IMMEDIATE``
+
+    See :proc:`Intrin.shiftLeft` for the intrinsic used.
+  */
+  inline operator<<=(ref x: vector(?eltType, ?numElts), param imm: int) {
+    x.data = Intrin.shiftLeft(eltType, numElts, x.data, imm);
+  }
+
+  /*
     Implements ``VECTOR == VECTOR``
 
     See :proc:`Intrin.cmpEq` for the intrinsic used.

@@ -433,14 +433,12 @@ module Vector {
     inline proc transmute(type t): t where isSubtype(t, vector) &&
                                       numBits(t) != numBits(this.type) {
       compilerError("cannot transmute vector of length " +
-                    numBits(this) + " to vector of length " + numBits(t));
+                    numBits(this.type):string +
+                    " to vector of length " + numBits(t):string);
     }
 
 
-
-    // TODO: transmute (bitcast)
-    // TODO: typecast
-
+    inline proc convert(type t): t where isSubtype(t, vector) &&
 
 
     inline proc type indices(
@@ -667,13 +665,13 @@ module Vector {
   inline proc vector.shiftLeft(param amount: int): this.type
   where isIntegralType(eltType) {
     var result: this.type;
-    result.data = Intrin.shiftLeftImm(eltType, numElts, this.data, amount);
+    result.data = Intrin.shiftLeft(eltType, numElts, this.data, amount);
     return result;
   }
   inline proc vector.shiftLeft(amount: this.type): this.type
   where isIntegralType(eltType) {
     var result: this.type;
-    result.data = Intrin.shiftLeftVec(eltType, numElts, this.data, amount);
+    result.data = Intrin.shiftLeft(eltType, numElts, this.data, amount);
     return result;
   }
 
@@ -684,13 +682,13 @@ module Vector {
   inline proc vector.shiftRight(param amount: int): this.type
   where isIntegralType(eltType) {
     var result: this.type;
-    result.data = Intrin.shiftRightImm(eltType, numElts, this.data, amount);
+    result.data = Intrin.shiftRight(eltType, numElts, this.data, amount);
     return result;
   }
   inline proc vector.shiftRight(amount: this.type): this.type
   where isIntegralType(eltType) {
     var result: this.type;
-    result.data = Intrin.shiftRightVec(eltType, numElts, this.data, amount);
+    result.data = Intrin.shiftRight(eltType, numElts, this.data, amount);
     return result;
   }
   /*
@@ -699,13 +697,15 @@ module Vector {
   inline proc vector.shiftRightArithmetic(param amount: int): this.type
   where isSignedType(eltType) {
     var result: this.type;
-    result.data = Intrin.shiftRightArithmeticImm(eltType, numElts, this.data, amount);
+    result.data =
+      Intrin.shiftRightArithmetic(eltType, numElts, this.data, amount);
     return result;
   }
   inline proc vector.shiftRightArithmetic(amount: this.type): this.type
   where isSignedType(eltType) {
     var result: this.type;
-    result.data = Intrin.shiftRightArithmeticVec(eltType, numElts, this.data, amount);
+    result.data =
+      Intrin.shiftRightArithmetic(eltType, numElts, this.data, amount);
     return result;
   }
 
@@ -865,6 +865,9 @@ module Vector {
     V | V  ;  V |= V  ;  V | S  ; V |= S  ;  S | V
     V ^ V  ;  V ^= V  ;  V ^ S  ;  V ^= S  ;  S ^ V
     ~ V
+
+    V >> V  ;  V >>= V  ;  V >> I ; V >>= I
+    V << V  ;  V <<= V  ;  V << I ; V <<= I
 
     V == V  ;  V == S  ;  S == V
     V != V  ;  V != S  ;  S != V

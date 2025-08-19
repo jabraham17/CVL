@@ -15,6 +15,7 @@ import textwrap
 class OperandType(Enum):
     VECTOR = "vector"
     SCALAR = "scalar"
+    IMMEDIATE = "immediate"
 
     @classmethod
     def from_string(cls, type_str: str):
@@ -22,6 +23,8 @@ class OperandType(Enum):
             return cls.VECTOR
         elif type_str.strip() == "S":
             return cls.SCALAR
+        elif type_str.strip() == "I":
+            return cls.IMMEDIATE
         else:
             raise ValueError(f"Unknown operand type: {type_str}")
 
@@ -41,6 +44,11 @@ class OperatorType(Enum):
     OR_ASSIGN = ("|=", "or", True)
     XOR = ("^", "xor", False)
     XOR_ASSIGN = ("^=", "xor", True)
+
+    SHIFT_LEFT = ("<<", "shiftLeft", False)
+    SHIFT_LEFT_ASSIGN = ("<<=", "shiftLeft", True)
+    SHIFT_RIGHT = (">>", "shiftRight", False)
+    SHIFT_RIGHT_ASSIGN = (">>=", "shiftRight", True)
 
     NEGATE = ("-", "neg", False, "NEG")
     BW_NEGATE = ("~", "not", False)
@@ -183,6 +191,18 @@ inline operator@@{op}(x: vector(?eltType, ?numElts), y: ?scalarType): x.type
   return result;
 }
 """
+VECTOR_X_IMMEDIATE_TEMPLATE = """
+/*
+  Implements ``VECTOR @@{op} IMMEDIATE``
+
+  See :proc:`Intrin.@@{intrin}` for the intrinsic used.
+*/
+inline operator@@{op}(x: vector(?eltType, ?numElts), param imm: int): x.type {
+  var result: x.type;
+  result.data = Intrin.@@{intrin}(eltType, numElts, x.data, imm);
+  return result;
+}
+"""
 VECTOR_X_SCALAR_ASSIGN_TEMPLATE = """
 /*
   Implements ``VECTOR @@{op} SCALAR``
@@ -193,6 +213,16 @@ inline operator@@{op}(ref x: vector(?eltType, ?numElts), y: ?scalarType)
   where isCoercible(scalarType, eltType) {
   x.data = Intrin.@@{intrin}(eltType, numElts, x.data,
                   Intrin.splat(eltType, numElts, y));
+}
+"""
+VECTOR_X_IMMEDIATE_ASSIGN_TEMPLATE = """
+/*
+  Implements ``VECTOR @@{op} IMMEDIATE``
+
+  See :proc:`Intrin.@@{intrin}` for the intrinsic used.
+*/
+inline operator@@{op}(ref x: vector(?eltType, ?numElts), param imm: int) {
+  x.data = Intrin.@@{intrin}(eltType, numElts, x.data, imm);
 }
 """
 SCALAR_X_VECTOR_TEMPLATE = """
@@ -249,7 +279,9 @@ class BinaryOpsGenerator:
                 "vector_x_vector": VECTOR_X_VECTOR_TEMPLATE,
                 "vector_x_vector_assign": VECTOR_X_VECTOR_ASSIGN_TEMPLATE,
                 "vector_x_scalar": VECTOR_X_SCALAR_TEMPLATE,
+                "vector_x_immediate": VECTOR_X_IMMEDIATE_TEMPLATE,
                 "vector_x_scalar_assign": VECTOR_X_SCALAR_ASSIGN_TEMPLATE,
+                "vector_x_immediate_assign": VECTOR_X_IMMEDIATE_ASSIGN_TEMPLATE,
                 "scalar_x_vector": SCALAR_X_VECTOR_TEMPLATE,
                 "vector_unary": VECTOR_UNARY_TEMPLATE,
             }.items()

@@ -46,7 +46,8 @@ module Vector {
       this.data = Intrin.splat(eltType, numElts, 0:eltType);
     }
     /* init to single value */
-    inline proc init(type eltType, param numElts: int, value: eltType) {
+    inline proc init(type eltType, param numElts: int, value: ?valEltType)
+    where isCoercible(valEltType, eltType) {
       this.eltType = eltType;
       this.numElts = numElts;
       this.data = Intrin.splat(eltType, numElts, value);
@@ -61,6 +62,11 @@ module Vector {
     //
     // init from other vector
     //
+    inline proc init(value: vector(?eltType, ?numElts)) {
+      this.eltType = eltType;
+      this.numElts = numElts;
+      this.data = value.data;
+    }
     inline proc init(type eltType,
                      param numElts: int,
                      value: vector(eltType, numElts)) {
@@ -83,13 +89,13 @@ module Vector {
     //
     // init from tuple
     //
-    inline proc init(type eltType, param numElts: int, values)
-      where isHomogeneousTupleType(values.type) &&
-            isCoercible(values(0).type, eltType) &&
-            numElts == values.size {
+    inline proc init(
+      type eltType, param numElts: int,
+      values: numElts*?tupEltType
+    ) where isCoercible(tupEltType, eltType) {
       this.eltType = eltType;
       this.numElts = numElts;
-      this.data = Intrin.set(this.eltType, this.numElts, values);
+      this.data = Intrin.set(eltType, numElts, values);
     }
     inline proc init(values) where isHomogeneousTupleType(values.type) {
       this.eltType = values(0).type;
@@ -148,8 +154,8 @@ module Vector {
       return this:tupType;
     }
 
-    // TODO shifts
-
+    // TODO: set and init from tuple technically support coercion
+    // but it doesn't work
     inline proc ref set(value)
     where isCoercible(value.type, eltType) do
       data = Intrin.splat(eltType, numElts, value:eltType);
@@ -438,12 +444,18 @@ module Vector {
                     numBits(this) + " to vector of length " + numBits(t));
     }
 
-
-
-    // TODO: transmute (bitcast)
-    // TODO: typecast
-
-
+    inline proc convert(type t): t where isSubtype(t, vector) &&
+                                        numBits(t) == numBits(this.type) {
+      // TODO: for now, the lane types must have the same size
+      if numBits(t.eltType) != numBits(eltType) {
+        compilerError("cannot convert vector of type " + eltType:string +
+                      " to vector of type " + t.eltType:string);
+      }
+      var result: t;
+      result.data = Intrin.typeCast(eltType, numElts,
+                                    t.eltType, t.numElts, this.data);
+      return result;
+    }
 
     inline proc type indices(
       rng: range(?)

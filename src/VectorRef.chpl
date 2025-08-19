@@ -119,6 +119,10 @@ module VectorRef {
     if isSubtype(lhsType, vector) && isSubtype(rhsType, vector) {
       return false;
     }
+    // one of the types must be a vectorRef
+    if !isSubtype(lhsType, vectorRef) && !isSubtype(rhsType, vectorRef) {
+      return false;
+    }
     return true;
   }
 

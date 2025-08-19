@@ -366,6 +366,21 @@ module Intrin {
         .reinterpretCast(vectorType(toEltType, toNumElts), x);
   }
 
+  inline proc typeCast(
+    type fromEltType,
+    param fromNumElts: int,
+    type toEltType,
+    param toNumElts: int,
+    x: vectorType(fromEltType, fromNumElts)
+  ): vectorType(toEltType, toNumElts) {
+    if fromEltType == toEltType &&
+       fromNumElts == toNumElts then
+      return x; // no-op
+    else
+      return implType(fromEltType, fromNumElts)
+        .typeCast(vectorType(toEltType, toNumElts), x);
+  }
+
   /*
     Add pairs of adjacent elements
 

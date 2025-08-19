@@ -317,6 +317,11 @@ module IntrinArm64_256 {
         implVecType.reinterpretCast(toVecType.vt, x.lo),
         implVecType.reinterpretCast(toVecType.vt, x.hi)
       );
+    inline proc type typeCast(type toVecType, x: vecType): toVecType do
+      return new toVecType(
+        implVecType.typeCast(toVecType.vt, x.lo),
+        implVecType.typeCast(toVecType.vt, x.hi)
+      );
 
   }
 

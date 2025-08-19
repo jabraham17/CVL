@@ -664,37 +664,49 @@ module Vector {
   /*
     Shift each lane left by the given amount, shifting in zeros.
   */
-  inline proc shiftLeft(param amount: int): this.type
+  inline proc vector.shiftLeft(param amount: int): this.type
   where isIntegralType(eltType) {
-    amount;
+    var result: this.type;
+    result.data = Intrin.shiftLeftImm(eltType, numElts, this.data, amount);
+    return result;
   }
-  inline proc shiftLeft(amount: this.type): this.type
+  inline proc vector.shiftLeft(amount: this.type): this.type
   where isIntegralType(eltType) {
-    amount;
+    var result: this.type;
+    result.data = Intrin.shiftLeftVec(eltType, numElts, this.data, amount);
+    return result;
   }
 
 
   /*
     Shift each lane right by the given amount, shifting in zeros.
   */
-  inline proc shiftRight(param amount: int): this.type
+  inline proc vector.shiftRight(param amount: int): this.type
   where isIntegralType(eltType) {
-    amount;
+    var result: this.type;
+    result.data = Intrin.shiftRightImm(eltType, numElts, this.data, amount);
+    return result;
   }
-  inline proc shiftRight(amount: this.type): this.type
+  inline proc vector.shiftRight(amount: this.type): this.type
   where isIntegralType(eltType) {
-    amount;
+    var result: this.type;
+    result.data = Intrin.shiftRightVec(eltType, numElts, this.data, amount);
+    return result;
   }
   /*
     Shift each lane right by the given amount, shifting in sign bits.
   */
-  inline proc shiftRightArithmetic(param amount: int): this.type
+  inline proc vector.shiftRightArithmetic(param amount: int): this.type
   where isSignedType(eltType) {
-    amount;
+    var result: this.type;
+    result.data = Intrin.shiftRightArithmeticImm(eltType, numElts, this.data, amount);
+    return result;
   }
-  inline proc shiftRightArithmetic(amount: this.type): this.type
+  inline proc vector.shiftRightArithmetic(amount: this.type): this.type
   where isSignedType(eltType) {
-    amount;
+    var result: this.type;
+    result.data = Intrin.shiftRightArithmeticVec(eltType, numElts, this.data, amount);
+    return result;
   }
 
 

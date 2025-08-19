@@ -250,10 +250,56 @@ module IntrinArm64_128 {
                     " on this platform");
     }
 
+    inline proc type shiftLeftImm(x: vecType, param offset: int): vecType {
+      if isRealType(laneType) then
+        compilerError(getRoutineName() + " is not supported for real types");
+      if canResolveTypeMethod(extensionType, "shiftLeftImm", x) then
+        return extensionType.shiftLeftImm(x);
+      else
+        return doSimpleOp("vshlq_n", x, offset);
+    }
+    inline proc type shiftLeftVec(x: vecType, y: vecType): vecType {
+      if isRealType(laneType) then
+        compilerError(getRoutineName() + " is not supported for real types");
+      if canResolveTypeMethod(extensionType, "shiftLeftVec", x, y) then
+        return extensionType.shiftLeftVec(x, y);
+      else
+        return doSimpleOp("vshlq", x, y);
+    }
+    inline proc type shiftRightImm(x: vecType, param offset: int): vecType {
+      if isRealType(laneType) then
+        compilerError(getRoutineName() + " is not supported for real types");
+      if canResolveTypeMethod(extensionType, "shiftRightImm", x) then
+        return extensionType.shiftRightImm(x);
+      else
+        return doSimpleOp("vshrq_n", x, offset);
+    }
+    inline proc type shiftRightVec(x: vecType, y: vecType): vecType {
+      if isRealType(laneType) then
+        compilerError(getRoutineName() + " is not supported for real types");
+      if canResolveTypeMethod(extensionType, "shiftRightVec", x, y) then
+        return extensionType.shiftRightVec(x, y);
+      else
+        return doSimpleOp("vshrq", x, y);
+    }
+    inline proc type shiftRightArithImm(x: vecType,
+                                        param offset: int): vecType {
+      if isRealType(laneType) then
+        compilerError(getRoutineName() + " is not supported for real types");
+      if canResolveTypeMethod(extensionType, "shiftRightArithImm", x) then
+        return extensionType.shiftRightArithImm(x);
+      else
+        return doSimpleOp("vshlq_n", x, -offset);
+    }
+    inline proc type shiftRightArithVec(x: vecType, y: vecType): vecType {
+      if isRealType(laneType) then
+        compilerError(getRoutineName() + " is not supported for real types");
+      if canResolveTypeMethod(extensionType, "shiftRightArithVec", x, y) then
+        return extensionType.shiftRightArithVec(x, y);
+      else
+        return doSimpleOp("vshlq", x, doSimpleOp("vnegq", y));
+    }
 
-    // bit cast int to float or float to int
-    // TODO im not happy with this api
-    // inline proc type bitcast(x: vecType, type otherVecType): otherVecType
 
     inline proc type swapPairs(x: vecType): vecType do
       return extensionType.swapPairs(x);

@@ -148,8 +148,6 @@ module Vector {
       return this:tupType;
     }
 
-    // TODO shifts
-
     inline proc ref set(value)
     where isCoercible(value.type, eltType) do
       data = Intrin.splat(eltType, numElts, value:eltType);
@@ -435,14 +433,12 @@ module Vector {
     inline proc transmute(type t): t where isSubtype(t, vector) &&
                                       numBits(t) != numBits(this.type) {
       compilerError("cannot transmute vector of length " +
-                    numBits(this) + " to vector of length " + numBits(t));
+                    numBits(this.type):string +
+                    " to vector of length " + numBits(t):string);
     }
 
 
-
-    // TODO: transmute (bitcast)
-    // TODO: typecast
-
+    inline proc convert(type t): t where isSubtype(t, vector) &&
 
 
     inline proc type indices(
@@ -663,6 +659,57 @@ module Vector {
   }
 
 
+  /*
+    Shift each lane left by the given amount, shifting in zeros.
+  */
+  inline proc vector.shiftLeft(param amount: int): this.type
+  where isIntegralType(eltType) {
+    var result: this.type;
+    result.data = Intrin.shiftLeft(eltType, numElts, this.data, amount);
+    return result;
+  }
+  inline proc vector.shiftLeft(amount: this.type): this.type
+  where isIntegralType(eltType) {
+    var result: this.type;
+    result.data = Intrin.shiftLeft(eltType, numElts, this.data, amount);
+    return result;
+  }
+
+
+  /*
+    Shift each lane right by the given amount, shifting in zeros.
+  */
+  inline proc vector.shiftRight(param amount: int): this.type
+  where isIntegralType(eltType) {
+    var result: this.type;
+    result.data = Intrin.shiftRight(eltType, numElts, this.data, amount);
+    return result;
+  }
+  inline proc vector.shiftRight(amount: this.type): this.type
+  where isIntegralType(eltType) {
+    var result: this.type;
+    result.data = Intrin.shiftRight(eltType, numElts, this.data, amount);
+    return result;
+  }
+  /*
+    Shift each lane right by the given amount, shifting in sign bits.
+  */
+  inline proc vector.shiftRightArithmetic(param amount: int): this.type
+  where isSignedType(eltType) {
+    var result: this.type;
+    result.data =
+      Intrin.shiftRightArithmetic(eltType, numElts, this.data, amount);
+    return result;
+  }
+  inline proc vector.shiftRightArithmetic(amount: this.type): this.type
+  where isSignedType(eltType) {
+    var result: this.type;
+    result.data =
+      Intrin.shiftRightArithmetic(eltType, numElts, this.data, amount);
+    return result;
+  }
+
+
 
   inline proc sqrt(x: vector(?eltType, ?numElts)): x.type {
     var result: x.type;
@@ -818,6 +865,9 @@ module Vector {
     V | V  ;  V |= V  ;  V | S  ; V |= S  ;  S | V
     V ^ V  ;  V ^= V  ;  V ^ S  ;  V ^= S  ;  S ^ V
     ~ V
+
+    V >> V  ;  V >>= V  ;  V >> I ; V >>= I
+    V << V  ;  V <<= V  ;  V << I ; V <<= I
 
     V == V  ;  V == S  ;  S == V
     V != V  ;  V != S  ;  S != V

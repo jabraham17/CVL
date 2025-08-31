@@ -21,9 +21,11 @@ jobs:
       fail-fast: false
       matrix:
         backend: [llvm, gnu, clang]
-        os: [ubuntu-latest, macos-latest]
+        os: [ubuntu-latest, macos-latest, ubuntu-24.04-arm]
         exclude:
           - os: ubuntu-latest
+            backend: clang
+          - os: ubuntu-24.04-arm
             backend: clang
           - os: macos-latest
             backend: gnu

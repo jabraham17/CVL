@@ -35,6 +35,13 @@ jobs:
         uses: actions/checkout@v4
       - name: Set up Homebrew
         uses: Homebrew/actions/setup-homebrew@master
+      - name: Workaround for https://github.com/actions/runner-images/pull/12791
+        run: |
+          if brew tap | grep 'local/pinned'; then
+            brew uninstall cmake
+            brew untap local/pinned
+            brew install cmake
+          fi
       - name: Install Chapel
         run: |
           if [ "${{ inputs.chapel_version }}" = "nightly" ]; then

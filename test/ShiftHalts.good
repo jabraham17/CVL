@@ -1,0 +1,16 @@
+=== vector(int(8),16) ===
+error: halt reached - shift amount must be in range [0, 7]
+=== vector(int(16),8) ===
+error: halt reached - shift amount must be in range [0, 15]
+=== vector(int(32),4) ===
+error: halt reached - shift amount must be in range [0, 31]
+=== vector(int(64),2) ===
+error: halt reached - shift amount must be in range [0, 63]
+=== vector(int(8),32) ===
+error: halt reached - shift amount must be in range [0, 7]
+=== vector(int(16),16) ===
+error: halt reached - shift amount must be in range [0, 15]
+=== vector(int(32),8) ===
+error: halt reached - shift amount must be in range [0, 31]
+=== vector(int(64),4) ===
+error: halt reached - shift amount must be in range [0, 63]

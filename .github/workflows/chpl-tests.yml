@@ -21,11 +21,9 @@ jobs:
       fail-fast: false
       matrix:
         backend: [llvm, gnu, clang]
-        os: [ubuntu-latest, macos-latest, ubuntu-24.04-arm]
+        os: [ubuntu-latest, macos-latest]
         exclude:
           - os: ubuntu-latest
-            backend: clang
-          - os: ubuntu-24.04-arm
             backend: clang
           - os: macos-latest
             backend: gnu
@@ -60,7 +58,7 @@ jobs:
           - chapel/chapel-gasnet:${{ inputs.chapel_version }}
           - chapel/chapel-gasnet-smp:${{ inputs.chapel_version }}
         backend: [llvm, gnu]
-        os: [ubuntu-latest]
+        os: [ubuntu-latest, ubuntu-24.04-arm]
     runs-on: ${{ matrix.os }}
     container:
       image: ${{ matrix.image }}

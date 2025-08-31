@@ -33,6 +33,7 @@ These modules are the internal implementation types used by the intrinsics. They
    IntrinX86_256
    IntrinArm64_128
    IntrinArm64_256
+   SLEEF
 
 
 Indices and tables

@@ -14,7 +14,7 @@ on:
 
 jobs:
   # brew only supports nightly and latest
-  # brew doesn't suppoty linux arm
+  # brew doesn't support linux arm
   mason-test-brew:
     if: ${{ inputs.chapel_version == 'nightly' || inputs.chapel_version == 'latest' }}
     strategy:

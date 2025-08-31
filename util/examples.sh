@@ -26,7 +26,7 @@ done
 for example in "$PROJECT_DIR/target/example"/*; do
   if [[ -x "$example" ]]; then
     echo "Running: $(basename "$example")"
-    $example
+    $example -nl1
     res=$?
     echo ""
     if [[ $res -ne 0 ]]; then

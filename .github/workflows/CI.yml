@@ -9,6 +9,10 @@ on:
   pull_request:
   workflow_dispatch:
 
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
 # TODO: add comm!=none jobs for brew once brew has ML chapel
 
 # TODO: add auto benchmarks for https://github.com/benchmark-action/github-action-benchmark

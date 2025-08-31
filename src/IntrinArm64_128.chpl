@@ -358,8 +358,12 @@ module IntrinArm64_128 {
     inline proc type cmpEq(x: vecType, y: vecType): vecType {
       if canResolveTypeMethod(extensionType, "cmpEq", x, y) then
         return extensionType.cmpEq(x, y);
-      else
-        return doSimpleOp("vceqq", x, y);
+      else {
+        pragma "fn synchronization free"
+        extern ("vceqq_"+ typeToSuffix(vecType))
+        proc vceqq(x: vecType, y: vecType): getBitMaskType(vecType);
+        return reinterpret(vceqq(x, y), vecType);
+      }
     }
     inline proc type cmpNe(x: vecType, y: vecType): vecType {
       if canResolveTypeMethod(extensionType, "cmpNe", x, y) then
@@ -370,34 +374,50 @@ module IntrinArm64_128 {
     inline proc type cmpLt(x: vecType, y: vecType): vecType {
       if canResolveTypeMethod(extensionType, "cmpLt", x, y) then
         return extensionType.cmpLt(x, y);
-      else
-        return doSimpleOp("vcltq", x, y);
+      else {
+        pragma "fn synchronization free"
+        extern ("vcltq_"+ typeToSuffix(vecType))
+        proc vcltq(x: vecType, y: vecType): getBitMaskType(vecType);
+        return reinterpret(vcltq(x, y), vecType);
+      }
     }
     inline proc type cmpLe(x: vecType, y: vecType): vecType {
       if canResolveTypeMethod(extensionType, "cmpLe", x, y) then
         return extensionType.cmpLe(x, y);
-      else
-        return doSimpleOp("vcleq", x, y);
+      else {
+        pragma "fn synchronization free"
+        extern ("vcleq_"+ typeToSuffix(vecType))
+        proc vcleq(x: vecType, y: vecType): getBitMaskType(vecType);
+        return reinterpret(vcleq(x, y), vecType);
+      }
     }
     inline proc type cmpGt(x: vecType, y: vecType): vecType {
       if canResolveTypeMethod(extensionType, "cmpGt", x, y) then
         return extensionType.cmpGt(x, y);
-      else
-        return doSimpleOp("vcgtq", x, y);
+      else {
+        pragma "fn synchronization free"
+        extern ("vcgtq_"+ typeToSuffix(vecType))
+        proc vcgtq(x: vecType, y: vecType): getBitMaskType(vecType);
+        return reinterpret(vcgtq(x, y), vecType);
+      }
     }
     inline proc type cmpGe(x: vecType, y: vecType): vecType {
       if canResolveTypeMethod(extensionType, "cmpGe", x, y) then
         return extensionType.cmpGe(x, y);
-      else
-        return doSimpleOp("vcgeq", x, y);
+      else {
+        pragma "fn synchronization free"
+        extern ("vcgeq_"+ typeToSuffix(vecType))
+        proc vcgeq(x: vecType, y: vecType): getBitMaskType(vecType);
+        return reinterpret(vcgeq(x, y), vecType);
+      }
     }
     inline proc type bitSelect(mask: ?, x: vecType, y: vecType): vecType
       where numBits(mask.type) == numBits(vecType) {
       if canResolveTypeMethod(extensionType, "bitSelect", mask, x, y) then
         return extensionType.bitSelect(mask, x, y);
       else {
-        // var maskT = reinterpret(mask, getBitMaskType(vecType));
-        return doSimpleOp("vbslq", vecType, mask, x, y);
+        return doSimpleOp("vbslq",
+          vecType, reinterpret(mask, getBitMaskType(vecType)), x, y);
       }
     }
     inline proc type isAllZeros(x: vecType): bool {

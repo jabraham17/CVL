@@ -14,7 +14,7 @@ on:
 
 jobs:
   # brew only supports nightly and latest
-  # brew doesn't suppoty linux arm
+  # brew doesn't support linux arm
   mason-test-brew:
     if: ${{ inputs.chapel_version == 'nightly' || inputs.chapel_version == 'latest' }}
     strategy:
@@ -58,7 +58,7 @@ jobs:
           - chapel/chapel-gasnet:${{ inputs.chapel_version }}
           - chapel/chapel-gasnet-smp:${{ inputs.chapel_version }}
         backend: [llvm, gnu]
-        os: [ubuntu-latest]
+        os: [ubuntu-latest, ubuntu-24.04-arm]
     runs-on: ${{ matrix.os }}
     container:
       image: ${{ matrix.image }}
@@ -68,6 +68,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Set up CMake
+        # cmake testing doesn't work on arm yet
+        if: ${{ matrix.os != 'ubuntu-24.04-arm' }}
         uses: jwlawson/actions-setup-cmake@v2.0.2
       - name: Build CVL Dependencies
         run: |
@@ -76,6 +78,8 @@ jobs:
         run: |
           ./util/test.sh
       - name: Run CMake Tests
+        # cmake testing doesn't work on arm yet
+        if: ${{ matrix.os != 'ubuntu-24.04-arm' }}
         run: |
           ./util/testCMake.sh
 

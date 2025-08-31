@@ -36,7 +36,7 @@ tests = [
 [architecture.x86_64]
 compopts = "--ccflags=-msse4.1 --ccflags=-mavx2 --ccflags=-mfma"
 [architecture.arm64]
-compopts = ""
+compopts = "--ccflags=-march=armv8.2-a+fp16"
 
 [tool.chpl-language-server]
 module-dir = ["src"]

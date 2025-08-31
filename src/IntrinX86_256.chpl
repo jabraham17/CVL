@@ -10,8 +10,8 @@ module IntrinX86_256 {
 
   use CTypes only c_ptr, c_ptrConst;
   use Reflection only canResolveTypeMethod;
-  import ChplConfig;
-  if ChplConfig.CHPL_TARGET_ARCH == "x86_64" {
+  use Arch only isX8664;
+  if isX8664() {
     require "x86intrin.h";
     require "IntrinX86_256/wrapper-x86-256.h";
   }

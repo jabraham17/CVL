@@ -1,9 +1,6 @@
 module Intrin {
   use CTypes only c_ptr, c_ptrConst, c_int;
-
-  import ChplConfig;
-  proc isX8664() param: bool do return ChplConfig.CHPL_TARGET_ARCH == "x86_64";
-  proc isArm64() param: bool do return ChplConfig.CHPL_TARGET_ARCH == "arm64";
+  use Arch only isX8664, isArm64;
 
   proc vectorType(type eltType, param numElts: int) type do
     return implType(eltType, numElts).vecType;

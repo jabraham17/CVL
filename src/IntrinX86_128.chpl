@@ -2,8 +2,8 @@
 module IntrinX86_128 {
   use CTypes only c_ptr, c_ptrConst, c_int;
   use Reflection only canResolveTypeMethod, getRoutineName;
-  import ChplConfig;
-  if ChplConfig.CHPL_TARGET_ARCH == "x86_64" {
+  use Arch only isX8664;
+  if isX8664() {
     require "x86intrin.h";
     require "IntrinX86_128/wrapper-x86-128.h";
     require "IntrinX86_128/wrapper-x86-gathers.h";

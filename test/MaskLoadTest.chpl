@@ -36,9 +36,8 @@ proc maskLoadTest(of, type eltType, param numElts: int) {
 
 
 proc maskLoadTestDriver(test: borrowed Test) throws {
-  import ChplConfig;
-
-  if ChplConfig.CHPL_TARGET_ARCH == "arm64" {
+  use Arch only isArm64;
+  if isArm64() {
     test.skip("loadMasked not supported on arm64 yet");
     return;
   }

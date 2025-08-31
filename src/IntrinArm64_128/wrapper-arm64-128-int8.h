@@ -59,7 +59,7 @@ static inline int movemask_8x16i(int8x16_t x) {
 }
 
 static inline int8x16_t reverse_8x16i(int8x16_t x) {
-  static const int8x16_t mask = {
+  static const uint8x16_t mask = {
     15, 14, 13, 12, 11, 10, 9, 8,
     7, 6, 5, 4, 3, 2, 1, 0
   };

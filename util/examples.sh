@@ -24,6 +24,9 @@ done
 
 # TODO: mason run --example is borked and doesn't work yet
 for example in "$PROJECT_DIR/target/example"/*; do
+  if [[ "$(basename "$example")" == *_real ]]; then
+    continue
+  fi
   if [[ -x "$example" ]]; then
     echo "Running: $(basename "$example")"
     $example -nl1

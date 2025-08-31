@@ -68,6 +68,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Set up CMake
+        # cmake testing doesn't work on arm yet
+        if: ${{ matrix.os != 'ubuntu-24.04-arm' }}
         uses: jwlawson/actions-setup-cmake@v2.0.2
       - name: Build CVL Dependencies
         run: |
@@ -76,6 +78,8 @@ jobs:
         run: |
           ./util/test.sh
       - name: Run CMake Tests
+        # cmake testing doesn't work on arm yet
+        if: ${{ matrix.os != 'ubuntu-24.04-arm' }}
         run: |
           ./util/testCMake.sh
 

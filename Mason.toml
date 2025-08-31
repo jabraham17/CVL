@@ -30,6 +30,10 @@ tests = [
   "sleef/Trig.chpl",
 ]
 
+# TODO: mason libraries don't let you `mason run` examples!
+[examples]
+examples = [ "SAXPY.chpl" ]
+
 [dependencies]
 
 [architecture]

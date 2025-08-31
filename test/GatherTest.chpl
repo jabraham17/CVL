@@ -69,9 +69,8 @@ proc gatherTest(of, type eltType, param numElts: int) {
 
 
 proc gatherTestDriver(test: borrowed Test) throws {
-  import ChplConfig;
-
-  if ChplConfig.CHPL_TARGET_ARCH == "arm64" {
+  use Arch only isArm64;
+  if isArm64() {
     test.skip("gathers not supported on arm64 yet");
     return;
   }

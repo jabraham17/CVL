@@ -6,7 +6,8 @@ module SLEEF {
     require SLEEF_INSTALL + "/lib/libsleef.a";
   }
 
-  use Intrin only implType, vectorType, isArm64;
+  use Intrin only implType, vectorType;
+  use Arch only isX8664, isArm64;
 
 
   inline proc doSimpleOp(

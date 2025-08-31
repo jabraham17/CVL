@@ -1,9 +1,9 @@
 @chplcheck.ignore("PascalCaseModules")
 module IntrinArm64_128 {
   use CTypes only c_ptr, c_ptrConst, c_int;
+  use Arch only isArm64;
   use Reflection only canResolveTypeMethod, getRoutineName;
-  import ChplConfig;
-  if ChplConfig.CHPL_TARGET_ARCH == "arm64" {
+  if isArm64() {
     require "arm_neon.h";
     require "IntrinArm64_128/wrapper-arm64-128.h";
   }

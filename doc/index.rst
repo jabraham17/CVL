@@ -33,7 +33,26 @@ These modules are the internal implementation types used by the intrinsics. They
    IntrinX86_256
    IntrinArm64_128
    IntrinArm64_256
+
+SLEEF
+~~~~~
+
+SLEEF is a vectorized math library that CVL can use to implement math functions.
+See https://sleef.org/ for more information.
+
+.. toctree::
+   :maxdepth: 1
+
    SLEEF
+
+
+Utilities
+~~~~~~~~~
+
+.. toctree::
+   :maxdepth: 1
+
+   Arch
 
 
 Indices and tables

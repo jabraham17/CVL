@@ -49,6 +49,24 @@ static inline __m128i hadd_epi32(__m128i x, __m128i y) {
   return _mm_shuffle_epi32(t0, 0b11011000);
 }
 
+#define SHUFFLES(IMM) \
+  static inline __m128i shiftLeft128_i_##IMM##_epi32(__m128i x) { \
+    return _mm_slli_epi32(x, IMM); \
+  } \
+  static inline __m128i shiftRight128_i_##IMM##_epi32(__m128i x) { \
+    return _mm_srli_epi32(x, IMM); \
+  } \
+  static inline __m128i shiftRightArith128_i_##IMM##_epi32(__m128i x) { \
+    return _mm_srai_epi32(x, IMM); \
+  }
+#define BITS(V) V(1) V(2) V(3) V(4) V(5) V(6) V(7) V(8) \
+                V(9) V(10) V(11) V(12) V(13) V(14) V(15) V(16) \
+                V(17) V(18) V(19) V(20) V(21) V(22) V(23) V(24) \
+                V(25) V(26) V(27) V(28) V(29) V(30) V(31)
+BITS(SHUFFLES)
+#undef BITS
+#undef SHUFFLES
+
 #undef LANES
 
 #endif

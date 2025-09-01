@@ -101,7 +101,7 @@ module IntrinX86_256 {
   proc type vec8x32u.isIntegralVector param : bool do return true;
   proc type vec16x16u.isIntegralVector param : bool do return true;
   proc type vec32x8u.isIntegralVector param : bool do return true;
-  proc type vec64x4u.isIntegralVector param : bool do return true;  
+  proc type vec64x4u.isIntegralVector param : bool do return true;
 
   proc type vec32x8r.bitMaskType type do return vec32x8i;
   proc type vec64x4r.bitMaskType type do return vec64x4i;
@@ -109,7 +109,13 @@ module IntrinX86_256 {
   proc type vec16x16i.bitMaskType type do return vec16x16i;
   proc type vec32x8i.bitMaskType type do return vec32x8i;
   proc type vec64x4i.bitMaskType type do return vec64x4i;
-  
+
+  proc type vec32x8r.implType type do return x8664_32x8r;
+  proc type vec64x4r.implType type do return x8664_64x4r;
+  proc type vec8x32i.implType type do return x8664_8x32i;
+  proc type vec16x16i.implType type do return x8664_16x16i;
+  proc type vec32x8i.implType type do return x8664_32x8i;
+  proc type vec64x4i.implType type do return x8664_64x4i;
 
   proc halfVectorHW(type t) type {
          if t == vec32x8r  then return vec32x4r;
@@ -311,6 +317,82 @@ module IntrinX86_256 {
     inline proc type insert(x: vecType, y: laneType, param idx: int): vecType do
       return generic256Insert(x, y, idx, x8664_8x16i);
 
+
+    inline proc type shiftLeftImm() {} // dummy for canResolveTypeMethod
+    inline proc type shiftLeftImm(x: vecType, param offset: int): vecType {
+      import CVL;
+      if CVL.implementationWarnings then
+        compilerWarning("'shiftLeftImm' on int(8) is implemented as scalar operations");
+      var res: vecType;
+      for param i in 0..<base.numLanes {
+        res = base.insert(res, base.extract(x, i) << offset, i);
+      }
+      return res;
+    }
+    inline proc type shiftLeftVec() {} // dummy for canResolveTypeMethod
+    inline proc type shiftLeftVec(x: vecType, y: vecType): vecType {
+      import CVL;
+      if CVL.implementationWarnings then
+        compilerWarning("'shiftLeftVec' on int(8) is implemented as scalar operations");
+      var res: vecType;
+      for param i in 0..<base.numLanes {
+        res = base.insert(res, base.extract(x, i) << base.extract(y, i), i);
+      }
+      return res;
+    }
+    inline proc type shiftRightImm() {} // dummy for canResolveTypeMethod
+    inline proc type shiftRightImm(x: vecType, param offset: int): vecType {
+      import CVL;
+      if CVL.implementationWarnings then
+        compilerWarning("'shiftRightImm' on int(8) is implemented as scalar operations");
+      var res: vecType;
+      for param i in 0..<base.numLanes {
+        type maskTy = uint(numBits(laneType));
+        res =
+          base.insert(res, (base.extract(x, i):maskTy >> offset):laneType, i);
+      }
+      return res;
+    }
+    inline proc type shiftRightVec() {} // dummy for canResolveTypeMethod
+    inline proc type shiftRightVec(x: vecType, y: vecType): vecType {
+      import CVL;
+      if CVL.implementationWarnings then
+        compilerWarning("'shiftRightVec' on int(8) is implemented as scalar operations");
+      var res: vecType;
+      for param i in 0..<base.numLanes {
+        type maskTy = uint(numBits(laneType));
+        res =
+          base.insert(res,
+                      (base.extract(x, i):maskTy >>
+                       base.extract(y, i)):laneType,
+                      i);
+      }
+      return res;
+    }
+    inline proc type shiftRightArithImm() {} // dummy for canResolveTypeMethod
+    inline proc type shiftRightArithImm(x: vecType,
+                                        param offset: int): vecType {
+      import CVL;
+      if CVL.implementationWarnings then
+        compilerWarning("'shiftRightArithImm' on int(8) is implemented as scalar operations");
+      var res: vecType;
+      for param i in 0..<base.numLanes {
+        res = base.insert(res, base.extract(x, i) >> offset, i);
+      }
+      return res;
+    }
+    inline proc type shiftRightArithVec() {} // dummy for canResolveTypeMethod
+    inline proc type shiftRightArithVec(x: vecType, y: vecType): vecType {
+      import CVL;
+      if CVL.implementationWarnings then
+        compilerWarning("'shiftRightArithVec' on int(8) is implemented as scalar operations");
+      var res: vecType;
+      for param i in 0..<base.numLanes {
+        res = base.insert(res, base.extract(x, i) >> base.extract(y, i), i);
+      }
+      return res;
+    }
+
     inline proc type interleaveLower(x: vecType, y: vecType): vecType do
       return doSimpleOp("interleaveLower_256", x, y);
     inline proc type interleaveUpper(x: vecType, y: vecType): vecType do
@@ -508,6 +590,32 @@ module IntrinX86_256 {
       pragma "fn synchronization free"
       extern proc _mm256_setr_epi64x(args...): vecType;
       return _mm256_setr_epi64x((...xs));
+    }
+
+    inline proc type shiftRightArithImm() {} // dummy for canResolveTypeMethod
+    inline proc type shiftRightArithImm(x: vecType,
+                                        param offset: int): vecType {
+      import CVL;
+      if CVL.implementationWarnings then
+        compilerWarning("'shiftRightArithImm' on int(64) is implemented as scalar operations");
+      // TODO: use srli with a bitmask
+      var res: vecType;
+      for param i in 0..<base.numLanes {
+        res = base.insert(res, base.extract(x, i) >> offset, i);
+      }
+      return res;
+    }
+    inline proc type shiftRightArithVec() {} // dummy for canResolveTypeMethod
+    inline proc type shiftRightArithVec(x: vecType, y: vecType): vecType {
+      import CVL;
+      if CVL.implementationWarnings then
+        compilerWarning("'shiftRightArithVec' on int(64) is implemented as scalar operations");
+      // TODO: use srli with a bitmask
+      var res: vecType;
+      for param i in 0..<base.numLanes {
+        res = base.insert(res, base.extract(x, i) >> base.extract(y, i), i);
+      }
+      return res;
     }
 
     inline proc type div(x: vecType, y: vecType): vecType {

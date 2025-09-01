@@ -136,7 +136,7 @@ proc testShiftImm(test: borrowed Test) throws {
 }
 
 proc testShiftVec(test: borrowed Test) throws {
-  
+
   proc t1(type t, initial) throws {
     var base = initial:t.eltType;
     var v = base:t;
@@ -228,63 +228,29 @@ proc testShiftVec(test: borrowed Test) throws {
     }
   }
 
-  t1(vector(int(8), 16), 0x18);
-  t1(vector(int(16), 8), 0x18);
-  t1(vector(int(32), 4), 0x18);
-  t1(vector(int(64), 2), 0x18);
-  // t1(vector(uint(8), 16), 0x18);
-  // t1(vector(uint(16), 8), 0x18);
-  // t1(vector(uint(32), 4), 0x18);
-  // t1(vector(uint(64), 2), 0x18);
+  proc tests(type t) throws {
+    t1(t, 0x18);
+    t1(t, min(t.eltType));
+    t1(t, max(t.eltType));
+  }
 
-  t1(vector(int(8), 32), 0x18);
-  t1(vector(int(16), 16), 0x18);
-  t1(vector(int(32), 8), 0x18);
-  t1(vector(int(64), 4), 0x18);
-  // t1(vector(uint(8), 32), 0x18);
-  // t1(vector(uint(16), 16), 0x18);
-  // t1(vector(uint(32), 8), 0x18);
-  // t1(vector(uint(64), 4), 0x18);
+  tests(vector(int(8), 16));
+  tests(vector(int(16), 8));
+  tests(vector(int(32), 4));
+  tests(vector(int(64), 2));
+  // tests(vector(uint(8), 16));
+  // tests(vector(uint(16), 8));
+  // tests(vector(uint(32), 4));
+  // tests(vector(uint(64), 2));
 
-
-  // test with min and max
-
-
-  t1(vector(int(8), 16), min(int(8)));
-  t1(vector(int(16), 8), min(int(16)));
-  t1(vector(int(32), 4), min(int(32)));
-  t1(vector(int(64), 2), min(int(64)));
-  // t1(vector(uint(8), 16), min(uint(8)));
-  // t1(vector(uint(16), 8), min(uint(16)));
-  // t1(vector(uint(32), 4), min(uint(32)));
-  // t1(vector(uint(64), 2), min(uint(64)));
-
-  t1(vector(int(8), 32), min(int(8)));
-  t1(vector(int(16), 16), min(int(16)));
-  t1(vector(int(32), 8), min(int(32)));
-  t1(vector(int(64), 4), min(int(64)));
-  // t1(vector(uint(8), 32), min(uint(8)));
-  // t1(vector(uint(16), 16), min(uint(16)));
-  // t1(vector(uint(32), 8), min(uint(32)));
-  // t1(vector(uint(64), 4), min(uint(64)));
-
-  t1(vector(int(8), 16), max(int(8)));
-  t1(vector(int(16), 8), max(int(16)));
-  t1(vector(int(32), 4), max(int(32)));
-  t1(vector(int(64), 2), max(int(64)));
-  // t1(vector(uint(8), 16), max(uint(8)));
-  // t1(vector(uint(16), 8), max(uint(16)));
-  // t1(vector(uint(32), 4), max(uint(32)));
-  // t1(vector(uint(64), 2), max(uint(64)));
-
-  t1(vector(int(8), 32), max(int(8)));
-  t1(vector(int(16), 16), max(int(16)));
-  t1(vector(int(32), 8), max(int(32)));
-  t1(vector(int(64), 4), max(int(64)));
-  // t1(vector(uint(8), 32), max(uint(8)));
-  // t1(vector(uint(16), 16), max(uint(16)));
-  // t1(vector(uint(32), 8), max(uint(32)));
-  // t1(vector(uint(64), 4), max(uint(64));
+  tests(vector(int(8), 32));
+  tests(vector(int(16), 16));
+  tests(vector(int(32), 8));
+  tests(vector(int(64), 4));
+  // tests(vector(uint(8), 32));
+  // tests(vector(uint(16), 16));
+  // tests(vector(uint(32), 8));
+  // tests(vector(uint(64), 4));
 
 }
 

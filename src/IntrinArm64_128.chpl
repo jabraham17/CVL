@@ -274,8 +274,8 @@ module IntrinArm64_128 {
     }
 
     inline proc type shiftLeftImm(x: vecType, param offset: int): vecType {
-      if canResolveTypeMethod(extensionType, "shiftLeftImm", x) then
-        return extensionType.shiftLeftImm(x);
+      if canResolveTypeMethod(extensionType, "shiftLeftImm") then
+        return extensionType.shiftLeftImm(x, offset);
       else if isRealType(laneType) {
         type t = getIntType(vecType);
         return reinterpret(
@@ -294,8 +294,8 @@ module IntrinArm64_128 {
         return doSimpleOp("vshlq", x, y);
     }
     inline proc type shiftRightImm(x: vecType, param offset: int): vecType {
-      if canResolveTypeMethod(extensionType, "shiftRightImm", x) then
-        return extensionType.shiftRightImm(x);
+      if canResolveTypeMethod(extensionType, "shiftRightImm") then
+        return extensionType.shiftRightImm(x, offset);
       else if isRealType(laneType) {
         type t = getIntType(vecType);
         return reinterpret(
@@ -322,8 +322,8 @@ module IntrinArm64_128 {
     }
     inline proc type shiftRightArithImm(x: vecType,
                                         param offset: int): vecType {
-      if canResolveTypeMethod(extensionType, "shiftRightArithImm", x) then
-        return extensionType.shiftRightArithImm(x);
+      if canResolveTypeMethod(extensionType, "shiftRightArithImm") then
+        return extensionType.shiftRightArithImm(x, offset);
       else if isRealType(laneType) {
         type t = getIntType(vecType);
         return reinterpret(

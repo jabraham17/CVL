@@ -114,4 +114,20 @@ static inline __m256i hadd_256epi16(__m256i x, __m256i y) {
   return t1;
 }
 
+#define SHUFFLES(IMM) \
+  static inline __m256i shiftLeft256_i_##IMM##_epi16(__m256i x) { \
+    return _mm256_slli_epi16(x, IMM); \
+  } \
+  static inline __m256i shiftRight256_i_##IMM##_epi16(__m256i x) { \
+    return _mm256_srli_epi16(x, IMM); \
+  } \
+  static inline __m256i shiftRightArith256_i_##IMM##_epi16(__m256i x) { \
+    return _mm256_srai_epi16(x, IMM); \
+  }
+#define BITS(V) V(1) V(2) V(3) V(4) V(5) V(6) V(7) V(8) \
+                V(9) V(10) V(11) V(12) V(13) V(14) V(15)
+BITS(SHUFFLES)
+#undef BITS
+#undef SHUFFLES
+
 #endif

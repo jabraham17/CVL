@@ -1,0 +1,4 @@
+-sdist=DR
+-sdist=block
+-sdist=cyclic
+-sdist=blockCyclic

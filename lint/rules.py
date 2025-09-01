@@ -31,8 +31,9 @@ def is_in_lib(node: chapel.AstNode) -> bool:
 
 CustomAttributes = {
     "typeOnly": "lint.typeOnly",
-    "checksFunc": "lint.checksFunc"
+    "checksFunc": "lint.checksFunc",
 }
+
 
 def has_attribute(node: chapel.AstNode, attr_name: str) -> bool:
     attrs = node.attribute_group()
@@ -40,6 +41,7 @@ def has_attribute(node: chapel.AstNode, attr_name: str) -> bool:
         return False
     a = attrs.get_attribute_named(attr_name)
     return a is not None
+
 
 def rules(driver):
 
@@ -57,7 +59,13 @@ def rules(driver):
         is_compile_time = node.return_intent() in ("param", "type")
         is_extern = node.linkage() in ("extern", "export")
         is_serialize = node.name() in ("serialize", "deserialize")
-        return node.is_inline() or is_compile_time or is_extern or is_serialize or is_checks
+        return (
+            node.is_inline()
+            or is_compile_time
+            or is_extern
+            or is_serialize
+            or is_checks
+        )
 
     @driver.fixit(OnlyInlineProc)
     def FixOnlyInlineProc(context: chapel.Context, result: BasicRuleResult):
@@ -79,7 +87,9 @@ def rules(driver):
         loc = result.node.location()
         proc_text = chapel.range_to_text(loc, lines)
         indent = loc.start()[1] - 1
-        proc_text = "@"+ CustomAttributes["checksFunc"] + f"\n{' '*indent}" + proc_text
+        proc_text = (
+            "@" + CustomAttributes["checksFunc"] + f"\n{' '*indent}" + proc_text
+        )
         # TODO: this works only because private/public is
         # not included in location
         fixit = Fixit.build(Edit.build(loc, proc_text))

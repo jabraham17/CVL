@@ -1,7 +1,11 @@
 module SAXPY {
   use CVL;
   use Random;
+  use BlockDist, BlockCycDist;
 
+  enum distType { DR, block, blockCyclic }
+  use distType;
+  config param dist = DR;
   config const N = 16;
 
   proc saxpy(a: real, x: [?D] real, y: [D] real, ref z: [D] real) {
@@ -26,10 +30,21 @@ module SAXPY {
     }
   }
 
+  proc getDomain() {
+    if dist == DR {
+      return {0..#N};
+    } else if dist == block {
+      return blockDist.createDomain(0..#N);
+    } else if dist == blockCyclic {
+      return {0..#N} dmapped new blockCycDist(startIdx=0, blocksize=4);
+    } else {
+      compilerError("Unknown distribution: " + dist);
+    }
+  }
+
   proc main() {
-    var x: [0..#N] real;
-    var y: [0..#N] real;
-    var z: [0..#N] real;
+    const D = getDomain();
+    var x, y, z1, z2: [D] real;
 
     fillRandom(x);
     fillRandom(y);
@@ -42,11 +57,22 @@ module SAXPY {
     writeln("y = ", y);
 
     writeln("Computing z = a * x + y using regular Chapel");
-    saxpy(a, x, y, z);
-    writeln("z = ", z);
+    saxpy(a, x, y, z1);
+    writeln("z = ", z1);
 
     writeln("Computing z = a * x + y using SIMD Chapel");
-    saxpySIMD(a, x, y, z);
-    writeln("z = ", z);
+    saxpySIMD(a, x, y, z2);
+    writeln("z = ", z2);
+
+    const tol = 1e-6;
+    const isSame = && reduce ([i in D] (abs(z1[i] - z2[i]) < tol));
+    if isSame {
+      writeln("Success: results match!");
+      return 0;
+    } else {
+      writeln("Error: results do not match!");
+      return 1;
+    }
+
   }
 }

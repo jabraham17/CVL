@@ -75,6 +75,29 @@ module IntrinArm64_128 {
       else if t == vec64x2u then return vec64x2u;
       else compilerError("Unknown type: ", t);
   }
+  proc getIntType(type t) type {
+         if t == vec32x4r then return vec32x4i;
+    else if t == vec64x2r then return vec64x2i;
+    else if t == vec8x16i then return vec8x16i;
+    else if t == vec16x8i then return vec16x8i;
+    else if t == vec32x4i then return vec32x4i;
+    else if t == vec64x2i then return vec64x2i;
+    else if t == vec8x16u then return vec8x16i;
+    else if t == vec16x8u then return vec16x8i;
+    else if t == vec32x4u then return vec32x4i;
+    else if t == vec64x2u then return vec64x2i;
+    else compilerError("Unknown type: ", t);
+  }
+
+  proc implType(type t) type {
+         if t == vec32x4r then return arm64_32x4r;
+    else if t == vec64x2r then return arm64_64x2r;
+    else if t == vec8x16i then return arm64_8x16i;
+    else if t == vec16x8i then return arm64_16x8i;
+    else if t == vec32x4i then return arm64_32x4i;
+    else if t == vec64x2i then return arm64_64x2i;
+    else compilerError("Unknown type: ", t);
+  }
 
   proc typeToSuffix(type t) param : string {
          if t == real(32) || t == vec32x4r || t == vec32x2r then return "f32";
@@ -251,52 +274,65 @@ module IntrinArm64_128 {
     }
 
     inline proc type shiftLeftImm(x: vecType, param offset: int): vecType {
-      if isRealType(laneType) then
-        compilerError(getRoutineName() + " is not supported for real types");
       if canResolveTypeMethod(extensionType, "shiftLeftImm", x) then
         return extensionType.shiftLeftImm(x);
-      else
+      else if isRealType(laneType) {
+        type t = getIntType(vecType);
+        return reinterpret(
+          implType(t).shiftLeftImm(reinterpret(x, t), offset), vecType);
+      } else
         return doSimpleOp("vshlq_n", x, offset);
     }
     inline proc type shiftLeftVec(x: vecType, y: vecType): vecType {
-      if isRealType(laneType) then
-        compilerError(getRoutineName() + " is not supported for real types");
       if canResolveTypeMethod(extensionType, "shiftLeftVec", x, y) then
         return extensionType.shiftLeftVec(x, y);
-      else
+      else if isRealType(laneType) {
+        compilerError(getRoutineName() +
+                      " by a vector is not supported with " +
+                      laneType:string);
+      } else
         return doSimpleOp("vshlq", x, y);
     }
     inline proc type shiftRightImm(x: vecType, param offset: int): vecType {
-      if isRealType(laneType) then
-        compilerError(getRoutineName() + " is not supported for real types");
       if canResolveTypeMethod(extensionType, "shiftRightImm", x) then
         return extensionType.shiftRightImm(x);
-      else
+      else if isRealType(laneType) {
+        type t = getIntType(vecType);
+        return reinterpret(
+          implType(t).shiftRightImm(reinterpret(x, t), offset), vecType);
+      } else
         return doSimpleOp("vshrq_n", x, offset);
     }
     inline proc type shiftRightVec(x: vecType, y: vecType): vecType {
-      if isRealType(laneType) then
-        compilerError(getRoutineName() + " is not supported for real types");
       if canResolveTypeMethod(extensionType, "shiftRightVec", x, y) then
         return extensionType.shiftRightVec(x, y);
-      else
+      else if isRealType(laneType) {
+        compilerError(getRoutineName() +
+                      " by a vector is not supported with " +
+                      laneType:string);
+      } else
         return doSimpleOp("vshrq", x, y);
     }
     inline proc type shiftRightArithImm(x: vecType,
                                         param offset: int): vecType {
-      if isRealType(laneType) then
-        compilerError(getRoutineName() + " is not supported for real types");
       if canResolveTypeMethod(extensionType, "shiftRightArithImm", x) then
         return extensionType.shiftRightArithImm(x);
-      else
+      else if isRealType(laneType) {
+        type t = getIntType(vecType);
+        return reinterpret(
+          implType(t).shiftRightArithImm(reinterpret(x, t), offset), vecType);
+      } else
+      // TODO: qhy can't I pass a neg number to get a logical shift
         return doSimpleOp("vshlq_n", x, -offset);
     }
     inline proc type shiftRightArithVec(x: vecType, y: vecType): vecType {
-      if isRealType(laneType) then
-        compilerError(getRoutineName() + " is not supported for real types");
       if canResolveTypeMethod(extensionType, "shiftRightArithVec", x, y) then
         return extensionType.shiftRightArithVec(x, y);
-      else
+      else if isRealType(laneType) {
+        compilerError(getRoutineName() +
+                      " by a vector is not supported with " +
+                      laneType:string);
+      } else
         return doSimpleOp("vshlq", x, doSimpleOp("vnegq", y));
     }
 

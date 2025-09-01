@@ -684,16 +684,16 @@ module Vector {
   /*
     Shift each lane left by the given amount, shifting in zeros.
   */
-  inline proc vector.shiftLeft(param amount: int): this.type
-  where isIntegralType(eltType) {
+  inline proc vector.shiftLeft(param amount: int): this.type {
+    this.type.shiftCheck(amount);
     var result: this.type;
     result.data = Intrin.shiftLeft(eltType, numElts, this.data, amount);
     return result;
   }
-  inline proc vector.shiftLeft(amount: this.type): this.type
-  where isIntegralType(eltType) {
+  inline proc vector.shiftLeft(amount: this.type): this.type {
+    this.type.shiftCheck(amount);
     var result: this.type;
-    result.data = Intrin.shiftLeft(eltType, numElts, this.data, amount);
+    result.data = Intrin.shiftLeft(eltType, numElts, this.data, amount.data);
     return result;
   }
 
@@ -701,33 +701,33 @@ module Vector {
   /*
     Shift each lane right by the given amount, shifting in zeros.
   */
-  inline proc vector.shiftRight(param amount: int): this.type
-  where isIntegralType(eltType) {
+  inline proc vector.shiftRight(param amount: int): this.type {
+    this.type.shiftCheck(amount);
     var result: this.type;
     result.data = Intrin.shiftRight(eltType, numElts, this.data, amount);
     return result;
   }
-  inline proc vector.shiftRight(amount: this.type): this.type
-  where isIntegralType(eltType) {
+  inline proc vector.shiftRight(amount: this.type): this.type {
+    this.type.shiftCheck(amount);
     var result: this.type;
-    result.data = Intrin.shiftRight(eltType, numElts, this.data, amount);
+    result.data = Intrin.shiftRight(eltType, numElts, this.data, amount.data);
     return result;
   }
   /*
     Shift each lane right by the given amount, shifting in sign bits.
   */
-  inline proc vector.shiftRightArithmetic(param amount: int): this.type
-  where isSignedType(eltType) {
+  inline proc vector.shiftRightArith(param amount: int): this.type {
+    this.type.shiftCheck(amount);
     var result: this.type;
     result.data =
-      Intrin.shiftRightArithmetic(eltType, numElts, this.data, amount);
+      Intrin.shiftRightArith(eltType, numElts, this.data, amount);
     return result;
   }
-  inline proc vector.shiftRightArithmetic(amount: this.type): this.type
-  where isSignedType(eltType) {
+  inline proc vector.shiftRightArith(amount: this.type): this.type {
+    this.type.shiftCheck(amount);
     var result: this.type;
     result.data =
-      Intrin.shiftRightArithmetic(eltType, numElts, this.data, amount);
+      Intrin.shiftRightArith(eltType, numElts, this.data, amount.data);
     return result;
   }
 

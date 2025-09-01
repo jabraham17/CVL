@@ -127,17 +127,17 @@ module IntrinArm64_256 {
         implVecType.shiftRightVec(x.lo, y.lo),
         implVecType.shiftRightVec(x.hi, y.hi)
       );
-    inline proc type shiftRightArithmeticImm(x: vecType,
+    inline proc type shiftRightArithImm(x: vecType,
                                              param offset: int): vecType do
       return new vecType(
-        implVecType.shiftRightArithmeticImm(x.lo, offset),
-        implVecType.shiftRightArithmeticImm(x.hi, offset)
+        implVecType.shiftRightArithImm(x.lo, offset),
+        implVecType.shiftRightArithImm(x.hi, offset)
       );
-    inline proc type shiftRightArithmeticVec(x: vecType,
+    inline proc type shiftRightArithVec(x: vecType,
                                              y: vecType): vecType do
       return new vecType(
-        implVecType.shiftRightArithmeticVec(x.lo, y.lo),
-        implVecType.shiftRightArithmeticVec(x.hi, y.hi)
+        implVecType.shiftRightArithVec(x.lo, y.lo),
+        implVecType.shiftRightArithVec(x.hi, y.hi)
       );
 
 

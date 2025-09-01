@@ -17,7 +17,6 @@ module Vector {
   where isArray(container) {
     return container.rank == 1 &&
            container.isRectangular() &&
-           container._value.isDefaultRectangular() &&
            container.eltType == eltType;
   }
   private proc isValidContainer(container: ?, type eltType) param: bool
@@ -184,8 +183,12 @@ module Vector {
                                      param checkBounds = true): c_ptr(eltType)
     where isValidContainer(arr, eltType) {
       if checkBounds && boundsChecking {
-        // reuse array slice bounds checking
-        arr[idx.. by arr.domain.stride # numElts];
+        // access each element to trigger normal array bounds checking
+        // this is slow, but only happens with bounds checking
+        const slice = idx.. by arr.domain.stride # numElts;
+        local {
+          [i in slice] arr[i];
+        }
       }
       const ptr = c_addrOf(arr[idx]);
       return ptr;
@@ -199,8 +202,13 @@ module Vector {
     ): c_ptrConst(eltType)
     where isValidContainer(arr, eltType) {
       if checkBounds && boundsChecking {
-        // reuse array slice bounds checking
-        arr[idx.. by arr.domain.stride # numElts];
+        // access each element to trigger normal array bounds checking
+        // this is slow, but only happens with bounds checking
+        const D = arr.domain;
+        const slice = idx.. by arr.domain.stride # numElts;
+        local {
+          [i in slice] arr[i];
+        }
       }
       const ptr = c_addrOfConst(arr[idx]);
       return ptr;

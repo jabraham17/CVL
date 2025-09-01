@@ -659,6 +659,27 @@ module Vector {
     return result;
   }
 
+  @chpldoc.nodoc
+  @lint.checksFunc
+  proc type vector.shiftCheck(param amount: int) param {
+    if amount < 0 || amount >= numBits(eltType) {
+      compilerError("shift amount must be in range [0, " +
+                    (numBits(eltType)-1):string + "]");
+    }
+  }
+
+  @chpldoc.nodoc
+  @lint.checksFunc
+  proc type vector.shiftCheck(amount: this.type) {
+    if boundsChecking {
+      for i in amount {
+        if i < 0 || i >= numBits(eltType) {
+          halt("shift amount must be in range [0, " +
+               (numBits(eltType)-1):string + "]");
+        }
+      }
+    }
+  }
 
   /*
     Shift each lane left by the given amount, shifting in zeros.

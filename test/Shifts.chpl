@@ -21,6 +21,14 @@ proc Test.assertEqual(actual: vector(?),
   }
 }
 
+proc Test.assertEqual(actual, expected, msg: string) throws {
+  if actual != expected {
+    const s = "%? - '%?' and '%?' differ"
+              .format(msg, toHex(actual), toHex(expected));
+    throw new TestError.AssertionError(s);
+  }
+}
+
 proc iTy(type t: vector(?)) type {
   return int(numBits(t.eltType));
 }
@@ -128,7 +136,156 @@ proc testShiftImm(test: borrowed Test) throws {
 }
 
 proc testShiftVec(test: borrowed Test) throws {
-  test.assertTrue(false);
+  
+  proc t1(type t, initial) throws {
+    var base = initial:t.eltType;
+    var v = base:t;
+    var amt: t;
+    for param i in 0..#t.numElts {
+      amt.set(i, getVal(t.eltType, ((i % (numBits(t.eltType)-1))+1)));
+    }
+
+    {
+      writeln("shifting ", toHex(v), " left by ", toHex(amt));
+      var tmp = v.shiftLeft(amt);
+      writeln(" result: ", toHex(tmp));
+      for param i in 0..#t.numElts {
+        const expected = base << amt[i];
+        test.assertEqual(tmp[i], expected,
+                         "left shift by vector failed at index "+i:string);
+      }
+    }
+
+    {
+      writeln("shifting ", toBin(v), " right by ", toBin(amt));
+      var tmp = v.shiftRight(amt);
+      writeln(" result: ", toBin(tmp));
+      for param i in 0..#t.numElts {
+        const expected = (getVal(uTy(t), base) >> amt[i]):t.eltType;
+        test.assertEqual(tmp[i], expected,
+                         "right shift by vector failed at index "+i:string);
+      }
+    }
+
+    {
+      writeln("shifting ", toHex(v), " right arith by ", toHex(amt));
+      var tmp = v.shiftRightArith(amt);
+      writeln(" result: ", toHex(tmp));
+      for param i in 0..#t.numElts {
+        const expected = (getVal(iTy(t), base) >> amt[i]):t.eltType;
+        test.assertEqual(
+          tmp[i], expected,
+          "right shift arithmetic by vector failed at index "+i:string);
+      }
+    }
+
+    {
+      writeln("shifting ", toHex(v), " left by ", toHex(amt), " using <<=");
+      var tmp = v;
+      tmp <<= amt;
+      writeln(" result: ", toHex(tmp));
+      for param i in 0..#t.numElts {
+        const expected = base << amt[i];
+        test.assertEqual(tmp[i], expected,
+                         "left shift by vector failed at index "+i:string);
+      }
+    }
+
+    {
+      writeln("shifting ", toHex(v), " right by ", toHex(amt), " using >>=");
+      var tmp = v;
+      tmp >>= amt;
+      writeln(" result: ", toHex(tmp));
+      for param i in 0..#t.numElts {
+        const expected = (getVal(uTy(t), base) >> amt[i]):t.eltType;
+        test.assertEqual(tmp[i], expected,
+                         "right shift by vector failed at index "+i:string);
+      }
+    }
+
+    {
+      writeln("shifting ", toHex(v), " left by ", toHex(amt),
+              " using <<");
+      var tmp = v << amt;
+      writeln(" result: ", toHex(tmp));
+      for param i in 0..#t.numElts {
+        const expected = (getVal(uTy(t), base) << amt[i]):t.eltType;
+        test.assertEqual(tmp[i], expected,
+                         "right shift by vector failed at index "+i:string);
+      }
+    }
+
+    {
+      writeln("shifting ", toHex(v), " right by ", toHex(amt),
+              " using >>");
+      var tmp = v >> amt;
+      writeln(" result: ", toHex(tmp));
+      for param i in 0..#t.numElts {
+        const expected = (getVal(uTy(t), base) >> amt[i]):t.eltType;
+        test.assertEqual(tmp[i], expected,
+                         "right shift by vector failed at index "+i:string);
+      }
+    }
+  }
+
+  t1(vector(int(8), 16), 0x18);
+  t1(vector(int(16), 8), 0x18);
+  t1(vector(int(32), 4), 0x18);
+  t1(vector(int(64), 2), 0x18);
+  // t1(vector(uint(8), 16), 0x18);
+  // t1(vector(uint(16), 8), 0x18);
+  // t1(vector(uint(32), 4), 0x18);
+  // t1(vector(uint(64), 2), 0x18);
+
+  t1(vector(int(8), 32), 0x18);
+  t1(vector(int(16), 16), 0x18);
+  t1(vector(int(32), 8), 0x18);
+  t1(vector(int(64), 4), 0x18);
+  // t1(vector(uint(8), 32), 0x18);
+  // t1(vector(uint(16), 16), 0x18);
+  // t1(vector(uint(32), 8), 0x18);
+  // t1(vector(uint(64), 4), 0x18);
+
+
+  // test with min and max
+
+
+  t1(vector(int(8), 16), min(int(8)));
+  t1(vector(int(16), 8), min(int(16)));
+  t1(vector(int(32), 4), min(int(32)));
+  t1(vector(int(64), 2), min(int(64)));
+  // t1(vector(uint(8), 16), min(uint(8)));
+  // t1(vector(uint(16), 8), min(uint(16)));
+  // t1(vector(uint(32), 4), min(uint(32)));
+  // t1(vector(uint(64), 2), min(uint(64)));
+
+  t1(vector(int(8), 32), min(int(8)));
+  t1(vector(int(16), 16), min(int(16)));
+  t1(vector(int(32), 8), min(int(32)));
+  t1(vector(int(64), 4), min(int(64)));
+  // t1(vector(uint(8), 32), min(uint(8)));
+  // t1(vector(uint(16), 16), min(uint(16)));
+  // t1(vector(uint(32), 8), min(uint(32)));
+  // t1(vector(uint(64), 4), min(uint(64)));
+
+  t1(vector(int(8), 16), max(int(8)));
+  t1(vector(int(16), 8), max(int(16)));
+  t1(vector(int(32), 4), max(int(32)));
+  t1(vector(int(64), 2), max(int(64)));
+  // t1(vector(uint(8), 16), max(uint(8)));
+  // t1(vector(uint(16), 8), max(uint(16)));
+  // t1(vector(uint(32), 4), max(uint(32)));
+  // t1(vector(uint(64), 2), max(uint(64)));
+
+  t1(vector(int(8), 32), max(int(8)));
+  t1(vector(int(16), 16), max(int(16)));
+  t1(vector(int(32), 8), max(int(32)));
+  t1(vector(int(64), 4), max(int(64)));
+  // t1(vector(uint(8), 32), max(uint(8)));
+  // t1(vector(uint(16), 16), max(uint(16)));
+  // t1(vector(uint(32), 8), max(uint(32)));
+  // t1(vector(uint(64), 4), max(uint(64));
+
 }
 
 

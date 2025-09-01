@@ -315,10 +315,10 @@ module IntrinArm64_128 {
                       laneType:string);
       } else
         return reinterpret(
-          doSimpleOp("vshrq",
-            reinterpret(x, getBitMaskType(vecType)),
-            reinterpret(y, getBitMaskType(vecType))
-          ), vecType);
+          doSimpleOp("vshlq",
+                     reinterpret(x, getBitMaskType(vecType)),
+                     doSimpleOp("vnegq", y)),
+          vecType);
     }
     inline proc type shiftRightArithImm(x: vecType,
                                         param offset: int): vecType {
@@ -338,8 +338,25 @@ module IntrinArm64_128 {
         compilerError(getRoutineName() +
                       " by a vector is not supported with " +
                       laneType:string);
-      } else
-        return doSimpleOp("vshrq", x, y);
+      } else {
+        const shiftAmount = doSimpleOp("vnegq", y);
+
+        // TODO: ALL THIS WORK IS NOT NEEDED but I need it for x86
+        // get all ones and shift them left by numBits-shiftAmount to get a mask
+        // of the sign bits replicated by shiftAmount
+        // then or that with the vshlq result to get the arithmetic shift
+
+        // const ones = implType(vecType).allOnes();
+        // const numSignBits =
+        //   doSimpleOp("vsubq", implType(vecType).splat(numBits(laneType)-1),
+        //                       shiftAmount);
+        // const signBits = doSimpleOp("vshlq", ones, numSignBits);
+
+        // const shifted = doSimpleOp("vshlq", x, shiftAmount);
+        // return doSimpleOp("vorrq", shifted, signBits);
+        const shifted = doSimpleOp("vshlq", x, shiftAmount);
+        return shifted;
+      }
     }
 
 

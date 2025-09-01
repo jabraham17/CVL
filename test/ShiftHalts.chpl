@@ -1,4 +1,4 @@
-use IO, Subprocess, Regex;
+use IO, Subprocess, Regex, Reflection;
 use CVL;
 
 proc getGoodFile(suffix="") {
@@ -183,87 +183,87 @@ proc main(args: [] string) {
 
 
 proc shiftLeftBySizeOfLane(type t) {
-  stderr.writeln("=== ", t:string, " ===");
+  stderr.writeln("=== ", getRoutineName(), " ", t:string, " ===");
   var v: t;
   var s = numBits(t.eltType):t.eltType:t;
   v.shiftLeft(s);
 }
 proc shiftLeftByZero(type t) {
-  stderr.writeln("=== ", t:string, " ===");
+  stderr.writeln("=== ", getRoutineName(), " ", t:string, " ===");
   var v: t;
   var s = 0:t.eltType:t;
   v.shiftLeft(s);
 }
 proc shiftLeftBySizeOfLaneOp(type t) {
-  stderr.writeln("=== ", t:string, " ===");
+  stderr.writeln("=== ", getRoutineName(), " ", t:string, " ===");
   var v: t;
   var s = numBits(t.eltType):t.eltType:t;
   var temp = v << s;
 }
 proc shiftLeftByZeroOp(type t) {
-  stderr.writeln("=== ", t:string, " ===");
+  stderr.writeln("=== ", getRoutineName(), " ", t:string, " ===");
   var v: t;
   var s = 0:t.eltType:t;
   var temp = v << s;
 }
 proc shiftLeftBySizeOfLaneOpEq(type t) {
-  stderr.writeln("=== ", t:string, " ===");
+  stderr.writeln("=== ", getRoutineName(), " ", t:string, " ===");
   var v: t;
   var s = numBits(t.eltType):t.eltType:t;
   v <<= s;
 }
 proc shiftLeftByZeroOpEq(type t) {
-  stderr.writeln("=== ", t:string, " ===");
+  stderr.writeln("=== ", getRoutineName(), " ", t:string, " ===");
   var v: t;
   var s = 0:t.eltType:t;
   v <<= s;
 }
 
 proc shiftRightBySizeOfLane(type t) {
-  stderr.writeln("=== ", t:string, " ===");
+  stderr.writeln("=== ", getRoutineName(), " ", t:string, " ===");
   var v: t;
   var s = numBits(t.eltType):t.eltType:t;
   v.shiftRight(s);
 }
 proc shiftRightByZero(type t) {
-  stderr.writeln("=== ", t:string, " ===");
+  stderr.writeln("=== ", getRoutineName(), " ", t:string, " ===");
   var v: t;
   var s = 0:t.eltType:t;
   v.shiftRight(s);
 }
 proc shiftRightBySizeOfLaneOp(type t) {
-  stderr.writeln("=== ", t:string, " ===");
+  stderr.writeln("=== ", getRoutineName(), " ", t:string, " ===");
   var v: t;
   var s = numBits(t.eltType):t.eltType:t;
   var temp = v >> s;
 }
 proc shiftRightByZeroOp(type t) {
-  stderr.writeln("=== ", t:string, " ===");
+  stderr.writeln("=== ", getRoutineName(), " ", t:string, " ===");
   var v: t;
   var s = 0:t.eltType:t;
   var temp = v >> s;
 }
 proc shiftRightBySizeOfLaneOpEq(type t) {
-  stderr.writeln("=== ", t:string, " ===");
+  stderr.writeln("=== ", getRoutineName(), " ", t:string, " ===");
   var v: t;
   var s = numBits(t.eltType):t.eltType:t;
   v >>= s;
 }
 proc shiftRightByZeroOpEq(type t) {
-  stderr.writeln("=== ", t:string, " ===");
+  stderr.writeln("=== ", getRoutineName(), " ", t:string, " ===");
   var v: t;
   var s = 0:t.eltType:t;
   v >>= s;
 }
 
 proc shiftRightArithBySizeOfLane(type t) {
-  stderr.writeln("=== ", t:string, " ===");
+  stderr.writeln("=== ", getRoutineName(), " ", t:string, " ===");
   var v: t;
   var s = numBits(t.eltType):t.eltType:t;
   v.shiftRightArith(s);
 }
 proc shiftRightArithByZero(type t) {
-  stderr.writeln("=== ", t:string, " ===");
+  stderr.writeln("=== ", getRoutineName(), " ", t:string, " ===");
   var v: t;
   var s = 0:t.eltType:t;
   v.shiftRightArith(s);

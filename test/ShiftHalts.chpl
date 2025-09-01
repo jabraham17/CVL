@@ -176,6 +176,7 @@ proc main(args: [] string) {
       when 111 do shiftRightArithByZero(vector(int(32), 8));
       when 112 do shiftRightArithByZero(vector(int(64), 4));
     }
+    compilerAssert(numTests == 112);
     return 1;
   }
   return 0;

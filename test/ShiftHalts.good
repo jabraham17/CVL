@@ -1,16 +1,224 @@
-=== vector(int(8),16) ===
+=== shiftLeftBySizeOfLane vector(int(8),16) ===
 error: halt reached - shift amount must be in range [0, 7]
-=== vector(int(16),8) ===
+=== shiftLeftBySizeOfLane vector(int(16),8) ===
 error: halt reached - shift amount must be in range [0, 15]
-=== vector(int(32),4) ===
+=== shiftLeftBySizeOfLane vector(int(32),4) ===
 error: halt reached - shift amount must be in range [0, 31]
-=== vector(int(64),2) ===
+=== shiftLeftBySizeOfLane vector(int(64),2) ===
 error: halt reached - shift amount must be in range [0, 63]
-=== vector(int(8),32) ===
+=== shiftLeftBySizeOfLane vector(int(8),32) ===
 error: halt reached - shift amount must be in range [0, 7]
-=== vector(int(16),16) ===
+=== shiftLeftBySizeOfLane vector(int(16),16) ===
 error: halt reached - shift amount must be in range [0, 15]
-=== vector(int(32),8) ===
+=== shiftLeftBySizeOfLane vector(int(32),8) ===
 error: halt reached - shift amount must be in range [0, 31]
-=== vector(int(64),4) ===
+=== shiftLeftBySizeOfLane vector(int(64),4) ===
+error: halt reached - shift amount must be in range [0, 63]
+=== shiftLeftByZero vector(int(8),16) ===
+error: halt reached - shift amount must be in range [0, 7]
+=== shiftLeftByZero vector(int(16),8) ===
+error: halt reached - shift amount must be in range [0, 15]
+=== shiftLeftByZero vector(int(32),4) ===
+error: halt reached - shift amount must be in range [0, 31]
+=== shiftLeftByZero vector(int(64),2) ===
+error: halt reached - shift amount must be in range [0, 63]
+=== shiftLeftByZero vector(int(8),32) ===
+error: halt reached - shift amount must be in range [0, 7]
+=== shiftLeftByZero vector(int(16),16) ===
+error: halt reached - shift amount must be in range [0, 15]
+=== shiftLeftByZero vector(int(32),8) ===
+error: halt reached - shift amount must be in range [0, 31]
+=== shiftLeftByZero vector(int(64),4) ===
+error: halt reached - shift amount must be in range [0, 63]
+=== shiftLeftBySizeOfLaneOp vector(int(8),16) ===
+error: halt reached - shift amount must be in range [0, 7]
+=== shiftLeftBySizeOfLaneOp vector(int(16),8) ===
+error: halt reached - shift amount must be in range [0, 15]
+=== shiftLeftBySizeOfLaneOp vector(int(32),4) ===
+error: halt reached - shift amount must be in range [0, 31]
+=== shiftLeftBySizeOfLaneOp vector(int(64),2) ===
+error: halt reached - shift amount must be in range [0, 63]
+=== shiftLeftBySizeOfLaneOp vector(int(8),32) ===
+error: halt reached - shift amount must be in range [0, 7]
+=== shiftLeftBySizeOfLaneOp vector(int(16),16) ===
+error: halt reached - shift amount must be in range [0, 15]
+=== shiftLeftBySizeOfLaneOp vector(int(32),8) ===
+error: halt reached - shift amount must be in range [0, 31]
+=== shiftLeftBySizeOfLaneOp vector(int(64),4) ===
+error: halt reached - shift amount must be in range [0, 63]
+=== shiftLeftByZeroOp vector(int(8),16) ===
+error: halt reached - shift amount must be in range [0, 7]
+=== shiftLeftByZeroOp vector(int(16),8) ===
+error: halt reached - shift amount must be in range [0, 15]
+=== shiftLeftByZeroOp vector(int(32),4) ===
+error: halt reached - shift amount must be in range [0, 31]
+=== shiftLeftByZeroOp vector(int(64),2) ===
+error: halt reached - shift amount must be in range [0, 63]
+=== shiftLeftByZeroOp vector(int(8),32) ===
+error: halt reached - shift amount must be in range [0, 7]
+=== shiftLeftByZeroOp vector(int(16),16) ===
+error: halt reached - shift amount must be in range [0, 15]
+=== shiftLeftByZeroOp vector(int(32),8) ===
+error: halt reached - shift amount must be in range [0, 31]
+=== shiftLeftByZeroOp vector(int(64),4) ===
+error: halt reached - shift amount must be in range [0, 63]
+=== shiftLeftBySizeOfLaneOpEq vector(int(8),16) ===
+error: halt reached - shift amount must be in range [0, 7]
+=== shiftLeftBySizeOfLaneOpEq vector(int(16),8) ===
+error: halt reached - shift amount must be in range [0, 15]
+=== shiftLeftBySizeOfLaneOpEq vector(int(32),4) ===
+error: halt reached - shift amount must be in range [0, 31]
+=== shiftLeftBySizeOfLaneOpEq vector(int(64),2) ===
+error: halt reached - shift amount must be in range [0, 63]
+=== shiftLeftBySizeOfLaneOpEq vector(int(8),32) ===
+error: halt reached - shift amount must be in range [0, 7]
+=== shiftLeftBySizeOfLaneOpEq vector(int(16),16) ===
+error: halt reached - shift amount must be in range [0, 15]
+=== shiftLeftBySizeOfLaneOpEq vector(int(32),8) ===
+error: halt reached - shift amount must be in range [0, 31]
+=== shiftLeftBySizeOfLaneOpEq vector(int(64),4) ===
+error: halt reached - shift amount must be in range [0, 63]
+=== shiftLeftByZeroOpEq vector(int(8),16) ===
+error: halt reached - shift amount must be in range [0, 7]
+=== shiftLeftByZeroOpEq vector(int(16),8) ===
+error: halt reached - shift amount must be in range [0, 15]
+=== shiftLeftByZeroOpEq vector(int(32),4) ===
+error: halt reached - shift amount must be in range [0, 31]
+=== shiftLeftByZeroOpEq vector(int(64),2) ===
+error: halt reached - shift amount must be in range [0, 63]
+=== shiftLeftByZeroOpEq vector(int(8),32) ===
+error: halt reached - shift amount must be in range [0, 7]
+=== shiftLeftByZeroOpEq vector(int(16),16) ===
+error: halt reached - shift amount must be in range [0, 15]
+=== shiftLeftByZeroOpEq vector(int(32),8) ===
+error: halt reached - shift amount must be in range [0, 31]
+=== shiftLeftByZeroOpEq vector(int(64),4) ===
+error: halt reached - shift amount must be in range [0, 63]
+=== shiftRightBySizeOfLane vector(int(8),16) ===
+error: halt reached - shift amount must be in range [0, 7]
+=== shiftRightBySizeOfLane vector(int(16),8) ===
+error: halt reached - shift amount must be in range [0, 15]
+=== shiftRightBySizeOfLane vector(int(32),4) ===
+error: halt reached - shift amount must be in range [0, 31]
+=== shiftRightBySizeOfLane vector(int(64),2) ===
+error: halt reached - shift amount must be in range [0, 63]
+=== shiftRightBySizeOfLane vector(int(8),32) ===
+error: halt reached - shift amount must be in range [0, 7]
+=== shiftRightBySizeOfLane vector(int(16),16) ===
+error: halt reached - shift amount must be in range [0, 15]
+=== shiftRightBySizeOfLane vector(int(32),8) ===
+error: halt reached - shift amount must be in range [0, 31]
+=== shiftRightBySizeOfLane vector(int(64),4) ===
+error: halt reached - shift amount must be in range [0, 63]
+=== shiftRightByZero vector(int(8),16) ===
+error: halt reached - shift amount must be in range [0, 7]
+=== shiftRightByZero vector(int(16),8) ===
+error: halt reached - shift amount must be in range [0, 15]
+=== shiftRightByZero vector(int(32),4) ===
+error: halt reached - shift amount must be in range [0, 31]
+=== shiftRightByZero vector(int(64),2) ===
+error: halt reached - shift amount must be in range [0, 63]
+=== shiftRightByZero vector(int(8),32) ===
+error: halt reached - shift amount must be in range [0, 7]
+=== shiftRightByZero vector(int(16),16) ===
+error: halt reached - shift amount must be in range [0, 15]
+=== shiftRightByZero vector(int(32),8) ===
+error: halt reached - shift amount must be in range [0, 31]
+=== shiftRightByZero vector(int(64),4) ===
+error: halt reached - shift amount must be in range [0, 63]
+=== shiftRightBySizeOfLaneOp vector(int(8),16) ===
+error: halt reached - shift amount must be in range [0, 7]
+=== shiftRightBySizeOfLaneOp vector(int(16),8) ===
+error: halt reached - shift amount must be in range [0, 15]
+=== shiftRightBySizeOfLaneOp vector(int(32),4) ===
+error: halt reached - shift amount must be in range [0, 31]
+=== shiftRightBySizeOfLaneOp vector(int(64),2) ===
+error: halt reached - shift amount must be in range [0, 63]
+=== shiftRightBySizeOfLaneOp vector(int(8),32) ===
+error: halt reached - shift amount must be in range [0, 7]
+=== shiftRightBySizeOfLaneOp vector(int(16),16) ===
+error: halt reached - shift amount must be in range [0, 15]
+=== shiftRightBySizeOfLaneOp vector(int(32),8) ===
+error: halt reached - shift amount must be in range [0, 31]
+=== shiftRightBySizeOfLaneOp vector(int(64),4) ===
+error: halt reached - shift amount must be in range [0, 63]
+=== shiftRightByZeroOp vector(int(8),16) ===
+error: halt reached - shift amount must be in range [0, 7]
+=== shiftRightByZeroOp vector(int(16),8) ===
+error: halt reached - shift amount must be in range [0, 15]
+=== shiftRightByZeroOp vector(int(32),4) ===
+error: halt reached - shift amount must be in range [0, 31]
+=== shiftRightByZeroOp vector(int(64),2) ===
+error: halt reached - shift amount must be in range [0, 63]
+=== shiftRightByZeroOp vector(int(8),32) ===
+error: halt reached - shift amount must be in range [0, 7]
+=== shiftRightByZeroOp vector(int(16),16) ===
+error: halt reached - shift amount must be in range [0, 15]
+=== shiftRightByZeroOp vector(int(32),8) ===
+error: halt reached - shift amount must be in range [0, 31]
+=== shiftRightByZeroOp vector(int(64),4) ===
+error: halt reached - shift amount must be in range [0, 63]
+=== shiftRightBySizeOfLaneOpEq vector(int(8),16) ===
+error: halt reached - shift amount must be in range [0, 7]
+=== shiftRightBySizeOfLaneOpEq vector(int(16),8) ===
+error: halt reached - shift amount must be in range [0, 15]
+=== shiftRightBySizeOfLaneOpEq vector(int(32),4) ===
+error: halt reached - shift amount must be in range [0, 31]
+=== shiftRightBySizeOfLaneOpEq vector(int(64),2) ===
+error: halt reached - shift amount must be in range [0, 63]
+=== shiftRightBySizeOfLaneOpEq vector(int(8),32) ===
+error: halt reached - shift amount must be in range [0, 7]
+=== shiftRightBySizeOfLaneOpEq vector(int(16),16) ===
+error: halt reached - shift amount must be in range [0, 15]
+=== shiftRightBySizeOfLaneOpEq vector(int(32),8) ===
+error: halt reached - shift amount must be in range [0, 31]
+=== shiftRightBySizeOfLaneOpEq vector(int(64),4) ===
+error: halt reached - shift amount must be in range [0, 63]
+=== shiftRightByZeroOpEq vector(int(8),16) ===
+error: halt reached - shift amount must be in range [0, 7]
+=== shiftRightByZeroOpEq vector(int(16),8) ===
+error: halt reached - shift amount must be in range [0, 15]
+=== shiftRightByZeroOpEq vector(int(32),4) ===
+error: halt reached - shift amount must be in range [0, 31]
+=== shiftRightByZeroOpEq vector(int(64),2) ===
+error: halt reached - shift amount must be in range [0, 63]
+=== shiftRightByZeroOpEq vector(int(8),32) ===
+error: halt reached - shift amount must be in range [0, 7]
+=== shiftRightByZeroOpEq vector(int(16),16) ===
+error: halt reached - shift amount must be in range [0, 15]
+=== shiftRightByZeroOpEq vector(int(32),8) ===
+error: halt reached - shift amount must be in range [0, 31]
+=== shiftRightByZeroOpEq vector(int(64),4) ===
+error: halt reached - shift amount must be in range [0, 63]
+=== shiftRightArithBySizeOfLane vector(int(8),16) ===
+error: halt reached - shift amount must be in range [0, 7]
+=== shiftRightArithBySizeOfLane vector(int(16),8) ===
+error: halt reached - shift amount must be in range [0, 15]
+=== shiftRightArithBySizeOfLane vector(int(32),4) ===
+error: halt reached - shift amount must be in range [0, 31]
+=== shiftRightArithBySizeOfLane vector(int(64),2) ===
+error: halt reached - shift amount must be in range [0, 63]
+=== shiftRightArithBySizeOfLane vector(int(8),32) ===
+error: halt reached - shift amount must be in range [0, 7]
+=== shiftRightArithBySizeOfLane vector(int(16),16) ===
+error: halt reached - shift amount must be in range [0, 15]
+=== shiftRightArithBySizeOfLane vector(int(32),8) ===
+error: halt reached - shift amount must be in range [0, 31]
+=== shiftRightArithBySizeOfLane vector(int(64),4) ===
+error: halt reached - shift amount must be in range [0, 63]
+=== shiftRightArithByZero vector(int(8),16) ===
+error: halt reached - shift amount must be in range [0, 7]
+=== shiftRightArithByZero vector(int(16),8) ===
+error: halt reached - shift amount must be in range [0, 15]
+=== shiftRightArithByZero vector(int(32),4) ===
+error: halt reached - shift amount must be in range [0, 31]
+=== shiftRightArithByZero vector(int(64),2) ===
+error: halt reached - shift amount must be in range [0, 63]
+=== shiftRightArithByZero vector(int(8),32) ===
+error: halt reached - shift amount must be in range [0, 7]
+=== shiftRightArithByZero vector(int(16),16) ===
+error: halt reached - shift amount must be in range [0, 15]
+=== shiftRightArithByZero vector(int(32),8) ===
+error: halt reached - shift amount must be in range [0, 31]
+=== shiftRightArithByZero vector(int(64),4) ===
 error: halt reached - shift amount must be in range [0, 63]

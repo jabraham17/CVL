@@ -301,7 +301,11 @@ module IntrinArm64_128 {
         return reinterpret(
           implType(t).shiftRightImm(reinterpret(x, t), offset), vecType);
       } else
-        return doSimpleOp("vshrq_n", x, offset);
+        return reinterpret(
+          doSimpleOp("vshrq_n",
+            reinterpret(x, getBitMaskType(vecType)),
+            offset
+          ), vecType);
     }
     inline proc type shiftRightVec(x: vecType, y: vecType): vecType {
       if canResolveTypeMethod(extensionType, "shiftRightVec", x, y) then
@@ -311,7 +315,11 @@ module IntrinArm64_128 {
                       " by a vector is not supported with " +
                       laneType:string);
       } else
-        return doSimpleOp("vshrq", x, y);
+        return reinterpret(
+          doSimpleOp("vshrq",
+            reinterpret(x, getBitMaskType(vecType)),
+            reinterpret(y, getBitMaskType(vecType))
+          ), vecType);
     }
     inline proc type shiftRightArithImm(x: vecType,
                                         param offset: int): vecType {
@@ -322,8 +330,7 @@ module IntrinArm64_128 {
         return reinterpret(
           implType(t).shiftRightArithImm(reinterpret(x, t), offset), vecType);
       } else
-      // TODO: qhy can't I pass a neg number to get a logical shift
-        return doSimpleOp("vshlq_n", x, -offset);
+        return doSimpleOp("vshrq_n", x, offset);
     }
     inline proc type shiftRightArithVec(x: vecType, y: vecType): vecType {
       if canResolveTypeMethod(extensionType, "shiftRightArithVec", x, y) then
@@ -333,7 +340,7 @@ module IntrinArm64_128 {
                       " by a vector is not supported with " +
                       laneType:string);
       } else
-        return doSimpleOp("vshlq", x, doSimpleOp("vnegq", y));
+        return doSimpleOp("vshrq", x, y);
     }
 
 
@@ -422,20 +429,6 @@ module IntrinArm64_128 {
       else
         return doSimpleOp("vbicq", y, x);
     }
-    // inline proc type shiftRightArith(x: vecType, param offset: int): vecType{
-    //   if canResolveTypeMethod(extensionType, "shiftRightArith", x) then
-    //     return extensionType.shiftRightArith(x);
-    //   else
-    //     return doSimpleOp("vshrq_n", x, offset);
-    // TODO this is not going to work because of macros/const int issues
-    // }
-    // inline proc type shiftLeft(x: vecType, param offset: int): vecType {
-    //   if canResolveTypeMethod(extensionType, "shiftLeft", x) then
-    //     return extensionType.shiftLeft(x);
-    //   else
-    //     return doSimpleOp("vshlq_n", x, offset);
-    // TODO this is not going to work because of macros/const int issues
-    // }
 
     inline proc type cmpEq(x: vecType, y: vecType): vecType {
       if canResolveTypeMethod(extensionType, "cmpEq", x, y) then

@@ -95,21 +95,50 @@ record outputManager: contextManager {
 }
 
 
-proc toHex(tup, param filled = false) {
+proc toHex(tup, param filled = false) where isTuple(tup) {
   use IO;
   var res: tup.size * string;
   for param i in 0..<tup.size {
-    type elmType = tup[i].type;
-    var bits = if isRealType(elmType)
-                then tup[i].transmute(uint(numBits(elmType)))
-                else tup[i]:uint(numBits(elmType));
-    param fmt = if filled then "%@0"+(numBits(elmType)/4):string+"xu"
-                          else "%@0xu";
-    res[i] = fmt.format(bits);
+    res[i] = toHex(tup[i], filled=filled);
   }
   return res;
 }
 import Vector.vector;
 proc toHex(x: vector(?), param filled = false) {
   return toHex(x.toTuple(), filled=filled);
+}
+proc toHex(x: numeric, param filled = false) {
+  use IO;
+  type T = x.type;
+  var bits = if isRealType(T)
+              then x.transmute(uint(numBits(T)))
+              else x:uint(numBits(T));
+  param width = numBits(T)/4 + 2; // +2 for "0x"
+  param fmt = if filled then "%@0"+numBits:string+"xu"
+                        else "%@0xu";
+  return fmt.format(bits);
+}
+
+
+proc toBin(tup, param filled = false) where isTuple(tup) {
+  use IO;
+  var res: tup.size * string;
+  for param i in 0..<tup.size {
+    res[i] = toBin(tup[i], filled=filled);
+  }
+  return res;
+}
+proc toBin(x: vector(?), param filled = false) {
+  return toBin(x.toTuple(), filled=filled);
+}
+proc toBin(x: numeric, param filled = false) {
+  use IO;
+  type T = x.type;
+  var bits = if isRealType(T)
+              then x.transmute(uint(numBits(T)))
+              else x:uint(numBits(T));
+  param width = numBits(T) + 2; // +2 for "0b"
+  param fmt = if filled then "%@0"+width:string+"bu"
+                        else "%@0bu";
+  return fmt.format(bits);
 }

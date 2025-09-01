@@ -8,14 +8,14 @@ proc Test.assertEqual(actual: vector(?),
   if actual.type != expected.type {
     const s =
       "%? - '%?' and '%?' are not of same type"
-      .format(msg, actual, expected);
+      .format(msg, toHex(actual), toHex(expected));
     throw new TestError.AssertionError(s);
   }
   for param i in 0..#actual.numElts {
     if actual[i] != expected[i] {
       const s =
         "%? - '%?' and '%?' differ at index %i"
-        .format(msg, actual, expected, i);
+        .format(msg, toHex(actual), toHex(expected), i);
       throw new TestError.AssertionError(s);
     }
   }
@@ -37,13 +37,15 @@ proc testShift(test: borrowed Test) throws {
     const exp_left_shift_4 = 0x700:t.eltType:t;
     const exp_right_shift_4 = 0x7:t.eltType:t;
     const exp_right_shift_4_arith = 0x7:t.eltType:t;
-    test.assertEqual(v << 4, exp_left_shift_4, "left shift failed");
-    test.assertEqual(v >> 4, exp_right_shift_4, "right shift failed");
+    test.assertEqual(v << 4, exp_left_shift_4, "left shift by 4 failed");
+    test.assertEqual(v >> 4, exp_right_shift_4, "right shift by 4 failed");
 
-    test.assertEqual(v.shiftLeft(4), exp_left_shift_4, "left shift failed");
-    test.assertEqual(v.shiftRight(4), exp_right_shift_4, "right shift failed");
-    test.assertEqual(v.shiftRightArith(4),
-                     exp_right_shift_4_arith, "right shift arithmetic failed");
+    test.assertEqual(v.shiftLeft(4), exp_left_shift_4,
+                     "left shift by 4 failed");
+    test.assertEqual(v.shiftRight(4), exp_right_shift_4,
+                     "right shift by 4 failed");
+    test.assertEqual(v.shiftRightArith(4), exp_right_shift_4_arith,
+                     "right shift arithmetic by 4failed");
   }
   proc t2(type t) throws {
     const v = min(t);
@@ -53,13 +55,15 @@ proc testShift(test: borrowed Test) throws {
     const exp_right_shift_1_arith = (min_val:iTy(t) >> 1):t.eltType:t;
     const exp_right_shift_1 = (min_val:uTy(t) >> 1):t.eltType:t;
 
-    test.assertEqual(v << 1, exp_left_shift_1, "left shift failed");
-    test.assertEqual(v >> 1, exp_right_shift_1, "right shift failed");
+    test.assertEqual(v << 1, exp_left_shift_1, "left shift by 1 failed");
+    test.assertEqual(v >> 1, exp_right_shift_1, "right shift by 1 failed");
 
-    test.assertEqual(v.shiftLeft(1), exp_left_shift_1, "left shift failed");
-    test.assertEqual(v.shiftRight(1), exp_right_shift_1, "right shift failed");
-    test.assertEqual(v.shiftRightArith(1),
-                     exp_right_shift_1_arith, "right shift arithmetic failed");
+    test.assertEqual(v.shiftLeft(1), exp_left_shift_1,
+                     "left shift by 1 failed");
+    test.assertEqual(v.shiftRight(1), exp_right_shift_1,
+                     "right shift by 1 failed");
+    test.assertEqual(v.shiftRightArith(1), exp_right_shift_1_arith,
+                     "right shift arithmetic by 1 failed");
   }
   proc tests(type t) throws {
     t1(t);

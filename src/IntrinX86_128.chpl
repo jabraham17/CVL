@@ -411,8 +411,22 @@ module IntrinX86_128 {
         compilerError(getRoutineName() +
                       " by a vector is not supported with " +
                       laneType:string);
-      } else
-        return x; // TODO
+      } else {
+        if numBits(laneType) == 8 || numBits(laneType) == 16 {
+          import CVL;
+          if CVL.implementationWarnings then
+            compilerWarning(getRoutineName() +
+                            " on " + laneType:string +
+                            " is implemented with scalar ops");
+          // implement via scalar ops for now
+          var result: vecType;
+          for param i in 0..#numLanes {
+            result = insert(result, extract(x, i) << extract(y, i), i);
+          }
+          return result;
+        } else
+          return doSimpleOp(mmPrefix+"_sllv_", x, y);
+      }
     }
     inline proc type shiftRightImm(x: vecType, param offset: int): vecType {
       if canResolveTypeMethod(extensionType, "shiftRightImm") then
@@ -435,8 +449,24 @@ module IntrinX86_128 {
         compilerError(getRoutineName() +
                       " by a vector is not supported with " +
                       laneType:string);
-      } else
-        return x; // TODO
+      } else {
+        if numBits(laneType) == 8 || numBits(laneType) == 16 {
+          import CVL;
+          if CVL.implementationWarnings then
+            compilerWarning(getRoutineName() +
+                            " on " + laneType:string +
+                            " is implemented with scalar ops");
+          // implement via scalar ops for now
+          var result: vecType;
+          for param i in 0..#numLanes {
+            type ty = uint(numBits(laneType));
+            result =
+              insert(result, (extract(x, i):ty >> extract(y, i)):laneType, i);
+          }
+          return result;
+        } else
+          return doSimpleOp(mmPrefix+"_srlv_", x, y);
+      }
     }
     inline proc type shiftRightArithImm(x: vecType,
                                         param offset: int): vecType {
@@ -460,8 +490,22 @@ module IntrinX86_128 {
         compilerError(getRoutineName() +
                       " by a vector is not supported with " +
                       laneType:string);
-      } else
-        return x; // TODO
+      } else {
+        if numBits(laneType) == 8 || numBits(laneType) == 16 {
+          import CVL;
+          if CVL.implementationWarnings then
+            compilerWarning(getRoutineName() +
+                            " on " + laneType:string +
+                            " is implemented with scalar ops");
+          // implement via scalar ops for now
+          var result: vecType;
+          for param i in 0..#numLanes {
+            result = insert(result, extract(x, i) >> extract(y, i), i);
+          }
+          return result;
+        } else
+          return doSimpleOp(mmPrefix+"_srav_", x, y);
+      }
     }
 
     inline proc type swapPairs(x: vecType): vecType {

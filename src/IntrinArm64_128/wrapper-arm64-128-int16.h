@@ -51,4 +51,21 @@ static inline int16x8_t reverse_16x8i(int16x8_t x) {
   return vreinterpretq_s16_s8(vqtbl1q_s8(vreinterpretq_s8_s16(x), mask));
 }
 
+
+#define SHUFFLES(IMM) \
+  static inline int16x8_t shiftLeft_n_##IMM##_s16(int16x8_t x) { \
+    return vshlq_n_s16(x, IMM); \
+  } \
+  static inline int16x8_t shiftRight_n_##IMM##_s16(int16x8_t x) { \
+    return vshrq_n_s16(x, IMM); \
+  } \
+  static inline uint16x8_t shiftRight_n_##IMM##_u16(uint16x8_t x) { \
+    return vshrq_n_u16(x, IMM); \
+  }
+#define BITS(V) V(1) V(2) V(3) V(4) V(5) V(6) V(7) V(8) \
+                V(9) V(10) V(11) V(12) V(13) V(14) V(15)
+BITS(SHUFFLES)
+#undef BITS
+#undef SHUFFLES
+
 #endif

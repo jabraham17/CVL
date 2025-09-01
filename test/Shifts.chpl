@@ -12,7 +12,7 @@ proc Test.assertEqual(actual: vector(?),
     throw new TestError.AssertionError(s);
   }
   for param i in 0..#actual.numElts {
-    if actual[i] != expected[i] {
+    if toHex(actual[i]) != toHex(expected[i]) {
       const s =
         "%? - '%?' and '%?' differ at index %i"
         .format(msg, toHex(actual), toHex(expected), i);
@@ -28,17 +28,43 @@ proc uTy(type t: vector(?)) type {
   return uint(numBits(t.eltType));
 }
 
-proc testShift(test: borrowed Test) throws {
+proc getVal(type t, val) {
+  if isSubtype(t, vector(?)) {
+    if isRealType(t.eltType) {
+      return (val:uint(numBits(t.eltType))).transmute(t.eltType):t;
+    } else if isReal(val) {
+      return val.transmute(uint(numBits(t.eltType))):t;
+    } else {
+      return val:t.eltType:t;
+    }
+  } else {
+    if isRealType(t) {
+      return (val:uint(numBits(t))).transmute(t);
+    } else if isReal(val) {
+      return val.transmute(uint(numBits(t))):t;
+    } else {
+      return val:t;
+    }
+  }
+}
+
+proc testShiftImm(test: borrowed Test) throws {
 
   proc t1(type t) throws {
-    // TODO: 0xF0 is a param, I should be able to cast it to the vector type
-    // directly since I know for certain that it will fit at compile time.
-    const v = 0x70:t.eltType:t;
-    const exp_left_shift_4 = 0x700:t.eltType:t;
-    const exp_right_shift_4 = 0x7:t.eltType:t;
-    const exp_right_shift_4_arith = 0x7:t.eltType:t;
+    const v = getVal(t, 0x70);
+    const exp_left_shift_4 = getVal(t, 0x700);
+    const exp_right_shift_4 = getVal(t, 0x7);
+    const exp_right_shift_4_arith = getVal(t, 0x7);
+
     test.assertEqual(v << 4, exp_left_shift_4, "left shift by 4 failed");
+    var tmp = v;
+    tmp <<= 4;
+    test.assertEqual(tmp, exp_left_shift_4, "left shift by 4 failed");
+
     test.assertEqual(v >> 4, exp_right_shift_4, "right shift by 4 failed");
+    tmp = v;
+    tmp >>= 4;
+    test.assertEqual(tmp, exp_right_shift_4, "right shift by 4 failed");
 
     test.assertEqual(v.shiftLeft(4), exp_left_shift_4,
                      "left shift by 4 failed");
@@ -50,13 +76,20 @@ proc testShift(test: borrowed Test) throws {
   proc t2(type t) throws {
     const v = min(t);
     const min_val = min(t.eltType);
-    const exp_left_shift_1 = (min_val:iTy(t) << 1):t.eltType:t;
+    const exp_left_shift_1 = getVal(t, getVal(iTy(t), min_val) << 1);
     // Chapel shifts are arithmetic on signed values
-    const exp_right_shift_1_arith = (min_val:iTy(t) >> 1):t.eltType:t;
-    const exp_right_shift_1 = (min_val:uTy(t) >> 1):t.eltType:t;
+    const exp_right_shift_1_arith = getVal(t, getVal(iTy(t), min_val) >> 1);
+    const exp_right_shift_1 = getVal(t, getVal(uTy(t), min_val) >> 1);
 
     test.assertEqual(v << 1, exp_left_shift_1, "left shift by 1 failed");
+    var tmp = v;
+    tmp <<= 1;
+    test.assertEqual(tmp, exp_left_shift_1, "left shift by 1 failed");
+
     test.assertEqual(v >> 1, exp_right_shift_1, "right shift by 1 failed");
+    tmp = v;
+    tmp >>= 1;
+    test.assertEqual(tmp, exp_right_shift_1, "right shift by 1 failed");
 
     test.assertEqual(v.shiftLeft(1), exp_left_shift_1,
                      "left shift by 1 failed");
@@ -94,6 +127,9 @@ proc testShift(test: borrowed Test) throws {
 
 }
 
+proc testShiftVec(test: borrowed Test) throws {
+  test.assertTrue(false);
+}
 
 
 UnitTest.main();

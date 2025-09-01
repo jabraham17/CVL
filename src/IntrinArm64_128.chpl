@@ -281,7 +281,7 @@ module IntrinArm64_128 {
         return reinterpret(
           implType(t).shiftLeftImm(reinterpret(x, t), offset), vecType);
       } else
-        return doSimpleOp("vshlq_n", x, offset);
+        return doSimpleOp("shiftLeft_n_"+offset:string, x);
     }
     inline proc type shiftLeftVec(x: vecType, y: vecType): vecType {
       if canResolveTypeMethod(extensionType, "shiftLeftVec", x, y) then
@@ -302,9 +302,8 @@ module IntrinArm64_128 {
           implType(t).shiftRightImm(reinterpret(x, t), offset), vecType);
       } else
         return reinterpret(
-          doSimpleOp("vshrq_n",
-            reinterpret(x, getBitMaskType(vecType)),
-            offset
+          doSimpleOp("shiftRight_n_"+offset:string,
+            reinterpret(x, getBitMaskType(vecType))
           ), vecType);
     }
     inline proc type shiftRightVec(x: vecType, y: vecType): vecType {
@@ -330,7 +329,7 @@ module IntrinArm64_128 {
         return reinterpret(
           implType(t).shiftRightArithImm(reinterpret(x, t), offset), vecType);
       } else
-        return doSimpleOp("vshrq_n", x, offset);
+        return doSimpleOp("shiftRight_n_"+offset:string, x);
     }
     inline proc type shiftRightArithVec(x: vecType, y: vecType): vecType {
       if canResolveTypeMethod(extensionType, "shiftRightArithVec", x, y) then

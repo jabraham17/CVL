@@ -442,10 +442,6 @@ module Vector {
                     " to vector of length " + numBits(t):string);
     }
 
-
-    inline proc convert(type t): t where isSubtype(t, vector) &&
-
-
     inline proc type indices(
       rng: range(?)
     ): range(strides=strideKind.positive) do

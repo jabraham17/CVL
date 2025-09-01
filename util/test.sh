@@ -12,6 +12,7 @@ fi
   mason test --show --keep-binary -- \
     $@ \
     $CVL_OPTIONS \
+    --set CVL.implementationWarnings=false \
   | tee $PROJECT_DIR/test.log \
 )
 

@@ -211,7 +211,8 @@ inline operator@@{op}(
   @@{rhs}: @@{lhs}.type
 ) {
   @@{preCall}
-  @@{lhs}.data = Intrin.@@{intrin}(eltType, numElts, @@{lhs}.data, @@{rhs}.data);
+  @@{lhs}.data =
+    Intrin.@@{intrin}(eltType, numElts, @@{lhs}.data, @@{rhs}.data);
   @@{postCall}
 }
 """,

@@ -32,7 +32,8 @@ module Operators {
     y: x.type
   ) {
 
-    x.data = Intrin.add(eltType, numElts, x.data, y.data);
+    x.data =
+      Intrin.add(eltType, numElts, x.data, y.data);
 
   }
 
@@ -111,7 +112,8 @@ module Operators {
     y: x.type
   ) {
 
-    x.data = Intrin.sub(eltType, numElts, x.data, y.data);
+    x.data =
+      Intrin.sub(eltType, numElts, x.data, y.data);
 
   }
 
@@ -190,7 +192,8 @@ module Operators {
     y: x.type
   ) {
 
-    x.data = Intrin.mul(eltType, numElts, x.data, y.data);
+    x.data =
+      Intrin.mul(eltType, numElts, x.data, y.data);
 
   }
 
@@ -269,7 +272,8 @@ module Operators {
     y: x.type
   ) {
 
-    x.data = Intrin.div(eltType, numElts, x.data, y.data);
+    x.data =
+      Intrin.div(eltType, numElts, x.data, y.data);
 
   }
 
@@ -361,7 +365,8 @@ module Operators {
     y: x.type
   ) {
 
-    x.data = Intrin.and(eltType, numElts, x.data, y.data);
+    x.data =
+      Intrin.and(eltType, numElts, x.data, y.data);
 
   }
 
@@ -440,7 +445,8 @@ module Operators {
     y: x.type
   ) {
 
-    x.data = Intrin.or(eltType, numElts, x.data, y.data);
+    x.data =
+      Intrin.or(eltType, numElts, x.data, y.data);
 
   }
 
@@ -519,7 +525,8 @@ module Operators {
     y: x.type
   ) {
 
-    x.data = Intrin.xor(eltType, numElts, x.data, y.data);
+    x.data =
+      Intrin.xor(eltType, numElts, x.data, y.data);
 
   }
 
@@ -611,7 +618,8 @@ module Operators {
     y: x.type
   ) {
     x.type.shiftCheck(y);
-    x.data = Intrin.shiftRight(eltType, numElts, x.data, y.data);
+    x.data =
+      Intrin.shiftRight(eltType, numElts, x.data, y.data);
 
   }
 
@@ -671,7 +679,8 @@ module Operators {
     y: x.type
   ) {
     x.type.shiftCheck(y);
-    x.data = Intrin.shiftLeft(eltType, numElts, x.data, y.data);
+    x.data =
+      Intrin.shiftLeft(eltType, numElts, x.data, y.data);
 
   }
 

@@ -1026,7 +1026,8 @@ module IntrinX86_128 {
     inline proc type shiftLeftImm(x: vecType, param offset: int): vecType {
       import CVL;
       if CVL.implementationWarnings then
-        compilerWarning("'shiftLeftImm' on int(8) is implemented as scalar operations");
+        compilerWarning("'shiftLeftImm' on int(8)" +
+                        " is implemented as scalar operations");
       var res: vecType;
       for param i in 0..<base.numLanes {
         res = base.insert(res, base.extract(x, i) << offset, i);
@@ -1037,7 +1038,8 @@ module IntrinX86_128 {
     inline proc type shiftLeftVec(x: vecType, y: vecType): vecType {
       import CVL;
       if CVL.implementationWarnings then
-        compilerWarning("'shiftLeftVec' on int(8) is implemented as scalar operations");
+        compilerWarning("'shiftLeftVec' on int(8)" +
+                        " is implemented as scalar operations");
       var res: vecType;
       for param i in 0..<base.numLanes {
         res = base.insert(res, base.extract(x, i) << base.extract(y, i), i);
@@ -1048,7 +1050,8 @@ module IntrinX86_128 {
     inline proc type shiftRightImm(x: vecType, param offset: int): vecType {
       import CVL;
       if CVL.implementationWarnings then
-        compilerWarning("'shiftRightImm' on int(8) is implemented as scalar operations");
+        compilerWarning("'shiftRightImm' on int(8)" +
+                        " is implemented as scalar operations");
       var res: vecType;
       for param i in 0..<base.numLanes {
         type maskTy = uint(numBits(laneType));
@@ -1061,7 +1064,8 @@ module IntrinX86_128 {
     inline proc type shiftRightVec(x: vecType, y: vecType): vecType {
       import CVL;
       if CVL.implementationWarnings then
-        compilerWarning("'shiftRightVec' on int(8) is implemented as scalar operations");
+        compilerWarning("'shiftRightVec' on int(8)" +
+                        " is implemented as scalar operations");
       var res: vecType;
       for param i in 0..<base.numLanes {
         type maskTy = uint(numBits(laneType));
@@ -1078,7 +1082,8 @@ module IntrinX86_128 {
                                         param offset: int): vecType {
       import CVL;
       if CVL.implementationWarnings then
-        compilerWarning("'shiftRightArithImm' on int(8) is implemented as scalar operations");
+        compilerWarning("'shiftRightArithImm' on int(8)" +
+                        " is implemented as scalar operations");
       var res: vecType;
       for param i in 0..<base.numLanes {
         res = base.insert(res, base.extract(x, i) >> offset, i);
@@ -1089,7 +1094,8 @@ module IntrinX86_128 {
     inline proc type shiftRightArithVec(x: vecType, y: vecType): vecType {
       import CVL;
       if CVL.implementationWarnings then
-        compilerWarning("'shiftRightArithVec' on int(8) is implemented as scalar operations");
+        compilerWarning("'shiftRightArithVec' on int(8)" +
+                        " is implemented as scalar operations");
       var res: vecType;
       for param i in 0..<base.numLanes {
         res = base.insert(res, base.extract(x, i) >> base.extract(y, i), i);
@@ -1215,7 +1221,8 @@ module IntrinX86_128 {
                                         param offset: int): vecType {
       import CVL;
       if CVL.implementationWarnings then
-        compilerWarning("'shiftRightArithImm' on int(64) is implemented as scalar operations");
+        compilerWarning("'shiftRightArithImm' on int(64)" +
+                        " is implemented as scalar operations");
       // TODO: use srli with a bitmask
       var res: vecType;
       for param i in 0..<base.numLanes {
@@ -1227,7 +1234,8 @@ module IntrinX86_128 {
     inline proc type shiftRightArithVec(x: vecType, y: vecType): vecType {
       import CVL;
       if CVL.implementationWarnings then
-        compilerWarning("'shiftRightArithVec' on int(64) is implemented as scalar operations");
+        compilerWarning("'shiftRightArithVec' on int(64)" +
+                        " is implemented as scalar operations");
       // TODO: use srli with a bitmask
       var res: vecType;
       for param i in 0..<base.numLanes {

@@ -24,6 +24,8 @@ tests = [
   "MaskLoadTest.chpl",
   "MathFuncs.chpl",
   "MathTest.chpl",
+  "Shifts.chpl",
+  "ShiftHalts.chpl",
   "ShuffleTest.chpl",
   "SqrtTest.chpl",
   "sleef/Trig.chpl",

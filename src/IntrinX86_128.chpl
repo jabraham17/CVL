@@ -103,6 +103,13 @@ module IntrinX86_128 {
   proc type vec32x4i.bitMaskType type do return vec32x4i;
   proc type vec64x2i.bitMaskType type do return vec64x2i;
 
+  proc type vec32x4r.implType type do return x8664_32x4r;
+  proc type vec64x2r.implType type do return x8664_64x2r;
+  proc type vec8x16i.implType type do return x8664_8x16i;
+  proc type vec16x8i.implType type do return x8664_16x8i;
+  proc type vec32x4i.implType type do return x8664_32x4i;
+  proc type vec64x2i.implType type do return x8664_64x2i;
+
 
   /*
     Call a simple op on a vector type
@@ -176,14 +183,14 @@ module IntrinX86_128 {
   }
 
   @chplcheck.ignore("NoGenericReturn")
-  inline proc reinterpret(param mmPrefix: string, type toType, x: ?fromType) {
+  inline proc reinterpret(param mmPrefix: string, x: ?fromType, type toType) {
     param toSuffix =
       if toType.isIntegralVector then "si" + toType.numBits:string
                                     else toType.typeSuffix;
     param fromSuffix =
       if fromType.isIntegralVector then "si" + fromType.numBits:string
                                   else fromType.typeSuffix;
-    
+
     if toSuffix == fromSuffix then
       return x;
     else {
@@ -382,9 +389,124 @@ module IntrinX86_128 {
       }
     }
 
-    // bit cast int to float or float to int
-    // TODO im not happy with this api
-    // inline proc type bitcast(x: vecType, type otherVecType): otherVecType
+
+    inline proc type shiftLeftImm(x: vecType, param offset: int): vecType {
+      if canResolveTypeMethod(extensionType, "shiftLeftImm") then
+        return extensionType.shiftLeftImm(x, offset);
+      else if isRealType(laneType) {
+        type t = vecType.bitMaskType;
+        return reinterpret(mmPrefix,
+          t.implType.shiftLeftImm(
+            reinterpret(mmPrefix, x, t),
+            offset),
+          vecType);
+      } else
+        return doSimpleOp(
+          "shiftLeft"+vecType.numBits:string+"_i_"+offset:string+"_", x);
+    }
+    inline proc type shiftLeftVec(x: vecType, y: vecType): vecType {
+      if canResolveTypeMethod(extensionType, "shiftLeftVec", x, y) then
+        return extensionType.shiftLeftVec(x, y);
+      else if isRealType(laneType) {
+        compilerError(getRoutineName() +
+                      " by a vector is not supported with " +
+                      laneType:string);
+      } else {
+        if numBits(laneType) == 8 || numBits(laneType) == 16 {
+          import CVL;
+          if CVL.implementationWarnings then
+            compilerWarning(getRoutineName() +
+                            " on " + laneType:string +
+                            " is implemented with scalar ops");
+          // implement via scalar ops for now
+          var result: vecType;
+          for param i in 0..#numLanes {
+            result = insert(result, extract(x, i) << extract(y, i), i);
+          }
+          return result;
+        } else
+          return doSimpleOp(mmPrefix+"_sllv_", x, y);
+      }
+    }
+    inline proc type shiftRightImm(x: vecType, param offset: int): vecType {
+      if canResolveTypeMethod(extensionType, "shiftRightImm") then
+        return extensionType.shiftRightImm(x, offset);
+      else if isRealType(laneType) {
+        type t = vecType.bitMaskType;
+        return reinterpret(mmPrefix,
+          t.implType.shiftRightImm(
+            reinterpret(mmPrefix, x, t),
+            offset),
+          vecType);
+      } else
+        return doSimpleOp(
+          "shiftRight"+vecType.numBits:string+"_i_"+offset:string+"_", x);
+    }
+    inline proc type shiftRightVec(x: vecType, y: vecType): vecType {
+      if canResolveTypeMethod(extensionType, "shiftRightVec", x, y) then
+        return extensionType.shiftRightVec(x, y);
+      else if isRealType(laneType) {
+        compilerError(getRoutineName() +
+                      " by a vector is not supported with " +
+                      laneType:string);
+      } else {
+        if numBits(laneType) == 8 || numBits(laneType) == 16 {
+          import CVL;
+          if CVL.implementationWarnings then
+            compilerWarning(getRoutineName() +
+                            " on " + laneType:string +
+                            " is implemented with scalar ops");
+          // implement via scalar ops for now
+          var result: vecType;
+          for param i in 0..#numLanes {
+            type ty = uint(numBits(laneType));
+            result =
+              insert(result, (extract(x, i):ty >> extract(y, i)):laneType, i);
+          }
+          return result;
+        } else
+          return doSimpleOp(mmPrefix+"_srlv_", x, y);
+      }
+    }
+    inline proc type shiftRightArithImm(x: vecType,
+                                        param offset: int): vecType {
+      if canResolveTypeMethod(extensionType, "shiftRightArithImm") then
+        return extensionType.shiftRightArithImm(x, offset);
+      else if isRealType(laneType) {
+        type t = vecType.bitMaskType;
+        return reinterpret(mmPrefix,
+          t.implType.shiftRightArithImm(
+            reinterpret(mmPrefix, x, t),
+            offset),
+          vecType);
+      } else
+        return doSimpleOp(
+          "shiftRightArith"+vecType.numBits:string+"_i_"+offset:string+"_", x);
+    }
+    inline proc type shiftRightArithVec(x: vecType, y: vecType): vecType {
+      if canResolveTypeMethod(extensionType, "shiftRightArithVec", x, y) then
+        return extensionType.shiftRightArithVec(x, y);
+      else if isRealType(laneType) {
+        compilerError(getRoutineName() +
+                      " by a vector is not supported with " +
+                      laneType:string);
+      } else {
+        if numBits(laneType) == 8 || numBits(laneType) == 16 {
+          import CVL;
+          if CVL.implementationWarnings then
+            compilerWarning(getRoutineName() +
+                            " on " + laneType:string +
+                            " is implemented with scalar ops");
+          // implement via scalar ops for now
+          var result: vecType;
+          for param i in 0..#numLanes {
+            result = insert(result, extract(x, i) >> extract(y, i), i);
+          }
+          return result;
+        } else
+          return doSimpleOp(mmPrefix+"_srav_", x, y);
+      }
+    }
 
     inline proc type swapPairs(x: vecType): vecType {
       if canResolveTypeMethod(extensionType, "swapPairs", x) then
@@ -579,21 +701,6 @@ module IntrinX86_128 {
         }
       }
     }
-    // inline proc type shiftRightArith(x: vecType, param offset: int): vecType{
-    //   if canResolveTypeMethod(extensionType, "shiftRightArith", x) then
-    //     return extensionType.shiftRightArith(x);
-    //   else
-    //     return doSimpleOp("vshrq_n", x, offset);
-    // TODO this is not going to work because of macros/const int issues
-    // }
-    // inline proc type shiftLeft(x: vecType, param offset: int): vecType {
-    //   if canResolveTypeMethod(extensionType, "shiftLeft", x) then
-    //     return extensionType.shiftLeft(x);
-    //   else
-    //     return doSimpleOp("vshlq_n", x, offset);
-    // TODO this is not going to work because of macros/const int issues
-    // }
-
     /*
       For floating point types, the comparison is ordered and non-signaling.
     */
@@ -657,9 +764,9 @@ module IntrinX86_128 {
       if canResolveTypeMethod(extensionType, "bitSelect", mask, x, y) then
         return extensionType.bitSelect(mask, x, y);
       else {
-        const mask_ = reinterpret(mmPrefix, mask.type.bitMaskType, mask);
-        const x_ = reinterpret(mmPrefix, mask_.type, x);
-        const y_ = reinterpret(mmPrefix, mask_.type, y);
+        const mask_ = reinterpret(mmPrefix, mask, mask.type.bitMaskType);
+        const x_ = reinterpret(mmPrefix, x, mask_.type);
+        const y_ = reinterpret(mmPrefix, y, mask_.type);
 
         param or = mmPrefix + "_or_si" + mask_.type.numBits:string;
         param and = mmPrefix + "_and_si" + mask_.type.numBits:string;
@@ -672,7 +779,7 @@ module IntrinX86_128 {
         extern andnot proc mmAndNot(x: mask_.type, y: mask_.type): mask_.type;
 
         const res = mmOr(mmAnd(x_, mask_), mmAndNot(mask_, y_));
-        return reinterpret(mmPrefix, vecType, res);
+        return reinterpret(mmPrefix, res, vecType);
       }
     }
 
@@ -680,7 +787,7 @@ module IntrinX86_128 {
       if canResolveTypeMethod(extensionType, "isAllZeros", x) then
         return extensionType.isAllZeros(x);
       else {
-        const x_ = reinterpret(mmPrefix, vecType.bitMaskType, x);
+        const x_ = reinterpret(mmPrefix, x, vecType.bitMaskType);
         param name = mmPrefix + "_testz_si" + x_.type.numBits:string;
         pragma "fn synchronization free"
         extern name proc testZero(x: x_.type, y: x_.type): bool;
@@ -771,7 +878,7 @@ module IntrinX86_128 {
 
     @chplcheck.ignore("NoGenericReturn")
     inline proc type reinterpretCast(type toVecType, x: vecType) do
-      return reinterpret(mmPrefix, toVecType, x);
+      return reinterpret(mmPrefix, x, toVecType);
 
   }
 
@@ -915,6 +1022,87 @@ module IntrinX86_128 {
     inline proc type fmsub(x: vecType, y: vecType, z: vecType): vecType do
       return base.sub(base.mul(x, y), z);
 
+    inline proc type shiftLeftImm() {} // dummy for canResolveTypeMethod
+    inline proc type shiftLeftImm(x: vecType, param offset: int): vecType {
+      import CVL;
+      if CVL.implementationWarnings then
+        compilerWarning("'shiftLeftImm' on int(8)" +
+                        " is implemented as scalar operations");
+      var res: vecType;
+      for param i in 0..<base.numLanes {
+        res = base.insert(res, base.extract(x, i) << offset, i);
+      }
+      return res;
+    }
+    inline proc type shiftLeftVec() {} // dummy for canResolveTypeMethod
+    inline proc type shiftLeftVec(x: vecType, y: vecType): vecType {
+      import CVL;
+      if CVL.implementationWarnings then
+        compilerWarning("'shiftLeftVec' on int(8)" +
+                        " is implemented as scalar operations");
+      var res: vecType;
+      for param i in 0..<base.numLanes {
+        res = base.insert(res, base.extract(x, i) << base.extract(y, i), i);
+      }
+      return res;
+    }
+    inline proc type shiftRightImm() {} // dummy for canResolveTypeMethod
+    inline proc type shiftRightImm(x: vecType, param offset: int): vecType {
+      import CVL;
+      if CVL.implementationWarnings then
+        compilerWarning("'shiftRightImm' on int(8)" +
+                        " is implemented as scalar operations");
+      var res: vecType;
+      for param i in 0..<base.numLanes {
+        type maskTy = uint(numBits(laneType));
+        res =
+          base.insert(res, (base.extract(x, i):maskTy >> offset):laneType, i);
+      }
+      return res;
+    }
+    inline proc type shiftRightVec() {} // dummy for canResolveTypeMethod
+    inline proc type shiftRightVec(x: vecType, y: vecType): vecType {
+      import CVL;
+      if CVL.implementationWarnings then
+        compilerWarning("'shiftRightVec' on int(8)" +
+                        " is implemented as scalar operations");
+      var res: vecType;
+      for param i in 0..<base.numLanes {
+        type maskTy = uint(numBits(laneType));
+        res =
+          base.insert(res,
+                      (base.extract(x, i):maskTy >>
+                       base.extract(y, i)):laneType,
+                      i);
+      }
+      return res;
+    }
+    inline proc type shiftRightArithImm() {} // dummy for canResolveTypeMethod
+    inline proc type shiftRightArithImm(x: vecType,
+                                        param offset: int): vecType {
+      import CVL;
+      if CVL.implementationWarnings then
+        compilerWarning("'shiftRightArithImm' on int(8)" +
+                        " is implemented as scalar operations");
+      var res: vecType;
+      for param i in 0..<base.numLanes {
+        res = base.insert(res, base.extract(x, i) >> offset, i);
+      }
+      return res;
+    }
+    inline proc type shiftRightArithVec() {} // dummy for canResolveTypeMethod
+    inline proc type shiftRightArithVec(x: vecType, y: vecType): vecType {
+      import CVL;
+      if CVL.implementationWarnings then
+        compilerWarning("'shiftRightArithVec' on int(8)" +
+                        " is implemented as scalar operations");
+      var res: vecType;
+      for param i in 0..<base.numLanes {
+        res = base.insert(res, base.extract(x, i) >> base.extract(y, i), i);
+      }
+      return res;
+    }
+
     inline proc type deinterleaveLower(x: vecType, y: vecType): vecType do
       return doSimpleOp("deinterleaveLower_", x, y);
     inline proc type deinterleaveUpper(x: vecType, y: vecType): vecType do
@@ -1025,6 +1213,35 @@ module IntrinX86_128 {
       pragma "fn synchronization free"
       extern proc _mm_set1_epi64x(x: laneType): vecType;
       return _mm_set1_epi64x(x);
+    }
+
+
+    inline proc type shiftRightArithImm() {} // dummy for canResolveTypeMethod
+    inline proc type shiftRightArithImm(x: vecType,
+                                        param offset: int): vecType {
+      import CVL;
+      if CVL.implementationWarnings then
+        compilerWarning("'shiftRightArithImm' on int(64)" +
+                        " is implemented as scalar operations");
+      // TODO: use srli with a bitmask
+      var res: vecType;
+      for param i in 0..<base.numLanes {
+        res = base.insert(res, base.extract(x, i) >> offset, i);
+      }
+      return res;
+    }
+    inline proc type shiftRightArithVec() {} // dummy for canResolveTypeMethod
+    inline proc type shiftRightArithVec(x: vecType, y: vecType): vecType {
+      import CVL;
+      if CVL.implementationWarnings then
+        compilerWarning("'shiftRightArithVec' on int(64)" +
+                        " is implemented as scalar operations");
+      // TODO: use srli with a bitmask
+      var res: vecType;
+      for param i in 0..<base.numLanes {
+        res = base.insert(res, base.extract(x, i) >> base.extract(y, i), i);
+      }
+      return res;
     }
 
     inline proc type swapLowHigh(x: vecType): vecType do

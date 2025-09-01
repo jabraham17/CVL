@@ -107,6 +107,40 @@ module IntrinArm64_256 {
                     " on this platform");
     }
 
+    inline proc type shiftLeftImm(x: vecType, param offset: int): vecType do
+      return new vecType(
+        implVecType.shiftLeftImm(x.lo, offset),
+        implVecType.shiftLeftImm(x.hi, offset)
+      );
+    inline proc type shiftLeftVec(x: vecType, y: vecType): vecType do
+      return new vecType(
+        implVecType.shiftLeftVec(x.lo, y.lo),
+        implVecType.shiftLeftVec(x.hi, y.hi)
+      );
+    inline proc type shiftRightImm(x: vecType, param offset: int): vecType do
+      return new vecType(
+        implVecType.shiftRightImm(x.lo, offset),
+        implVecType.shiftRightImm(x.hi, offset)
+      );
+    inline proc type shiftRightVec(x: vecType, y: vecType): vecType do
+      return new vecType(
+        implVecType.shiftRightVec(x.lo, y.lo),
+        implVecType.shiftRightVec(x.hi, y.hi)
+      );
+    inline proc type shiftRightArithImm(x: vecType,
+                                             param offset: int): vecType do
+      return new vecType(
+        implVecType.shiftRightArithImm(x.lo, offset),
+        implVecType.shiftRightArithImm(x.hi, offset)
+      );
+    inline proc type shiftRightArithVec(x: vecType,
+                                             y: vecType): vecType do
+      return new vecType(
+        implVecType.shiftRightArithVec(x.lo, y.lo),
+        implVecType.shiftRightArithVec(x.hi, y.hi)
+      );
+
+
     inline proc type swapPairs(x: vecType): vecType do
       return new vecType(implVecType.swapPairs(x.lo),
                          implVecType.swapPairs(x.hi));

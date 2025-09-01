@@ -66,4 +66,20 @@ static inline int8x16_t reverse_8x16i(int8x16_t x) {
   return vqtbl1q_s8(x, mask);
 }
 
+
+#define SHUFFLES(IMM) \
+  static inline int8x16_t shiftLeft_n_##IMM##_s8(int8x16_t x) { \
+    return vshlq_n_s8(x, IMM); \
+  } \
+  static inline int8x16_t shiftRight_n_##IMM##_s8(int8x16_t x) { \
+    return vshrq_n_s8(x, IMM); \
+  } \
+  static inline uint8x16_t shiftRight_n_##IMM##_u8(uint8x16_t x) { \
+    return vshrq_n_u8(x, IMM); \
+  }
+#define BITS(V) V(1) V(2) V(3) V(4) V(5) V(6) V(7)
+BITS(SHUFFLES)
+#undef BITS
+#undef SHUFFLES
+
 #endif

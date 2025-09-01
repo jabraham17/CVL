@@ -8,6 +8,11 @@ module Vector {
   proc numBits(type t) param: int where isSubtype(t, vector) do
     return numBits(t.eltType) * t.numElts;
 
+  inline proc min(type t): t where isSubtype(t, vector) do
+    return min(t.eltType):t;
+  inline proc max(type t): t where isSubtype(t, vector) do
+    return max(t.eltType):t;
+
   private proc isValidContainer(container: ?, type eltType) param: bool
   where isArray(container) {
     return container.rank == 1 &&
@@ -147,8 +152,6 @@ module Vector {
       type tupType = numElts * eltType;
       return this:tupType;
     }
-
-    // TODO shifts
 
     inline proc ref set(value)
     where isCoercible(value.type, eltType) do
@@ -435,15 +438,9 @@ module Vector {
     inline proc transmute(type t): t where isSubtype(t, vector) &&
                                       numBits(t) != numBits(this.type) {
       compilerError("cannot transmute vector of length " +
-                    numBits(this) + " to vector of length " + numBits(t));
+                    numBits(this.type):string +
+                    " to vector of length " + numBits(t):string);
     }
-
-
-
-    // TODO: transmute (bitcast)
-    // TODO: typecast
-
-
 
     inline proc type indices(
       rng: range(?)
@@ -662,6 +659,78 @@ module Vector {
     return result;
   }
 
+  @chpldoc.nodoc
+  @lint.checksFunc
+  proc type vector.shiftCheck(param amount: int) param {
+    if amount <= 0 || amount >= numBits(eltType) {
+      compilerError("shift amount must be in range [0, " +
+                    (numBits(eltType)-1):string + "]");
+    }
+  }
+
+  @chpldoc.nodoc
+  @lint.checksFunc
+  proc type vector.shiftCheck(amount: this.type) {
+    if boundsChecking {
+      for i in amount {
+        if i <= 0 || i >= numBits(eltType) {
+          halt("shift amount must be in range [0, " +
+               (numBits(eltType)-1):string + "]");
+        }
+      }
+    }
+  }
+
+  /*
+    Shift each lane left by the given amount, shifting in zeros.
+  */
+  inline proc vector.shiftLeft(param amount: int): this.type {
+    this.type.shiftCheck(amount);
+    var result: this.type;
+    result.data = Intrin.shiftLeft(eltType, numElts, this.data, amount);
+    return result;
+  }
+  inline proc vector.shiftLeft(amount: this.type): this.type {
+    this.type.shiftCheck(amount);
+    var result: this.type;
+    result.data = Intrin.shiftLeft(eltType, numElts, this.data, amount.data);
+    return result;
+  }
+
+
+  /*
+    Shift each lane right by the given amount, shifting in zeros.
+  */
+  inline proc vector.shiftRight(param amount: int): this.type {
+    this.type.shiftCheck(amount);
+    var result: this.type;
+    result.data = Intrin.shiftRight(eltType, numElts, this.data, amount);
+    return result;
+  }
+  inline proc vector.shiftRight(amount: this.type): this.type {
+    this.type.shiftCheck(amount);
+    var result: this.type;
+    result.data = Intrin.shiftRight(eltType, numElts, this.data, amount.data);
+    return result;
+  }
+  /*
+    Shift each lane right by the given amount, shifting in sign bits.
+  */
+  inline proc vector.shiftRightArith(param amount: int): this.type {
+    this.type.shiftCheck(amount);
+    var result: this.type;
+    result.data =
+      Intrin.shiftRightArith(eltType, numElts, this.data, amount);
+    return result;
+  }
+  inline proc vector.shiftRightArith(amount: this.type): this.type {
+    this.type.shiftCheck(amount);
+    var result: this.type;
+    result.data =
+      Intrin.shiftRightArith(eltType, numElts, this.data, amount.data);
+    return result;
+  }
+
 
 
   inline proc sqrt(x: vector(?eltType, ?numElts)): x.type {
@@ -805,26 +874,39 @@ module Vector {
     return result;
   }
 
+
+  // TODO: need to do preCall/postCall for these to implement checks
+
+
   /*
     === START OPERATORS ===
 
-    V + V  ;  V += V  ;  V + S  ;  V += S  ;  S + V
-    V - V  ;  V -= V  ;  V - S  ;  V -= S  ;  S - V
-    V * V  ;  V *= V  ;  V * S  ;  V *= S  ;  S * V
-    V / V  ;  V /= V  ;  V / S  ;  V /= S  ;  S / V
+    V + V  ;;  V += V  ;;  V + S  ;;  V += S  ;;  S + V
+    V - V  ;;  V -= V  ;;  V - S  ;;  V -= S  ;;  S - V
+    V * V  ;;  V *= V  ;;  V * S  ;;  V *= S  ;;  S * V
+    V / V  ;;  V /= V  ;;  V / S  ;;  V /= S  ;;  S / V
     NEG V
 
-    V & V  ;  V &= V  ;  V & S  ;  V &= S  ;  S & V
-    V | V  ;  V |= V  ;  V | S  ; V |= S  ;  S | V
-    V ^ V  ;  V ^= V  ;  V ^ S  ;  V ^= S  ;  S ^ V
+    V & V  ;;  V &= V  ;;  V & S  ;;  V &= S  ;;  S & V
+    V | V  ;;  V |= V  ;;  V | S  ;;  V |= S  ;;  S | V
+    V ^ V  ;;  V ^= V  ;;  V ^ S  ;;  V ^= S  ;;  S ^ V
     ~ V
 
-    V == V  ;  V == S  ;  S == V
-    V != V  ;  V != S  ;  S != V
-    V < V  ;  V < S  ;  S < V
-    V <= V  ;  V <= S  ;  S <= V
-    V > V  ;  V > S  ;  S > V
-    V >= V  ;  V >= S  ;  S >= V
+    [@@{lhs}.type.shiftCheck(@@{rhs});] V >> V
+    [@@{lhs}.type.shiftCheck(@@{rhs});] V >>= V
+    [@@{lhs}.type.shiftCheck(@@{rhs});] V >> I
+    [@@{lhs}.type.shiftCheck(@@{rhs});] V >>= I
+    [@@{lhs}.type.shiftCheck(@@{rhs});] V << V
+    [@@{lhs}.type.shiftCheck(@@{rhs});] V <<= V
+    [@@{lhs}.type.shiftCheck(@@{rhs});] V << I
+    [@@{lhs}.type.shiftCheck(@@{rhs});] V <<= I
+
+    V == V  ;;  V == S  ;;  S == V
+    V != V  ;;  V != S  ;;  S != V
+    V < V   ;;  V < S   ;;  S < V
+    V <= V  ;;  V <= S  ;;  S <= V
+    V > V   ;;  V > S   ;;  S > V
+    V >= V  ;;  V >= S  ;;  S >= V
 
     === END OPERATORS ===
   */

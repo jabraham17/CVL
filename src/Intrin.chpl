@@ -137,6 +137,55 @@ module Intrin {
     return implType(eltType, numElts)
             .gatherMasked(ptr, indexType, indices, scale, mask, src);
 
+
+
+  /*
+    Shifts the elements in each lane to the left by 'shift' bits. Zeroes are
+    shifted in.
+  */
+  inline proc shiftLeft(
+    type eltType, param numElts: int,
+    x: vectorType(eltType, numElts), param shift: int
+  ): x.type do
+    return implType(eltType, numElts).shiftLeftImm(x, shift);
+  inline proc shiftLeft(
+    type eltType, param numElts: int,
+    x: vectorType(eltType, numElts), y: x.type
+  ): x.type do
+    return implType(eltType, numElts).shiftLeftVec(x, y);
+
+  /*
+    Shifts the elements in each lane to the right by 'shift' bits. This treats
+    all elements as unsigned values and performs a logical shift (zeroes are
+    shifted in).
+  */
+  inline proc shiftRight(
+    type eltType, param numElts: int,
+    x: vectorType(eltType, numElts), param shift: int
+  ): x.type do
+    return implType(eltType, numElts).shiftRightImm(x, shift);
+  inline proc shiftRight(
+    type eltType, param numElts: int,
+    x: vectorType(eltType, numElts), y: x.type
+  ): x.type do
+    return implType(eltType, numElts).shiftRightVec(x, y);
+
+  /*
+    Shifts the elements in each lane to the right by 'shift' bits. This treats
+    all elements as signed values and performs an arithmetic shift (sign bit is
+    replicated).
+  */
+  inline proc shiftRightArith(
+    type eltType, param numElts: int,
+    x: vectorType(eltType, numElts), param shift: int
+  ): x.type do
+    return implType(eltType, numElts).shiftRightArithImm(x, shift);
+  inline proc shiftRightArith(
+    type eltType, param numElts: int,
+    x: vectorType(eltType, numElts), y: x.type
+  ): x.type do
+    return implType(eltType, numElts).shiftRightArithVec(x, y);
+
   inline proc swapPairs(type eltType,
                         param numElts: int,
                         x: vectorType(eltType, numElts)): x.type do

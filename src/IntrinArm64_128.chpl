@@ -75,6 +75,29 @@ module IntrinArm64_128 {
       else if t == vec64x2u then return vec64x2u;
       else compilerError("Unknown type: ", t);
   }
+  proc getIntType(type t) type {
+         if t == vec32x4r then return vec32x4i;
+    else if t == vec64x2r then return vec64x2i;
+    else if t == vec8x16i then return vec8x16i;
+    else if t == vec16x8i then return vec16x8i;
+    else if t == vec32x4i then return vec32x4i;
+    else if t == vec64x2i then return vec64x2i;
+    else if t == vec8x16u then return vec8x16i;
+    else if t == vec16x8u then return vec16x8i;
+    else if t == vec32x4u then return vec32x4i;
+    else if t == vec64x2u then return vec64x2i;
+    else compilerError("Unknown type: ", t);
+  }
+
+  proc implType(type t) type {
+         if t == vec32x4r then return arm64_32x4r;
+    else if t == vec64x2r then return arm64_64x2r;
+    else if t == vec8x16i then return arm64_8x16i;
+    else if t == vec16x8i then return arm64_16x8i;
+    else if t == vec32x4i then return arm64_32x4i;
+    else if t == vec64x2i then return arm64_64x2i;
+    else compilerError("Unknown type: ", t);
+  }
 
   proc typeToSuffix(type t) param : string {
          if t == real(32) || t == vec32x4r || t == vec32x2r then return "f32";
@@ -250,10 +273,92 @@ module IntrinArm64_128 {
                     " on this platform");
     }
 
+    inline proc type shiftLeftImm(x: vecType, param offset: int): vecType {
+      if canResolveTypeMethod(extensionType, "shiftLeftImm") then
+        return extensionType.shiftLeftImm(x, offset);
+      else if isRealType(laneType) {
+        type t = getIntType(vecType);
+        return reinterpret(
+          implType(t).shiftLeftImm(reinterpret(x, t), offset), vecType);
+      } else
+        return doSimpleOp("shiftLeft_n_"+offset:string, x);
+    }
+    inline proc type shiftLeftVec(x: vecType, y: vecType): vecType {
+      if canResolveTypeMethod(extensionType, "shiftLeftVec", x, y) then
+        return extensionType.shiftLeftVec(x, y);
+      else if isRealType(laneType) {
+        compilerError(getRoutineName() +
+                      " by a vector is not supported with " +
+                      laneType:string);
+      } else
+        return doSimpleOp("vshlq", x, y);
+    }
+    inline proc type shiftRightImm(x: vecType, param offset: int): vecType {
+      if canResolveTypeMethod(extensionType, "shiftRightImm") then
+        return extensionType.shiftRightImm(x, offset);
+      else if isRealType(laneType) {
+        type t = getIntType(vecType);
+        return reinterpret(
+          implType(t).shiftRightImm(reinterpret(x, t), offset), vecType);
+      } else
+        return reinterpret(
+          doSimpleOp("shiftRight_n_"+offset:string,
+            reinterpret(x, getBitMaskType(vecType))
+          ), vecType);
+    }
+    inline proc type shiftRightVec(x: vecType, y: vecType): vecType {
+      if canResolveTypeMethod(extensionType, "shiftRightVec", x, y) then
+        return extensionType.shiftRightVec(x, y);
+      else if isRealType(laneType) {
+        compilerError(getRoutineName() +
+                      " by a vector is not supported with " +
+                      laneType:string);
+      } else
+        return reinterpret(
+          doSimpleOp("vshlq",
+                     reinterpret(x, getBitMaskType(vecType)),
+                     doSimpleOp("vnegq", y)),
+          vecType);
+    }
+    inline proc type shiftRightArithImm(x: vecType,
+                                        param offset: int): vecType {
+      if canResolveTypeMethod(extensionType, "shiftRightArithImm") then
+        return extensionType.shiftRightArithImm(x, offset);
+      else if isRealType(laneType) {
+        type t = getIntType(vecType);
+        return reinterpret(
+          implType(t).shiftRightArithImm(reinterpret(x, t), offset), vecType);
+      } else
+        return doSimpleOp("shiftRight_n_"+offset:string, x);
+    }
+    inline proc type shiftRightArithVec(x: vecType, y: vecType): vecType {
+      if canResolveTypeMethod(extensionType, "shiftRightArithVec", x, y) then
+        return extensionType.shiftRightArithVec(x, y);
+      else if isRealType(laneType) {
+        compilerError(getRoutineName() +
+                      " by a vector is not supported with " +
+                      laneType:string);
+      } else {
+        const shiftAmount = doSimpleOp("vnegq", y);
 
-    // bit cast int to float or float to int
-    // TODO im not happy with this api
-    // inline proc type bitcast(x: vecType, type otherVecType): otherVecType
+        // TODO: ALL THIS WORK IS NOT NEEDED but I need it for x86
+        // get all ones and shift them left by numBits-shiftAmount to get a mask
+        // of the sign bits replicated by shiftAmount
+        // then or that with the vshlq result to get the arithmetic shift
+
+        // const ones = implType(vecType).allOnes();
+        // const numSignBits =
+        //   doSimpleOp("vsubq", implType(vecType).splat(numBits(laneType)-1),
+        //                       shiftAmount);
+        // const signBits = doSimpleOp("vshlq", ones, numSignBits);
+
+        // const shifted = doSimpleOp("vshlq", x, shiftAmount);
+        // return doSimpleOp("vorrq", shifted, signBits);
+        const shifted = doSimpleOp("vshlq", x, shiftAmount);
+        return shifted;
+      }
+    }
+
 
     inline proc type swapPairs(x: vecType): vecType do
       return extensionType.swapPairs(x);
@@ -340,20 +445,6 @@ module IntrinArm64_128 {
       else
         return doSimpleOp("vbicq", y, x);
     }
-    // inline proc type shiftRightArith(x: vecType, param offset: int): vecType{
-    //   if canResolveTypeMethod(extensionType, "shiftRightArith", x) then
-    //     return extensionType.shiftRightArith(x);
-    //   else
-    //     return doSimpleOp("vshrq_n", x, offset);
-    // TODO this is not going to work because of macros/const int issues
-    // }
-    // inline proc type shiftLeft(x: vecType, param offset: int): vecType {
-    //   if canResolveTypeMethod(extensionType, "shiftLeft", x) then
-    //     return extensionType.shiftLeft(x);
-    //   else
-    //     return doSimpleOp("vshlq_n", x, offset);
-    // TODO this is not going to work because of macros/const int issues
-    // }
 
     inline proc type cmpEq(x: vecType, y: vecType): vecType {
       if canResolveTypeMethod(extensionType, "cmpEq", x, y) then

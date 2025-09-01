@@ -3,7 +3,7 @@ gatherTest for real(32) 4
   original vector:  0.00,  0.00,  0.00,  0.00
   gathered vector:  0.00,  1.00,  2.00,  3.00
 ====
-  gathering at 2, masked by (0xffffffff, 0xffffffff, 0xffffffff, 0x000000), using indices: 0, 1, 2, 3
+  gathering at 2, masked by (0xffffffff, 0xffffffff, 0xffffffff, 0x00000000), using indices: 0, 1, 2, 3
   original vector:  0.00,  0.00,  0.00,  0.00
   gathered vector:  2.00,  3.00,  4.00,  0.00
 ====
@@ -11,7 +11,7 @@ gatherTest for real(32) 4
   original vector:  0.00,  0.00,  0.00,  0.00
   gathered vector:  0.00,  2.00,  4.00,  6.00
 ====
-  gathering at 0, masked by (0xffffffff, 0xffffffff, 0xffffffff, 0x000000), using indices: 0, 2, 4, 6
+  gathering at 0, masked by (0xffffffff, 0xffffffff, 0xffffffff, 0x00000000), using indices: 0, 2, 4, 6
   original vector: 17.00, 17.00, 17.00, 17.00
   gathered vector:  0.00,  2.00,  4.00, 17.00
 ====
@@ -20,7 +20,7 @@ gatherTest for real(64) 2
   original vector:  0.00,  0.00
   gathered vector:  0.00,  1.00
 ====
-  gathering at 2, masked by (0xffffffffffffffff, 0x00000000000000), using indices: 0, 1, 2, 3
+  gathering at 2, masked by (0xffffffffffffffff, 0x0000000000000000), using indices: 0, 1, 2, 3
   original vector:  0.00,  0.00
   gathered vector:  2.00,  0.00
 ====
@@ -28,7 +28,7 @@ gatherTest for real(64) 2
   original vector:  0.00,  0.00
   gathered vector:  0.00,  2.00
 ====
-  gathering at 0, masked by (0xffffffffffffffff, 0x00000000000000), using indices: 0, 2, 4, 6
+  gathering at 0, masked by (0xffffffffffffffff, 0x0000000000000000), using indices: 0, 2, 4, 6
   original vector: 17.00, 17.00
   gathered vector:  0.00, 17.00
 ====
@@ -37,7 +37,7 @@ gatherTest for real(32) 8
   original vector:  0.00,  0.00,  0.00,  0.00,  0.00,  0.00,  0.00,  0.00
   gathered vector:  0.00,  1.00,  2.00,  3.00,  4.00,  5.00,  6.00,  7.00
 ====
-  gathering at 2, masked by (0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0x000000), using indices: 0, 1, 2, 3, 4, 5, 6, 7
+  gathering at 2, masked by (0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0x00000000), using indices: 0, 1, 2, 3, 4, 5, 6, 7
   original vector:  0.00,  0.00,  0.00,  0.00,  0.00,  0.00,  0.00,  0.00
   gathered vector:  2.00,  3.00,  4.00,  5.00,  6.00,  7.00,  8.00,  0.00
 ====
@@ -45,7 +45,7 @@ gatherTest for real(32) 8
   original vector:  0.00,  0.00,  0.00,  0.00,  0.00,  0.00,  0.00,  0.00
   gathered vector:  0.00,  2.00,  4.00,  6.00,  8.00, 10.00, 12.00, 14.00
 ====
-  gathering at 0, masked by (0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0x000000), using indices: 0, 2, 4, 6, 8, 10, 12, 14
+  gathering at 0, masked by (0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0x00000000), using indices: 0, 2, 4, 6, 8, 10, 12, 14
   original vector: 17.00, 17.00, 17.00, 17.00, 17.00, 17.00, 17.00, 17.00
   gathered vector:  0.00,  2.00,  4.00,  6.00,  8.00, 10.00, 12.00, 17.00
 ====
@@ -54,7 +54,7 @@ gatherTest for real(64) 4
   original vector:  0.00,  0.00,  0.00,  0.00
   gathered vector:  0.00,  1.00,  2.00,  3.00
 ====
-  gathering at 2, masked by (0xffffffffffffffff, 0xffffffffffffffff, 0xffffffffffffffff, 0x00000000000000), using indices: 0, 1, 2, 3
+  gathering at 2, masked by (0xffffffffffffffff, 0xffffffffffffffff, 0xffffffffffffffff, 0x0000000000000000), using indices: 0, 1, 2, 3
   original vector:  0.00,  0.00,  0.00,  0.00
   gathered vector:  2.00,  3.00,  4.00,  0.00
 ====
@@ -62,7 +62,7 @@ gatherTest for real(64) 4
   original vector:  0.00,  0.00,  0.00,  0.00
   gathered vector:  0.00,  2.00,  4.00,  6.00
 ====
-  gathering at 0, masked by (0xffffffffffffffff, 0xffffffffffffffff, 0xffffffffffffffff, 0x00000000000000), using indices: 0, 2, 4, 6
+  gathering at 0, masked by (0xffffffffffffffff, 0xffffffffffffffff, 0xffffffffffffffff, 0x0000000000000000), using indices: 0, 2, 4, 6
   original vector: 17.00, 17.00, 17.00, 17.00
   gathered vector:  0.00,  2.00,  4.00, 17.00
 ====
@@ -71,7 +71,7 @@ gatherTest for int(32) 4
   original vector:     0,     0,     0,     0
   gathered vector:     0,     1,     2,     3
 ====
-  gathering at 2, masked by (0xffffffff, 0xffffffff, 0xffffffff, 0x000000), using indices: 0, 1, 2, 3
+  gathering at 2, masked by (0xffffffff, 0xffffffff, 0xffffffff, 0x00000000), using indices: 0, 1, 2, 3
   original vector:     0,     0,     0,     0
   gathered vector:     2,     3,     4,     0
 ====
@@ -79,7 +79,7 @@ gatherTest for int(32) 4
   original vector:     0,     0,     0,     0
   gathered vector:     0,     2,     4,     6
 ====
-  gathering at 0, masked by (0xffffffff, 0xffffffff, 0xffffffff, 0x000000), using indices: 0, 2, 4, 6
+  gathering at 0, masked by (0xffffffff, 0xffffffff, 0xffffffff, 0x00000000), using indices: 0, 2, 4, 6
   original vector:    17,    17,    17,    17
   gathered vector:     0,     2,     4,    17
 ====
@@ -88,7 +88,7 @@ gatherTest for int(64) 2
   original vector:     0,     0
   gathered vector:     0,     1
 ====
-  gathering at 2, masked by (0xffffffffffffffff, 0x00000000000000), using indices: 0, 1, 2, 3
+  gathering at 2, masked by (0xffffffffffffffff, 0x0000000000000000), using indices: 0, 1, 2, 3
   original vector:     0,     0
   gathered vector:     2,     0
 ====
@@ -96,7 +96,7 @@ gatherTest for int(64) 2
   original vector:     0,     0
   gathered vector:     0,     2
 ====
-  gathering at 0, masked by (0xffffffffffffffff, 0x00000000000000), using indices: 0, 2, 4, 6
+  gathering at 0, masked by (0xffffffffffffffff, 0x0000000000000000), using indices: 0, 2, 4, 6
   original vector:    17,    17
   gathered vector:     0,    17
 ====
@@ -105,7 +105,7 @@ gatherTest for int(32) 8
   original vector:     0,     0,     0,     0,     0,     0,     0,     0
   gathered vector:     0,     1,     2,     3,     4,     5,     6,     7
 ====
-  gathering at 2, masked by (0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0x000000), using indices: 0, 1, 2, 3, 4, 5, 6, 7
+  gathering at 2, masked by (0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0x00000000), using indices: 0, 1, 2, 3, 4, 5, 6, 7
   original vector:     0,     0,     0,     0,     0,     0,     0,     0
   gathered vector:     2,     3,     4,     5,     6,     7,     8,     0
 ====
@@ -113,7 +113,7 @@ gatherTest for int(32) 8
   original vector:     0,     0,     0,     0,     0,     0,     0,     0
   gathered vector:     0,     2,     4,     6,     8,    10,    12,    14
 ====
-  gathering at 0, masked by (0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0x000000), using indices: 0, 2, 4, 6, 8, 10, 12, 14
+  gathering at 0, masked by (0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0x00000000), using indices: 0, 2, 4, 6, 8, 10, 12, 14
   original vector:    17,    17,    17,    17,    17,    17,    17,    17
   gathered vector:     0,     2,     4,     6,     8,    10,    12,    17
 ====
@@ -122,7 +122,7 @@ gatherTest for int(64) 4
   original vector:     0,     0,     0,     0
   gathered vector:     0,     1,     2,     3
 ====
-  gathering at 2, masked by (0xffffffffffffffff, 0xffffffffffffffff, 0xffffffffffffffff, 0x00000000000000), using indices: 0, 1, 2, 3
+  gathering at 2, masked by (0xffffffffffffffff, 0xffffffffffffffff, 0xffffffffffffffff, 0x0000000000000000), using indices: 0, 1, 2, 3
   original vector:     0,     0,     0,     0
   gathered vector:     2,     3,     4,     0
 ====
@@ -130,7 +130,7 @@ gatherTest for int(64) 4
   original vector:     0,     0,     0,     0
   gathered vector:     0,     2,     4,     6
 ====
-  gathering at 0, masked by (0xffffffffffffffff, 0xffffffffffffffff, 0xffffffffffffffff, 0x00000000000000), using indices: 0, 2, 4, 6
+  gathering at 0, masked by (0xffffffffffffffff, 0xffffffffffffffff, 0xffffffffffffffff, 0x0000000000000000), using indices: 0, 2, 4, 6
   original vector:    17,    17,    17,    17
   gathered vector:     0,     2,     4,    17
 ====

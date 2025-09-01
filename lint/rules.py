@@ -29,6 +29,18 @@ def is_in_lib(node: chapel.AstNode) -> bool:
     return False
 
 
+CustomAttributes = {
+    "typeOnly": "lint.typeOnly",
+    "checksFunc": "lint.checksFunc"
+}
+
+def has_attribute(node: chapel.AstNode, attr_name: str) -> bool:
+    attrs = node.attribute_group()
+    if attrs is None:
+        return False
+    a = attrs.get_attribute_named(attr_name)
+    return a is not None
+
 def rules(driver):
 
     @driver.basic_rule(chapel.Function)
@@ -41,10 +53,11 @@ def rules(driver):
         if not is_in_lib(node):
             return True
 
+        is_checks = has_attribute(node, CustomAttributes["checksFunc"])
         is_compile_time = node.return_intent() in ("param", "type")
         is_extern = node.linkage() in ("extern", "export")
         is_serialize = node.name() in ("serialize", "deserialize")
-        return node.is_inline() or is_compile_time or is_extern or is_serialize
+        return node.is_inline() or is_compile_time or is_extern or is_serialize or is_checks
 
     @driver.fixit(OnlyInlineProc)
     def FixOnlyInlineProc(context: chapel.Context, result: BasicRuleResult):
@@ -56,6 +69,21 @@ def rules(driver):
         # not included in location
         fixit = Fixit.build(Edit.build(loc, proc_text))
         fixit.description = "Add inline keyword"
+        return fixit
+
+    @driver.fixit(OnlyInlineProc)
+    def FixOnlyInlineProc_Checks(
+        context: chapel.Context, result: BasicRuleResult
+    ):
+        lines = chapel.get_file_lines(context, result.node)
+        loc = result.node.location()
+        proc_text = chapel.range_to_text(loc, lines)
+        indent = loc.start()[1] - 1
+        proc_text = "@"+ CustomAttributes["checksFunc"] + f"\n{' '*indent}" + proc_text
+        # TODO: this works only because private/public is
+        # not included in location
+        fixit = Fixit.build(Edit.build(loc, proc_text))
+        fixit.description = "Mark this as a checks function"
         return fixit
 
     @driver.basic_rule(chapel.Function)
@@ -208,11 +236,7 @@ def rules(driver):
 
         for rec, _ in chapel.each_matching(root, chapel.Record):
             assert isinstance(rec, chapel.Record)
-            attrs = rec.attribute_group()
-            if attrs is None:
-                continue
-            a = attrs.get_attribute_named("lint.typeOnly")
-            if a is None:
+            if not has_attribute(rec, CustomAttributes["typeOnly"]):
                 continue
 
             for nd in rec:

@@ -185,7 +185,10 @@ VECTOR_X_VECTOR_TEMPLATE = operator_template(
 
   See :proc:`Intrin.@@{intrin}` for the intrinsic used.
 */
-inline operator@@{op}(@@{lhs}: vector(?eltType, ?numElts), @@{rhs}: @@{lhs}.type): @@{lhs}.type {
+inline operator@@{op}(
+  @@{lhs}: vector(?eltType, ?numElts),
+  @@{rhs}: @@{lhs}.type
+): @@{lhs}.type {
   @@{preCall}
   var result: @@{lhs}.type;
   result.data = Intrin.@@{intrin}(eltType, numElts, @@{lhs}.data, @@{rhs}.data);
@@ -203,7 +206,10 @@ VECTOR_X_VECTOR_ASSIGN_TEMPLATE = operator_template(
 
   See :proc:`Intrin.@@{intrin}` for the intrinsic used.
 */
-inline operator@@{op}(ref @@{lhs}: vector(?eltType, ?numElts), @@{rhs}: @@{lhs}.type) {
+inline operator@@{op}(
+  ref @@{lhs}: vector(?eltType, ?numElts),
+  @@{rhs}: @@{lhs}.type
+) {
   @@{preCall}
   @@{lhs}.data = Intrin.@@{intrin}(eltType, numElts, @@{lhs}.data, @@{rhs}.data);
   @@{postCall}
@@ -219,8 +225,10 @@ VECTOR_X_SCALAR_TEMPLATE = operator_template(
 
   See :proc:`Intrin.@@{intrin}` for the intrinsic used.
 */
-inline operator@@{op}(@@{lhs}: vector(?eltType, ?numElts), @@{rhs}: ?scalarType): @@{lhs}.type
-  where isCoercible(scalarType, eltType) {
+inline operator@@{op}(
+  @@{lhs}: vector(?eltType, ?numElts),
+  @@{rhs}: ?scalarType
+): @@{lhs}.type where isCoercible(scalarType, eltType) {
   @@{preCall}
   var result: @@{lhs}.type;
   result.data = Intrin.@@{intrin}(eltType, numElts, @@{lhs}.data,
@@ -239,7 +247,10 @@ VECTOR_X_IMMEDIATE_TEMPLATE = operator_template(
 
   See :proc:`Intrin.@@{intrin}` for the intrinsic used.
 */
-inline operator@@{op}(@@{lhs}: vector(?eltType, ?numElts), param @@{rhs}: int): @@{lhs}.type {
+inline operator@@{op}(
+  @@{lhs}: vector(?eltType, ?numElts),
+  param @@{rhs}: int
+): @@{lhs}.type {
   @@{preCall}
   var result: @@{lhs}.type;
   result.data = Intrin.@@{intrin}(eltType, numElts, @@{lhs}.data, @@{rhs});
@@ -257,8 +268,10 @@ VECTOR_X_SCALAR_ASSIGN_TEMPLATE = operator_template(
 
   See :proc:`Intrin.@@{intrin}` for the intrinsic used.
 */
-inline operator@@{op}(ref @@{lhs}: vector(?eltType, ?numElts), @@{rhs}: ?scalarType)
-  where isCoercible(scalarType, eltType) {
+inline operator@@{op}(
+  ref @@{lhs}: vector(?eltType, ?numElts),
+  @@{rhs}: ?scalarType
+) where isCoercible(scalarType, eltType) {
   @@{preCall}
   @@{lhs}.data = Intrin.@@{intrin}(eltType, numElts, @@{lhs}.data,
                   Intrin.splat(eltType, numElts, @@{rhs}));
@@ -275,7 +288,10 @@ VECTOR_X_IMMEDIATE_ASSIGN_TEMPLATE = operator_template(
 
   See :proc:`Intrin.@@{intrin}` for the intrinsic used.
 */
-inline operator@@{op}(ref @@{lhs}: vector(?eltType, ?numElts), param @@{rhs}: int) {
+inline operator@@{op}(
+  ref @@{lhs}: vector(?eltType, ?numElts),
+  param @@{rhs}: int
+) {
   @@{preCall}
   @@{lhs}.data = Intrin.@@{intrin}(eltType, numElts, @@{lhs}.data, @@{rhs});
   @@{postCall}
@@ -291,8 +307,10 @@ SCALAR_X_VECTOR_TEMPLATE = operator_template(
 
   See :proc:`Intrin.@@{intrin}` for the intrinsic used.
 */
-inline operator@@{op}(@@{lhs}: ?scalarType, @@{rhs}: vector(?eltType, ?numElts)): @@{rhs}.type
-  where isCoercible(scalarType, eltType) {
+inline operator@@{op}(
+  @@{lhs}: ?scalarType,
+  @@{rhs}: vector(?eltType, ?numElts)
+): @@{rhs}.type where isCoercible(scalarType, eltType) {
   @@{preCall}
   var result: @@{rhs}.type;
   result.data = Intrin.@@{intrin}(eltType, numElts,
@@ -343,7 +361,10 @@ class BinaryOpsGenerator:
         delimiter = "@@"
 
         def substitute_recursive(self, **mapping):
-            """Recursively substitute template variables until no more substitutions can be made."""
+            """
+            Recursively substitute template variables until
+            no more substitutions can be made.
+            """
             result = self.template
             max_iterations = 10  # Prevent infinite loops
             iterations = 0

@@ -3,6 +3,7 @@
 Generate operators the vector types
 """
 
+from collections import namedtuple
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
@@ -83,10 +84,30 @@ class Expression:
     lhs_type: OperandType
     operator: OperatorType
     rhs_type: Optional[OperandType]
+    precall: Optional[str]
+    postcall: Optional[str]
 
     @classmethod
     def from_string(cls, expr_str: str):
-        parts = expr_str.strip().split()
+        s = expr_str.strip()
+
+        if s.startswith("["):
+            # parse the precall
+            end_idx = s.index("]")
+            precall = s[1:end_idx].strip()
+            s = s[end_idx + 1 :].strip()
+        else:
+            precall = None
+
+        if s.endswith("]"):
+            # parse the postcall
+            start_idx = s.rindex("[")
+            postcall = s[start_idx + 1 : -1].strip()
+            s = s[:start_idx].strip()
+        else:
+            postcall = None
+
+        parts = s.strip().split()
         if len(parts) != 3 and len(parts) != 2:
             raise ValueError(f"Invalid expression format: {expr_str}")
 
@@ -99,7 +120,7 @@ class Expression:
         lhs_type = OperandType.from_string(lhs)
         rhs_type = OperandType.from_string(rhs) if rhs else None
         operator_type = OperatorType.from_string(operator)
-        return cls(lhs_type, operator_type, rhs_type)
+        return cls(lhs_type, operator_type, rhs_type, precall, postcall)
 
     def is_unary(self):
         return self.rhs_type is None
@@ -123,7 +144,7 @@ class Parser:
     def _parse_line(self, line: str) -> List[Expression]:
         # parse a semicolon-separated line into expressions
         expressions = []
-        for expr_str in line.strip().split(";"):
+        for expr_str in line.strip().split(";;"):
             expr_str = expr_str.strip()
             if expr_str:
                 expressions.append(Expression.from_string(expr_str))
@@ -155,102 +176,152 @@ class Parser:
         return expressions
 
 
-VECTOR_X_VECTOR_TEMPLATE = """
+operator_template = namedtuple("operator_template", ["template", "lhs", "rhs"])
+
+VECTOR_X_VECTOR_TEMPLATE = operator_template(
+    template="""
 /*
   Implements ``VECTOR @@{op} VECTOR``
 
   See :proc:`Intrin.@@{intrin}` for the intrinsic used.
 */
-inline operator@@{op}(x: vector(?eltType, ?numElts), y: x.type): x.type {
-  var result: x.type;
-  result.data = Intrin.@@{intrin}(eltType, numElts, x.data, y.data);
+inline operator@@{op}(@@{lhs}: vector(?eltType, ?numElts), @@{rhs}: @@{lhs}.type): @@{lhs}.type {
+  @@{preCall}
+  var result: @@{lhs}.type;
+  result.data = Intrin.@@{intrin}(eltType, numElts, @@{lhs}.data, @@{rhs}.data);
+  @@{postCall}
   return result;
 }
-"""
-VECTOR_X_VECTOR_ASSIGN_TEMPLATE = """
+""",
+    lhs="x",
+    rhs="y",
+)
+VECTOR_X_VECTOR_ASSIGN_TEMPLATE = operator_template(
+    template="""
 /*
   Implements ``VECTOR @@{op} VECTOR``
 
   See :proc:`Intrin.@@{intrin}` for the intrinsic used.
 */
-inline operator@@{op}(ref x: vector(?eltType, ?numElts), y: x.type) {
-  x.data = Intrin.@@{intrin}(eltType, numElts, x.data, y.data);
+inline operator@@{op}(ref @@{lhs}: vector(?eltType, ?numElts), @@{rhs}: @@{lhs}.type) {
+  @@{preCall}
+  @@{lhs}.data = Intrin.@@{intrin}(eltType, numElts, @@{lhs}.data, @@{rhs}.data);
+  @@{postCall}
 }
-"""
-VECTOR_X_SCALAR_TEMPLATE = """
+""",
+    lhs="x",
+    rhs="y",
+)
+VECTOR_X_SCALAR_TEMPLATE = operator_template(
+    template="""
 /*
   Implements ``VECTOR @@{op} SCALAR``
 
   See :proc:`Intrin.@@{intrin}` for the intrinsic used.
 */
-inline operator@@{op}(x: vector(?eltType, ?numElts), y: ?scalarType): x.type
+inline operator@@{op}(@@{lhs}: vector(?eltType, ?numElts), @@{rhs}: ?scalarType): @@{lhs}.type
   where isCoercible(scalarType, eltType) {
-  var result: x.type;
-  result.data = Intrin.@@{intrin}(eltType, numElts, x.data,
-                  Intrin.splat(eltType, numElts, y));
+  @@{preCall}
+  var result: @@{lhs}.type;
+  result.data = Intrin.@@{intrin}(eltType, numElts, @@{lhs}.data,
+                  Intrin.splat(eltType, numElts, @@{rhs}));
+  @@{postCall}
   return result;
 }
-"""
-VECTOR_X_IMMEDIATE_TEMPLATE = """
+""",
+    lhs="x",
+    rhs="y",
+)
+VECTOR_X_IMMEDIATE_TEMPLATE = operator_template(
+    template="""
 /*
   Implements ``VECTOR @@{op} IMMEDIATE``
 
   See :proc:`Intrin.@@{intrin}` for the intrinsic used.
 */
-inline operator@@{op}(x: vector(?eltType, ?numElts), param imm: int): x.type {
-  var result: x.type;
-  result.data = Intrin.@@{intrin}(eltType, numElts, x.data, imm);
+inline operator@@{op}(@@{lhs}: vector(?eltType, ?numElts), param @@{rhs}: int): @@{lhs}.type {
+  @@{preCall}
+  var result: @@{lhs}.type;
+  result.data = Intrin.@@{intrin}(eltType, numElts, @@{lhs}.data, @@{rhs});
+  @@{postCall}
   return result;
 }
-"""
-VECTOR_X_SCALAR_ASSIGN_TEMPLATE = """
+""",
+    lhs="x",
+    rhs="imm",
+)
+VECTOR_X_SCALAR_ASSIGN_TEMPLATE = operator_template(
+    template="""
 /*
   Implements ``VECTOR @@{op} SCALAR``
 
   See :proc:`Intrin.@@{intrin}` for the intrinsic used.
 */
-inline operator@@{op}(ref x: vector(?eltType, ?numElts), y: ?scalarType)
+inline operator@@{op}(ref @@{lhs}: vector(?eltType, ?numElts), @@{rhs}: ?scalarType)
   where isCoercible(scalarType, eltType) {
-  x.data = Intrin.@@{intrin}(eltType, numElts, x.data,
-                  Intrin.splat(eltType, numElts, y));
+  @@{preCall}
+  @@{lhs}.data = Intrin.@@{intrin}(eltType, numElts, @@{lhs}.data,
+                  Intrin.splat(eltType, numElts, @@{rhs}));
+  @@{postCall}
 }
-"""
-VECTOR_X_IMMEDIATE_ASSIGN_TEMPLATE = """
+""",
+    lhs="x",
+    rhs="y",
+)
+VECTOR_X_IMMEDIATE_ASSIGN_TEMPLATE = operator_template(
+    template="""
 /*
   Implements ``VECTOR @@{op} IMMEDIATE``
 
   See :proc:`Intrin.@@{intrin}` for the intrinsic used.
 */
-inline operator@@{op}(ref x: vector(?eltType, ?numElts), param imm: int) {
-  x.data = Intrin.@@{intrin}(eltType, numElts, x.data, imm);
+inline operator@@{op}(ref @@{lhs}: vector(?eltType, ?numElts), param @@{rhs}: int) {
+  @@{preCall}
+  @@{lhs}.data = Intrin.@@{intrin}(eltType, numElts, @@{lhs}.data, @@{rhs});
+  @@{postCall}
 }
-"""
-SCALAR_X_VECTOR_TEMPLATE = """
+""",
+    lhs="x",
+    rhs="imm",
+)
+SCALAR_X_VECTOR_TEMPLATE = operator_template(
+    template="""
 /*
   Implements ``SCALAR @@{op} VECTOR``
 
   See :proc:`Intrin.@@{intrin}` for the intrinsic used.
 */
-inline operator@@{op}(x: ?scalarType, y: vector(?eltType, ?numElts)): y.type
+inline operator@@{op}(@@{lhs}: ?scalarType, @@{rhs}: vector(?eltType, ?numElts)): @@{rhs}.type
   where isCoercible(scalarType, eltType) {
-  var result: y.type;
+  @@{preCall}
+  var result: @@{rhs}.type;
   result.data = Intrin.@@{intrin}(eltType, numElts,
-                  Intrin.splat(eltType, numElts, x), y.data);
+                  Intrin.splat(eltType, numElts, @@{lhs}), @@{rhs}.data);
+  @@{postCall}
   return result;
 }
-"""
-VECTOR_UNARY_TEMPLATE = """
+""",
+    lhs="x",
+    rhs="y",
+)
+VECTOR_UNARY_TEMPLATE = operator_template(
+    template="""
 /*
   Implements ``VECTOR @@{op}``
 
   See :proc:`Intrin.@@{intrin}` for the intrinsic used.
 */
-inline operator@@{op}(x: vector(?eltType, ?numElts)): x.type {
-  var result: x.type;
-  result.data = Intrin.@@{intrin}(eltType, numElts, x.data);
+inline operator@@{op}(@@{lhs}: vector(?eltType, ?numElts)): @@{lhs}.type {
+  @@{preCall}
+  var result: @@{lhs}.type;
+  result.data = Intrin.@@{intrin}(eltType, numElts, @@{lhs}.data);
+  @@{postCall}
   return result;
 }
-"""
+""",
+    lhs="x",
+    rhs="",
+)
 
 
 MODULE_TEMPLATE = """
@@ -271,10 +342,28 @@ class BinaryOpsGenerator:
     class Template(string.Template):
         delimiter = "@@"
 
+        def substitute_recursive(self, **mapping):
+            """Recursively substitute template variables until no more substitutions can be made."""
+            result = self.template
+            max_iterations = 10  # Prevent infinite loops
+            iterations = 0
+
+            while self.delimiter in result and iterations < max_iterations:
+                template = self.__class__(result)
+                try:
+                    result = template.substitute(mapping)
+                except KeyError:
+                    # No more substitutions possible
+                    break
+                iterations += 1
+
+            return result
+
     def __init__(self, expressions: List[Expression]):
         self.expressions = expressions
+        # precompile templates
         self.templates = {
-            k: self.Template(v)
+            k: operator_template(self.Template(v.template), v.lhs, v.rhs)
             for k, v in {
                 "vector_x_vector": VECTOR_X_VECTOR_TEMPLATE,
                 "vector_x_vector_assign": VECTOR_X_VECTOR_ASSIGN_TEMPLATE,
@@ -299,12 +388,19 @@ class BinaryOpsGenerator:
         if not template:
             raise ValueError(f"No template found for {key}")
 
-        return template.substitute(
+        method = template.template.substitute_recursive(
             op=expr.operator.operator,
             intrin=expr.operator.intrinsic,
+            preCall=expr.precall or "",
+            postCall=expr.postcall or "",
+            lhs=template.lhs,
+            rhs=template.rhs,
         )
+        # Clean up any trailing whitespace, line by line
+        method = "\n".join(line.rstrip() for line in method.splitlines()) + "\n"
+        return method
 
-    def generate(self, output_file: Path) -> str:
+    def generate(self, output_file: Path):
         output = []
 
         for expr in self.expressions:

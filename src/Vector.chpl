@@ -662,7 +662,7 @@ module Vector {
   @chpldoc.nodoc
   @lint.checksFunc
   proc type vector.shiftCheck(param amount: int) param {
-    if amount < 0 || amount >= numBits(eltType) {
+    if amount <= 0 || amount >= numBits(eltType) {
       compilerError("shift amount must be in range [0, " +
                     (numBits(eltType)-1):string + "]");
     }
@@ -673,7 +673,7 @@ module Vector {
   proc type vector.shiftCheck(amount: this.type) {
     if boundsChecking {
       for i in amount {
-        if i < 0 || i >= numBits(eltType) {
+        if i <= 0 || i >= numBits(eltType) {
           halt("shift amount must be in range [0, " +
                (numBits(eltType)-1):string + "]");
         }
@@ -874,29 +874,39 @@ module Vector {
     return result;
   }
 
+
+  // TODO: need to do preCall/postCall for these to implement checks
+
+
   /*
     === START OPERATORS ===
 
-    V + V  ;  V += V  ;  V + S  ;  V += S  ;  S + V
-    V - V  ;  V -= V  ;  V - S  ;  V -= S  ;  S - V
-    V * V  ;  V *= V  ;  V * S  ;  V *= S  ;  S * V
-    V / V  ;  V /= V  ;  V / S  ;  V /= S  ;  S / V
+    V + V  ;;  V += V  ;;  V + S  ;;  V += S  ;;  S + V
+    V - V  ;;  V -= V  ;;  V - S  ;;  V -= S  ;;  S - V
+    V * V  ;;  V *= V  ;;  V * S  ;;  V *= S  ;;  S * V
+    V / V  ;;  V /= V  ;;  V / S  ;;  V /= S  ;;  S / V
     NEG V
 
-    V & V  ;  V &= V  ;  V & S  ;  V &= S  ;  S & V
-    V | V  ;  V |= V  ;  V | S  ; V |= S  ;  S | V
-    V ^ V  ;  V ^= V  ;  V ^ S  ;  V ^= S  ;  S ^ V
+    V & V  ;;  V &= V  ;;  V & S  ;;  V &= S  ;;  S & V
+    V | V  ;;  V |= V  ;;  V | S  ;;  V |= S  ;;  S | V
+    V ^ V  ;;  V ^= V  ;;  V ^ S  ;;  V ^= S  ;;  S ^ V
     ~ V
 
-    V >> V  ;  V >>= V  ;  V >> I ; V >>= I
-    V << V  ;  V <<= V  ;  V << I ; V <<= I
+    [@@{lhs}.type.shiftCheck(@@{rhs});] V >> V
+    [@@{lhs}.type.shiftCheck(@@{rhs});] V >>= V
+    [@@{lhs}.type.shiftCheck(@@{rhs});] V >> I
+    [@@{lhs}.type.shiftCheck(@@{rhs});] V >>= I
+    [@@{lhs}.type.shiftCheck(@@{rhs});] V << V
+    [@@{lhs}.type.shiftCheck(@@{rhs});] V <<= V
+    [@@{lhs}.type.shiftCheck(@@{rhs});] V << I
+    [@@{lhs}.type.shiftCheck(@@{rhs});] V <<= I
 
-    V == V  ;  V == S  ;  S == V
-    V != V  ;  V != S  ;  S != V
-    V < V  ;  V < S  ;  S < V
-    V <= V  ;  V <= S  ;  S <= V
-    V > V  ;  V > S  ;  S > V
-    V >= V  ;  V >= S  ;  S >= V
+    V == V  ;;  V == S  ;;  S == V
+    V != V  ;;  V != S  ;;  S != V
+    V < V   ;;  V < S   ;;  S < V
+    V <= V  ;;  V <= S  ;;  S <= V
+    V > V   ;;  V > S   ;;  S > V
+    V >= V  ;;  V >= S  ;;  S >= V
 
     === END OPERATORS ===
   */

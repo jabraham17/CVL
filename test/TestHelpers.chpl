@@ -114,7 +114,7 @@ proc toHex(x: numeric, param filled = false) {
               then x.transmute(uint(numBits(T)))
               else x:uint(numBits(T));
   param width = numBits(T)/4 + 2; // +2 for "0x"
-  param fmt = if filled then "%@0"+numBits:string+"xu"
+  param fmt = if filled then "%@0"+width:string+"xu"
                         else "%@0xu";
   return fmt.format(bits);
 }

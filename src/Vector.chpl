@@ -8,6 +8,11 @@ module Vector {
   proc numBits(type t) param: int where isSubtype(t, vector) do
     return numBits(t.eltType) * t.numElts;
 
+  inline proc min(type t): t where isSubtype(t, vector) do
+    return min(t.eltType):t;
+  inline proc max(type t): t where isSubtype(t, vector) do
+    return max(t.eltType):t;
+
   private proc isValidContainer(container: ?, type eltType) param: bool
   where isArray(container) {
     return container.rank == 1 &&

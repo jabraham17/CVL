@@ -1,6 +1,10 @@
 use IO, Subprocess, Regex, Reflection;
 use CVL;
 
+
+// TODO: how could I write this in the UnitTest framework such that halts are
+// expected and don't cause test failures?
+
 proc getGoodFile(suffix="") {
   use Reflection, Path;
   var path = absPath(getFileName());

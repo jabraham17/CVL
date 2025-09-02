@@ -475,8 +475,14 @@ module Vector {
                              container: ?,
                              param aligned: bool = false): this
     where tag == iterKind.standalone && isValidContainer(container, eltType) {
-      for i in indices(container).these(tag=tag) {
-        yield this.load(container, i, aligned=aligned);
+      if __primitive("resolves", indices(container).these(tag=tag)) {
+        for i in indices(container).these(tag=tag) {
+          yield this.load(container, i, aligned=aligned);
+        }
+      } else {
+        for i in indices(container) {
+          yield this.load(container, i, aligned=aligned);
+        }
       }
     }
     @chplcheck.ignore("UnusedFormal")
@@ -511,10 +517,18 @@ module Vector {
                                 ref container: ?,
                                 param aligned: bool = false) ref : this
     where tag == iterKind.standalone && isValidContainer(container, eltType) {
-      for i in indices(container).these(tag=tag) {
-        const addr = this._computeAddress(container, i);
-        var vr = new vectorRef(this, addr, aligned=aligned);
-        yield vr;
+      if __primitive("resolves", indices(container).these(tag=tag)) {
+        for i in indices(container).these(tag=tag) {
+          const addr = this._computeAddress(container, i);
+          var vr = new vectorRef(this, addr, aligned=aligned);
+          yield vr;
+        }
+      } else {
+        for i in indices(container) {
+          const addr = this._computeAddress(container, i);
+          var vr = new vectorRef(this, addr, aligned=aligned);
+          yield vr;
+        }
       }
     }
     @chplcheck.ignore("UnusedFormal")

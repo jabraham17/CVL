@@ -16,6 +16,7 @@ tests = [
   "BitTest.chpl",
   "BytesTest.chpl",
   "CmpTest.chpl",
+  "Distributed.chpl",
   "FmaTest.chpl",
   "GatherTest.chpl",
   "InitTest.chpl",

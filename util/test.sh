@@ -9,7 +9,9 @@ if [[ $? -ne 0 ]]; then
 fi
 
 (cd $PROJECT_DIR && set -x && \
-  mason test --show --keep-binary -- \
+  mason test --show --keep-binary \
+    --setComm=$($(chpl --print-chpl-home)/util/chplenv/chpl_comm.py) \
+    -- \
     $@ \
     $CVL_OPTIONS \
     --set CVL.implementationWarnings=false \

@@ -12,6 +12,14 @@ proc getGoodFile(suffix="") {
   return path;
 }
 
+proc string.stripSuffix(suffix: string): string {
+  if this.endsWith(suffix) {
+    return this[0..#this.size - suffix.size - 1];
+  } else {
+    return this;
+  }
+}
+
 config const testcase = 0;
 
 param numTests = /*procs*/14 * /*types*/8;
@@ -26,7 +34,8 @@ proc main(args: [] string) {
     for i in 1..#numTests {
       // TODO: all output must be to stderr until issue is resolved
       //  https://github.com/chapel-lang/chapel/issues/15497
-      var p = spawn([args[0], "-nl1", "--testcase="+i:string],
+      const execname = args[0].stripSuffix("_real");
+      var p = spawn([execname, "-nl1", "--testcase="+i:string],
           stdout=pipeStyle.pipe, stderr=pipeStyle.pipe);
         // stdout=pipeStyle.pipe, stderr=pipeStyle.stdout);
       p.wait();

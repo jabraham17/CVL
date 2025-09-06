@@ -474,16 +474,11 @@ module Vector {
     inline iter type vectors(param tag: iterKind,
                              container: ?,
                              param aligned: bool = false): this
-    where tag == iterKind.standalone && isValidContainer(container, eltType) {
-      if  __primitive("resolves", indices(container).these(tag=tag)) {
-        for i in indices(container).these(tag=tag) {
-          yield this.load(container, i, aligned=aligned);
-        }
-      } else {
-        // invoke the parallel iterator using forall, requires Chapel 2.6
-        forall i in indices(container) {
-          yield this.load(container, i, aligned=aligned);
-        }
+    where tag == iterKind.standalone &&
+          __primitive("resolves", indices(container).these(tag=tag)) &&
+          isValidContainer(container, eltType) {
+      for i in indices(container).these(tag=tag) {
+        yield this.load(container, i, aligned=aligned);
       }
     }
     @chplcheck.ignore("UnusedFormal")
@@ -517,20 +512,13 @@ module Vector {
     inline iter type vectorsRef(param tag: iterKind,
                                 ref container: ?,
                                 param aligned: bool = false) ref : vectorRef
-    where tag == iterKind.standalone && isValidContainer(container, eltType) {
-      if  __primitive("resolves", indices(container).these(tag=tag)) {
-        for i in indices(container).these(tag=tag) {
-          const addr = this._computeAddress(container, i);
-          var vr = new vectorRef(this, addr, aligned=aligned);
-          yield vr;
-        }
-      } else {
-        // invoke the parallel iterator using forall, requires Chapel 2.6
-        forall i in indices(container) {
-          const addr = this._computeAddress(container, i);
-          var vr = new vectorRef(this, addr, aligned=aligned);
-          yield vr;
-        }
+    where tag == iterKind.standalone &&
+          __primitive("resolves", indices(container).these(tag=tag)) &&
+          isValidContainer(container, eltType) {
+      for i in indices(container).these(tag=tag) {
+        const addr = this._computeAddress(container, i);
+        var vr = new vectorRef(this, addr, aligned=aligned);
+        yield vr;
       }
     }
     @chplcheck.ignore("UnusedFormal")

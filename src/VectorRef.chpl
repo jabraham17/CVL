@@ -1,6 +1,7 @@
 module VectorRef {
 
   use Vector only vector;
+  use CTypes only c_ptr, c_ptrConst, c_ptrTo, c_ptrToConst;
 
   /* a transparent record that iterators can yield,
      takes in modifications to the yielded vector and then writes them back out
@@ -87,6 +88,25 @@ module VectorRef {
     // TODO: we also need init= from vector, init= from vectorRef, and
     //  init= from tuple
     //
+
+    // init from a vector
+    inline proc init=(other: ?vecType) where isSubtype(vecType, vector) {
+      this.vectorType = vecType;
+      this.aligned = false;
+      this.vec = other;
+      this.address = nil;
+      init this;
+      halt("Cannot copy-init a vectorRef from a vector");
+    }
+    inline operator=(ref lhs: vectorRef(?vecType),
+                         rhs: vecType) {
+      lhs.vec = rhs;
+    }
+    inline operator:(v: ?vecType, type t:vectorRef(vecType, ?)) : t {
+      halt("Cannot cast a vector to a vectorRef");
+      return new t(vec=v, address=nil, aligned=false);
+    }
+
     // operator=(ref lhs: ?lhsType, rhs: ?rhsType)
     //   where isVectorType(lhsType) &&
     //        (isVectorType(rhsType) || isHomogeneousTupleType(rhsType)) do

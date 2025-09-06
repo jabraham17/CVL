@@ -9,6 +9,7 @@ module SAXPY {
   config const N = 16;
 
   proc saxpy(a: real, x: [?D] real, y: [D] real, ref z: [D] real) {
+    // z = a * x + y
     forall i in D {
       z[i] = a * x[i] + y[i];
     }
@@ -22,11 +23,19 @@ module SAXPY {
       halt("Error: vector size must be a multiple of " + vecSize:string);
     }
 
-    forall i in vec.indices(D) {
-      const xv = vec.load(x, i);
-      const yv = vec.load(y, i);
-      const zv = a * xv + yv;
-      zv.store(z, i);
+    // forall i in vec.indices(D) {
+    //   const xv = vec.load(x, i);
+    //   const yv = vec.load(y, i);
+    //   const zv = a * xv + yv;
+    //   zv.store(z, i);
+    // }
+    // forall (i, xv, yv) in zip(vec.indices(D), vec.vectors(x), vec.vectors(y)) {
+    //   const zv = a * xv + yv;
+    //   zv.store(z, i);
+    // }
+    forall (zv, xv, yv) in zip(vec.vectorsRef(z),
+                               vec.vectors(x), vec.vectors(y)) {
+      zv = a * xv + yv;
     }
   }
 

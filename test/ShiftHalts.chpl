@@ -14,7 +14,7 @@ proc getGoodFile(suffix="") {
 
 proc string.stripSuffix(suffix: string): string {
   if this.endsWith(suffix) {
-    return this[0..#this.size - suffix.size - 1];
+    return this[0..#(this.size - suffix.size)];
   } else {
     return this;
   }

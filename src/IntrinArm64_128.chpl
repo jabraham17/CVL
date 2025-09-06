@@ -618,6 +618,20 @@ module IntrinArm64_128 {
       return reinterpret(x, toVecType);
     }
 
+    inline proc type typeCast(type toVecType, x: vecType): toVecType {
+      if canResolveTypeMethod(extensionType, "typeCast", x) then
+        return extensionType.typeCast(toVecType, x);
+      else {
+        param fromType = typeToSuffix(x.type);
+        param toType = typeToSuffix(toVecType);
+        param prefix = if isIntegralType(laneType) then "vcvtq" else "vcvtaq";
+        param externName = prefix + "_" + toType + "_" + fromType;
+
+        pragma "fn synchronization free"
+        extern externName proc func(externX: x.type): toVecType;
+        return func(x);
+      }
+    }
 
   }
 

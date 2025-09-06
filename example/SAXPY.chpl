@@ -29,7 +29,7 @@ module SAXPY {
     //   const zv = a * xv + yv;
     //   zv.store(z, i);
     // }
-    // forall (i, xv, yv) in zip(vec.indices(D), vec.vectors(x), vec.vectors(y)) {
+    // forall (i,xv,yv) in zip(vec.indices(D), vec.vectors(x), vec.vectors(y)) {
     //   const zv = a * xv + yv;
     //   zv.store(z, i);
     // }

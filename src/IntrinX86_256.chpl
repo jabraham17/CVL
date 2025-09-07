@@ -16,16 +16,21 @@ module IntrinX86_256 {
     require "IntrinX86_256/wrapper-x86-256.h";
   }
 
-  extern "__m256"  type vec32x8r;
-  extern "__m256d" type vec64x4r;
-  extern "__m256i" type vec8x32i;
-  extern "__m256i" type vec16x16i;
-  extern "__m256i" type vec32x8i;
-  extern "__m256i" type vec64x4i;
-  extern "__m256i" type vec8x32u;
-  extern "__m256i" type vec16x16u;
-  extern "__m256i" type vec32x8u;
-  extern "__m256i" type vec64x4u;
+  //
+  // ideally, just use __m256[,d,i]
+  // but we need distinct names to workaround a bug with C codegen
+  // and wide types
+  //
+  extern /*"__m256"*/ type vec32x8r;
+  extern /*"__m256d"*/ type vec64x4r;
+  extern /*"__m256i"*/ type vec8x32i;
+  extern /*"__m256i"*/ type vec16x16i;
+  extern /*"__m256i"*/ type vec32x8i;
+  extern /*"__m256i"*/ type vec64x4i;
+  extern /*"__m256i"*/ type vec8x32u;
+  extern /*"__m256i"*/ type vec16x16u;
+  extern /*"__m256i"*/ type vec32x8u;
+  extern /*"__m256i"*/ type vec64x4u;
 
   proc numBits(type t) param: int
     where t == vec32x8r || t == vec64x4r ||

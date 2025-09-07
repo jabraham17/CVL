@@ -20,3 +20,16 @@ static inline __m256i insert128x2i0(__m256i x, __m128i y) {
 static inline __m256i insert128x2i1(__m256i x, __m128i y) {
   return _mm256_insertf128_si256(x, y, 1);
 }
+
+
+// workarounds for Chapel C codegen bugs, see IntrinX86_256.chpl
+typedef __m256  vec32x8r;
+typedef __m256d vec64x4r;
+typedef __m256i vec8x32i;
+typedef __m256i vec16x16i;
+typedef __m256i vec32x8i;
+typedef __m256i vec64x4i;
+typedef __m256i vec8x32u;
+typedef __m256i vec16x16u;
+typedef __m256i vec32x8u;
+typedef __m256i vec64x4u;

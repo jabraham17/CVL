@@ -195,6 +195,19 @@ def rules(driver):
         )
         has_no_ret = len(list(rets_and_yields)) == 0
 
+        is_leader_iterator = False
+        if node.kind() == "iter":
+            # rudimentary check, look for 'iterKind.leader'
+            for v, _ in chapel.each_matching(node, chapel.Dot):
+                assert isinstance(v, chapel.Dot)
+                if (
+                    isinstance(v.receiver(), chapel.Identifier)
+                    and v.receiver().name() == "iterKind"
+                    and v.field() == "leader"
+                ):
+                    is_leader_iterator = True
+                    break
+
         if not (
             ret_type
             or returns_type
@@ -202,6 +215,7 @@ def rules(driver):
             or is_serialize
             or has_no_ret
             or is_cast
+            or is_leader_iterator
         ):
             return BasicRuleResult(node, ignorable=True)
         return True

@@ -1,11 +1,23 @@
 use IO, Subprocess, Regex, Reflection;
 use CVL;
 
+
+// TODO: how could I write this in the UnitTest framework such that halts are
+// expected and don't cause test failures?
+
 proc getGoodFile(suffix="") {
   use Reflection, Path;
   var path = absPath(getFileName());
   path = path[0..#path.size-5] + suffix + ".good";
   return path;
+}
+
+proc string.stripSuffix(suffix: string): string {
+  if this.endsWith(suffix) {
+    return this[0..#(this.size - suffix.size)];
+  } else {
+    return this;
+  }
 }
 
 config const testcase = 0;
@@ -22,7 +34,8 @@ proc main(args: [] string) {
     for i in 1..#numTests {
       // TODO: all output must be to stderr until issue is resolved
       //  https://github.com/chapel-lang/chapel/issues/15497
-      var p = spawn([args[0], "-nl1", "--testcase="+i:string],
+      const execname = args[0].stripSuffix("_real");
+      var p = spawn([execname, "-nl1", "--testcase="+i:string],
           stdout=pipeStyle.pipe, stderr=pipeStyle.pipe);
         // stdout=pipeStyle.pipe, stderr=pipeStyle.stdout);
       p.wait();

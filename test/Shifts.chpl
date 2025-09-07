@@ -2,33 +2,6 @@ use CVL;
 use UnitTest;
 use TestHelpers;
 
-
-proc Test.assertEqual(actual: vector(?),
-                      expected: vector(?), msg: string) throws {
-  if actual.type != expected.type {
-    const s =
-      "%? - '%?' and '%?' are not of same type"
-      .format(msg, toHex(actual), toHex(expected));
-    throw new TestError.AssertionError(s);
-  }
-  for param i in 0..#actual.numElts {
-    if toHex(actual[i]) != toHex(expected[i]) {
-      const s =
-        "%? - '%?' and '%?' differ at index %i"
-        .format(msg, toHex(actual), toHex(expected), i);
-      throw new TestError.AssertionError(s);
-    }
-  }
-}
-
-proc Test.assertEqual(actual, expected, msg: string) throws {
-  if actual != expected {
-    const s = "%? - '%?' and '%?' differ"
-              .format(msg, toHex(actual), toHex(expected));
-    throw new TestError.AssertionError(s);
-  }
-}
-
 proc iTy(type t: vector(?)) type {
   return int(numBits(t.eltType));
 }

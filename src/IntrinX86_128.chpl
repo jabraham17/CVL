@@ -10,16 +10,21 @@ module IntrinX86_128 {
     require "IntrinX86_128/wrapper-x86-fp-compare.h";
   }
 
-  extern "__m128"  type vec32x4r;
-  extern "__m128d" type vec64x2r;
-  extern "__m128i" type vec8x16i;
-  extern "__m128i" type vec16x8i;
-  extern "__m128i" type vec32x4i;
-  extern "__m128i" type vec64x2i;
-  extern "__m128i" type vec8x16u;
-  extern "__m128i" type vec16x8u;
-  extern "__m128i" type vec32x4u;
-  extern "__m128i" type vec64x2u;
+  //
+  // ideally, just use __m128[,d,i]
+  // but we need distinct names to workaround a bug with C codegen
+  // and wide types
+  //
+  extern /*"__m128"*/  type vec32x4r;
+  extern /*"__m128d"*/ type vec64x2r;
+  extern /*"__m128i"*/ type vec8x16i;
+  extern /*"__m128i"*/ type vec16x8i;
+  extern /*"__m128i"*/ type vec32x4i;
+  extern /*"__m128i"*/ type vec64x2i;
+  extern /*"__m128i"*/ type vec8x16u;
+  extern /*"__m128i"*/ type vec16x8u;
+  extern /*"__m128i"*/ type vec32x4u;
+  extern /*"__m128i"*/ type vec64x2u;
 
   proc numBits(type t) param: int
     where t == vec32x4r || t == vec64x2r ||

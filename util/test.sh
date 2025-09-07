@@ -8,6 +8,8 @@ if [[ $? -ne 0 ]]; then
   exit 1
 fi
 
+# --setComm works around a mason bug where it always defaults to `none`
+
 (cd $PROJECT_DIR && set -x && \
   mason test --show --keep-binary \
     --setComm=$($(chpl --print-chpl-home)/util/chplenv/chpl_comm.py) \

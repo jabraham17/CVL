@@ -14,6 +14,7 @@ docopts="--using-attribute-toolname=lint"
 tests = [
   "ArrTest.chpl",
   "BitTest.chpl",
+  "Bounds.chpl",
   "BytesTest.chpl",
   "CmpTest.chpl",
   "Distributed.chpl",
@@ -25,6 +26,7 @@ tests = [
   "MaskLoadTest.chpl",
   "MathFuncs.chpl",
   "MathTest.chpl",
+  "SAXPYVariants.chpl",
   "Shifts.chpl",
   "ShiftHalts.chpl",
   "ShuffleTest.chpl",

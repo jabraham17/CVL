@@ -178,7 +178,7 @@ proc Test.skipIfExceedsMaxLocales() throws {
   var MAX_LOCALES_FILE = projectDir + "/.MAX_LOCALES";
   if !exists(MAX_LOCALES_FILE) then return;
 
-  var maxLocalesStr = IO.openReader(MAX_LOCALES_FILE).read().strip():int;
+  var maxLocalesStr = IO.openReader(MAX_LOCALES_FILE).read(string).strip():int;
   if numLocales > maxLocalesStr {
     this.skip("skipping due to .MAX_LOCALES file setting a limit of " +
               maxLocalesStr:string + " locales" );

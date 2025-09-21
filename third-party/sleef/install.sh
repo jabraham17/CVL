@@ -2,7 +2,7 @@
 
 SLEEF_DIR=$(cd $(dirname $0); pwd)
 
-# use 3.8, not the latest 3.9.0, because 3.8 builds faster and 3.9.0 has issues
+# FIXME: use 3.8, not the latest 3.9.0, because 3.8 builds faster and 3.9.0 has issues
 # with the non-test build requiring gmp
 SLEEF_VERSION=3.8
 SLEEF_URL=https://github.com/shibatch/sleef/archive/refs/tags/${SLEEF_VERSION}.tar.gz

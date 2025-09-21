@@ -100,10 +100,16 @@ jobs:
           python3 -m venv .venv
           ./.venv/bin/python3 -m pip install --upgrade pip
           ./.venv/bin/python3 -m pip install pydantic
-      - name: Install other dependencies
-        run: |
-          apt-get update -y
-          apt-get install -y gfortran rustc
+      - name: Setup fortran
+        uses: fortran-lang/setup-fortran@v1
+        with:
+          compiler: gcc
+          version: latest
+      - name: Setup Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
       - name: Build CVL Dependencies
         run: |
           ./third-party/sleef/install.sh

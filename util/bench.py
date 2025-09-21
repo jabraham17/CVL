@@ -13,7 +13,7 @@ from typing import List, Dict, Optional, Self
 from pydantic import BaseModel, Field
 import tempfile
 import re
-
+import os
 
 class Language(str, Enum):
     CHPL = "chpl"
@@ -21,6 +21,8 @@ class Language(str, Enum):
     CPP_GCC = "cpp-gcc"
     C_CLANG = "c-clang"
     CPP_CLANG = "cpp-clang"
+    RUST = "rust"
+    FORTRAN = "fortran"
 
     def get_compiler(self) -> str:
         m = {
@@ -29,6 +31,8 @@ class Language(str, Enum):
             Language.CPP_GCC: "g++",
             Language.C_CLANG: "clang",
             Language.CPP_CLANG: "clang++",
+            Language.RUST: "rustc",
+            Language.FORTRAN: "gfortran",
         }
         return m[self]
 
@@ -49,6 +53,7 @@ class BenchmarkVersion(BaseModel):
     compopts: List[str] = Field(default_factory=list)
     execopts: List[str] = Field(default_factory=list)
     measure: List[str] = Field(default_factory=list)
+    arch: List[str] = Field(default_factory=list)
 
     def resolve_compopts(self, cvl_options: Optional[str] = None):
         # if CVL_OPTIONS in the compopts, remove it and add the CVL_OPTIONS
@@ -229,8 +234,25 @@ def load_schema(schema_path: str) -> BenchmarkSchema:
 
 
 def should_run_benchmark(
-    benchmark_name: str, version_name: str, filters: List[str]
+    benchmark: BenchmarkConfig, version: BenchmarkVersion, filters: List[str]
 ) -> bool:
+
+    benchmark_name = benchmark.name
+    version_name = version.name
+
+    uname_result = os.uname()
+    machine = uname_result.machine
+    if machine == "x86_64":
+        arch = "x86_64"
+    elif machine == "aarch64" or machine == "arm64":
+        arch = "aarch64"
+    else:
+        arch = "unknown"
+
+    if version.arch and arch not in version.arch:
+        print(f"Skipping {benchmark_name}::{version_name} due to architecture mismatch")
+        return False
+
     if not filters:  # If no filters, run everything
         return True
 
@@ -318,7 +340,7 @@ def main():
     for benchmark in schema.benchmarks:
         for version in benchmark.versions:
             full_name = f"{benchmark.name}::{version.name}"
-            if should_run_benchmark(benchmark.name, version.name, args.filter):
+            if should_run_benchmark(benchmark, version, args.filter):
                 version.resolve_compopts(cvl_options)
                 runners[full_name] = BenchmarkRun(
                     benchmark_dir, benchmark, version

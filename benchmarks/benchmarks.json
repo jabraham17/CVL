@@ -34,12 +34,53 @@
           "language": "c-gcc",
           "compopts": ["-O3", "-march=native"],
           "execopts": ["50000000"],
-          "measure": ["RUNTIME"]
+          "measure": ["RUNTIME"],
+          "arch": ["x86_64"]
         },
         {
           "name": "nbody-clang",
           "files": ["nbody/nbody.c"],
           "language": "c-clang",
+          "compopts": ["-O3", "-march=native"],
+          "execopts": ["50000000"],
+          "measure": ["RUNTIME"],
+          "arch": ["x86_64"]
+        },
+        {
+          "name": "nbody-baseline-gcc",
+          "files": ["nbody/nbody-baseline.c"],
+          "language": "c-gcc",
+          "compopts": ["-O3", "-march=native"],
+          "execopts": ["50000000"],
+          "measure": ["RUNTIME"]
+        },
+        {
+          "name": "nbody-baseline-clang",
+          "files": ["nbody/nbody-baseline.c"],
+          "language": "c-clang",
+          "compopts": ["-O3", "-march=native"],
+          "execopts": ["50000000"],
+          "measure": ["RUNTIME"]
+        },
+        {
+          "name": "nbody-rust",
+          "files": ["nbody/nbody.rs"],
+          "language": "rust",
+          "compopts": [
+            "-C",
+            "opt-level=3",
+            "-C",
+            "target-cpu=native",
+            "-C",
+            "codegen-units=1"
+          ],
+          "execopts": ["50000000"],
+          "measure": ["RUNTIME"]
+        },
+        {
+          "name": "nbody-fortran",
+          "files": ["nbody/nbody.f90"],
+          "language": "fortran",
           "compopts": ["-O3", "-march=native"],
           "execopts": ["50000000"],
           "measure": ["RUNTIME"]
@@ -136,7 +177,12 @@
           "name": "baseline",
           "files": ["trig/trigBench.chpl"],
           "language": "chpl",
-          "compopts": ["--fast", "--no-ieee-float", "-svectorize=false", "CVL_OPTIONS"],
+          "compopts": [
+            "--fast",
+            "--no-ieee-float",
+            "-svectorize=false",
+            "CVL_OPTIONS"
+          ],
           "execopts": ["--n=10_000_000", "--timing"],
           "measure": ["Time taken: ([0-9.]+)"]
         },
@@ -144,7 +190,12 @@
           "name": "vectorized",
           "files": ["trig/trigBench.chpl"],
           "language": "chpl",
-          "compopts": ["--fast", "--no-ieee-float", "-svectorize=true", "CVL_OPTIONS"],
+          "compopts": [
+            "--fast",
+            "--no-ieee-float",
+            "-svectorize=true",
+            "CVL_OPTIONS"
+          ],
           "execopts": ["--n=10_000_000", "--timing"],
           "measure": ["Time taken: ([0-9.]+)"]
         }

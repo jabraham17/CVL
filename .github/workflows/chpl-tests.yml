@@ -75,6 +75,10 @@ jobs:
       - name: Build CVL Dependencies
         run: |
           ./third-party/sleef/install.sh
+      - name: Limit Locales For SMP
+        if: ${{ matrix.image == 'chapel/chapel-gasnet-smp:${{ inputs.chapel_version }}' }}
+        run: |
+          echo 'MAX_LOCALES=2' >> $GITHUB_ENV
       - name: Run Tests
         run: |
           ./util/test.sh

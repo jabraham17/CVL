@@ -83,7 +83,8 @@ proc testDomainHelper(test: borrowed Test, type vecTy, dom) throws {
 
 
 proc testOneLocale(test: borrowed Test) throws {
-// TODO: bug in mason in <2.5 prevents us from using addNumLocales
+  test.skipIfExceedsMaxLocales();
+  // TODO: bug in mason in <2.6 prevents us from using addNumLocales
   test.maxLocales(1);
   test.minLocales(1);
 
@@ -107,7 +108,8 @@ proc testOneLocale(test: borrowed Test) throws {
 }
 
 proc testTwoLocales(test: borrowed Test) throws {
-// TODO: bug in mason in <2.5 prevents us from using addNumLocales
+  test.skipIfExceedsMaxLocales();
+  // TODO: bug in mason in <2.6 prevents us from using addNumLocales
   test.maxLocales(2);
   test.minLocales(2);
 
@@ -128,7 +130,8 @@ proc testTwoLocales(test: borrowed Test) throws {
 }
 
 proc testFourLocales(test: borrowed Test) throws {
-  // TODO: bug in mason in <2.5 prevents us from using addNumLocales
+  test.skipIfExceedsMaxLocales();
+  // TODO: bug in mason in <2.6 prevents us from using addNumLocales
   test.maxLocales(4);
   test.minLocales(4);
 

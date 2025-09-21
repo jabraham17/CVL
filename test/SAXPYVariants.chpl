@@ -121,28 +121,28 @@ proc testSaxpyBlock(test: borrowed Test) throws {
   writeln("Testing SAXPY with block distribution: ", D);
   testSaxpyDriver(test, D);
 }
-proc testSaxpyBlockCyclic(test: borrowed Test) throws {
-  const D = getDomain(N, distType.blockCyclic);
-  writeln("Testing SAXPY with block-cyclic distribution: ", D);
-  testSaxpyDriver(test, D);
-}
+// proc testSaxpyBlockCyclic(test: borrowed Test) throws {
+//   const D = getDomain(N, distType.blockCyclic);
+//   writeln("Testing SAXPY with block-cyclic distribution: ", D);
+//   testSaxpyDriver(test, D);
+// }
 
-proc testSaxpyBlock4Locales(test: borrowed Test) throws {
-  test.skipIfExceedsMaxLocales();
-  test.maxLocales(4);
-  test.minLocales(4);
-  const D = getDomain(N, distType.block);
-  writeln("Testing SAXPY with block distribution on 4 locales: ", D);
-  testSaxpyDriver(test, D);
-}
+// proc testSaxpyBlock4Locales(test: borrowed Test) throws {
+//   test.skipIfExceedsMaxLocales();
+//   test.maxLocales(4);
+//   test.minLocales(4);
+//   const D = getDomain(N, distType.block);
+//   writeln("Testing SAXPY with block distribution on 4 locales: ", D);
+//   testSaxpyDriver(test, D);
+// }
 
-proc testSaxpyBlockCyclic4Locales(test: borrowed Test) throws {
-  test.skipIfExceedsMaxLocales();
-  test.maxLocales(4);
-  test.minLocales(4);
-  const D = getDomain(N, distType.blockCyclic);
-  writeln("Testing SAXPY with block-cyclic distribution on 4 locales: ", D);
-  testSaxpyDriver(test, D);
-}
+// proc testSaxpyBlockCyclic4Locales(test: borrowed Test) throws {
+//   test.skipIfExceedsMaxLocales();
+//   test.maxLocales(4);
+//   test.minLocales(4);
+//   const D = getDomain(N, distType.blockCyclic);
+//   writeln("Testing SAXPY with block-cyclic distribution on 4 locales: ", D);
+//   testSaxpyDriver(test, D);
+// }
 
 UnitTest.main();

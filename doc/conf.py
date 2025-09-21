@@ -54,8 +54,6 @@ exclude_patterns = []
 pygments_style = "sphinx"
 
 if not on_rtd:
-    import sphinx_rtd_theme
-
     html_theme = "sphinx_rtd_theme"
 
     html_theme_options = {

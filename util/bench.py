@@ -15,6 +15,7 @@ import tempfile
 import re
 import os
 
+
 class Language(str, Enum):
     CHPL = "chpl"
     C_GCC = "c-gcc"
@@ -250,7 +251,10 @@ def should_run_benchmark(
         arch = "unknown"
 
     if version.arch and arch not in version.arch:
-        print(f"Skipping {benchmark_name}::{version_name} due to architecture mismatch")
+        print(
+            f"Skipping {benchmark_name}::{version_name} "
+            + "due to architecture mismatch"
+        )
         return False
 
     if not filters:  # If no filters, run everything

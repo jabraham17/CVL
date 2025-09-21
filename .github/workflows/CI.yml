@@ -23,8 +23,3 @@ jobs:
     with:
       chapel_version: latest
       run_optional_tests: true
-  # test-chpl-2_4:
-  #   uses: ./.github/workflows/chpl-tests.yml
-  #   with:
-  #     chapel_version: 2.4.0
-  #     run_optional_tests: false

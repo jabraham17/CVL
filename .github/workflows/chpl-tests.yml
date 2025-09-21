@@ -105,6 +105,9 @@ jobs:
           ./.venv/bin/python3 -m pip install --upgrade pip
           ./.venv/bin/python3 -m pip install pydantic
       - name: Setup fortran
+        # fortran-lang/setup-fortran has some bugs when running in a container
+        # and bad usage of sudo, so use jabraham17/setup-fortran@fix-cd until
+        # those are fixed
         uses: jabraham17/setup-fortran@fix-cd
         with:
           compiler: gcc

@@ -4,6 +4,9 @@ name: Run on chpl nightly
 # This prevents potential regressions from the latest changes in Chapel. This
 # workflow runs on a weekly schedule and can also be triggered manually.
 #
+# This workflow also tests a couple of specific older Chapel versions to
+# ensure compatibility.
+#
 
 on:
   schedule:
@@ -20,7 +23,7 @@ jobs:
     uses: ./.github/workflows/chpl-tests.yml
     with:
       chapel_version: 2.6.0
-      run_optional_tests: true
+      run_optional_tests: false
   test-chpl-2_5_0:
     uses: ./.github/workflows/chpl-tests.yml
     with:

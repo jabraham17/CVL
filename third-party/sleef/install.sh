@@ -25,6 +25,7 @@ chpl_cxx_flags=$($chpl_home/util/chplenv/chpl_compiler.py --host --cxx --additio
 mkdir -p $SLEEF_DIR/sleef-build
 cmake -S $SLEEF_DIR/sleef-src -B $SLEEF_DIR/sleef-build/ -DCMAKE_BUILD_TYPE=Release \
   -DCMAKE_INSTALL_PREFIX=$SLEEF_DIR/sleef-install \
+  -DCMAKE_INSTALL_LIBDIR=$SLEEF_DIR/sleef-install/lib \
   -DSLEEF_BUILD_SHARED_LIBS=OFF -DSLEEF_BUILD_TESTS=OFF \
   -DSLEEF_SHOW_CONFIG=ON \
   -DCMAKE_C_COMPILER=$chpl_cc -DCMAKE_C_FLAGS="$chpl_cc_flags" \

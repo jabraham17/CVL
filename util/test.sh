@@ -8,18 +8,12 @@ if [[ $? -ne 0 ]]; then
   exit 1
 fi
 
-# determine the MAX locales this machine can run
-# use sysctl -n hw.physicalcpu on macOS
-# use nproc --all on Linux
-if [[ -z "$MAX_LOCALES" ]]; then
-
-  if [[ "$(uname)" == "Darwin" ]]; then
-    MAX_LOCALES=$(sysctl -n hw.physicalcpu)
-  else
-    MAX_LOCALES=$(nproc --all)
-  fi
+# Set MAX_LOCALES if specified in environment
+rm -f $PROJECT_DIR/.MAX_LOCALES
+if [[ ! -z "$MAX_LOCALES" ]]; then
+  echo "$MAX_LOCALES" > $PROJECT_DIR/.MAX_LOCALES
 fi
-echo "$MAX_LOCALES" > $PROJECT_DIR/.MAX_LOCALES
+
 
 # --setComm works around a mason bug where it always defaults to `none`
 (cd $PROJECT_DIR && set -x && \

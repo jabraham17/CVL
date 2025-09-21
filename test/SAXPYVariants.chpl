@@ -1,4 +1,5 @@
 use UnitTest;
+use TestHelpers;
 use CVL;
 use Random;
 use BlockDist, BlockCycDist;

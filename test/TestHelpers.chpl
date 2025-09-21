@@ -171,7 +171,7 @@ proc Test.assertEqual(actual, expected, msg: string) throws {
   }
 }
 
-proc Test.skipIfExceedsMaxLocales(test: borrowed Test) throws {
+proc Test.skipIfExceedsMaxLocales() throws {
   use Reflection, Path, FileSystem;
   var path = realPath(absPath(getFileName()));
   var projectDir = dirname(dirname(path));
@@ -180,7 +180,7 @@ proc Test.skipIfExceedsMaxLocales(test: borrowed Test) throws {
 
   var maxLocalesStr = IO.openReader(MAX_LOCALES_FILE).read().strip():int;
   if numLocales > maxLocalesStr {
-    test.skip("skipping due to .MAX_LOCALES file setting a limit of " +
+    this.skip("skipping due to .MAX_LOCALES file setting a limit of " +
               maxLocalesStr:string + " locales" );
   }
 }

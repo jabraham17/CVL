@@ -105,7 +105,7 @@ jobs:
           ./.venv/bin/python3 -m pip install --upgrade pip
           ./.venv/bin/python3 -m pip install pydantic
       - name: Setup fortran
-        uses: fortran-lang/setup-fortran@v1
+        uses: jabraham17/setup-fortran@fix-cd
         with:
           compiler: gcc
           version: latest

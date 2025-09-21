@@ -127,14 +127,14 @@ proc testSaxpyBlock(test: borrowed Test) throws {
 //   testSaxpyDriver(test, D);
 // }
 
-// proc testSaxpyBlock4Locales(test: borrowed Test) throws {
-//   test.skipIfExceedsMaxLocales();
-//   test.maxLocales(4);
-//   test.minLocales(4);
-//   const D = getDomain(N, distType.block);
-//   writeln("Testing SAXPY with block distribution on 4 locales: ", D);
-//   testSaxpyDriver(test, D);
-// }
+proc testSaxpyBlock4Locales(test: borrowed Test) throws {
+  test.skipIfExceedsMaxLocales();
+  test.maxLocales(4);
+  test.minLocales(4);
+  const D = getDomain(N, distType.block);
+  writeln("Testing SAXPY with block distribution on 4 locales: ", D);
+  testSaxpyDriver(test, D);
+}
 
 // proc testSaxpyBlockCyclic4Locales(test: borrowed Test) throws {
 //   test.skipIfExceedsMaxLocales();

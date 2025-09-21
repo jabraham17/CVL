@@ -501,7 +501,7 @@ module Vector {
     }
 
     inline iter type vectorsRef(ref container: ?,
-                                param aligned: bool = false) ref : vectorRef
+                                param aligned: bool = false) ref : vectorRef(?)
     where isValidContainer(container, eltType) {
       for i in indices(container) {
         const addr = this._computeAddress(container, i);
@@ -511,7 +511,7 @@ module Vector {
     }
     inline iter type vectorsRef(param tag: iterKind,
                                 ref container: ?,
-                                param aligned: bool = false) ref : vectorRef
+                                param aligned: bool = false) ref : vectorRef(?)
     where tag == iterKind.standalone &&
           __primitive("resolves", indices(container).these(tag=tag)) &&
           isValidContainer(container, eltType) {
@@ -533,7 +533,7 @@ module Vector {
     inline iter type vectorsRef(param tag: iterKind,
                                 followThis,
                                 ref container: ?,
-                                param aligned: bool = false) ref : vectorRef
+                                param aligned: bool = false) ref : vectorRef(?)
     where tag == iterKind.follower && isValidContainer(container, eltType) {
       for i in indices(container).these(tag=tag, followThis=followThis) {
         const addr = this._computeAddress(container, i);

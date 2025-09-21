@@ -15,6 +15,7 @@ on:
 jobs:
   # brew only supports nightly and latest
   # brew doesn't support linux arm
+  # TODO: brew will soon support ML chapel, so we can add comm!=none jobs for brew then
   mason-test-brew:
     if: ${{ inputs.chapel_version == 'nightly' || inputs.chapel_version == 'latest' }}
     strategy:
@@ -34,14 +35,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Set up Homebrew
-        uses: Homebrew/actions/setup-homebrew@master
-      - name: Workaround for https://github.com/actions/runner-images/pull/12791
-        run: |
-          if brew tap | grep 'local/pinned'; then
-            brew uninstall cmake
-            brew untap local/pinned
-            brew install cmake
-          fi
+        uses: Homebrew/actions/setup-homebrew@main
       - name: Install Chapel
         run: |
           if [ "${{ inputs.chapel_version }}" = "nightly" ]; then

@@ -159,6 +159,32 @@ proc convertToGrayscale(
     return res;
   }
 
+  const intConstants1Vec = (
+    intConstants1[0]:int(16),
+    intConstants1[1]:int(16),
+    intConstants1[2]:int(16)
+  );
+  const intConstants2Vec = (
+    intConstants2[0]:int(16),
+    intConstants2[1]:int(16),
+    intConstants2[2]:int(16)
+  );
+
+  inline proc inner(img1dPtr, i) {
+    const v0 = vector(int(32), 8).load(img1dPtr, i);
+    const v1 = vector(int(32), 8).load(img1dPtr, i+8);
+
+    const r = getPackedRed(v0, v1);
+    const g = getPackedGreen(v0, v1);
+    const b = getPackedBlue(v0, v1);
+
+    const rS = intConstants1Vec[0] * r + intConstants2Vec[0],
+          gS = intConstants1Vec[1] * g + intConstants2Vec[1],
+          bS = intConstants1Vec[2] * b + intConstants2Vec[2];
+    const sum = ((rS + gS + bS) >> 8);
+    return sum;
+  }
+
 
   ref img1D = reshape(img, {0..#img.size});
   ref res1D = reshape(res, {0..#res.size});
@@ -171,42 +197,11 @@ proc convertToGrayscale(
   var res1dPtr = c_ptrTo(res1D):c_ptr(int(8));
 
   forall i in 0.. by chunk # iters {
-    // TODO: clean this up with a helper func
-    const v0 = vector(int(32), 8).load(img1dPtr, i);
-    const v1 = vector(int(32), 8).load(img1dPtr, i+8);
-    const v2 = vector(int(32), 8).load(img1dPtr, i+16);
-    const v3 = vector(int(32), 8).load(img1dPtr, i+24);
-
-    const r1 = getPackedRed(v0, v1);
-    const g1 = getPackedGreen(v0, v1);
-    const b1 = getPackedBlue(v0, v1);
-
-  // TODO: hoist these casts out and splats
-    const rS1 = intConstants1[0]:int(16) * r1 + intConstants2[0]:int(16),
-          gS1 = intConstants1[1]:int(16) * g1 + intConstants2[1]:int(16),
-          bS1 = intConstants1[2]:int(16) * b1 + intConstants2[2]:int(16);
-
-    const sum1 = ((rS1 + gS1 + bS1) >> 8);
-
-    const r2 = getPackedRed(v2, v3);
-    const g2 = getPackedGreen(v2, v3);
-    const b2 = getPackedBlue(v2, v3);
-    const rS2 = intConstants1[0]:int(16) * r2
-      + intConstants2[0]:int(16),
-          gS2 = intConstants1[1]:int(16) * g2
-      + intConstants2[1]:int(16),
-          bS2 = intConstants1[2]:int(16) * b2
-      + intConstants2[2]:int(16);
-    const sum2 = ((rS2 + gS2 + bS2) >> 8);
-
-
-
-
+    const sum1 = inner(img1dPtr, i);
+    const sum2 = inner(img1dPtr, i+16);
     const res = packTo8(sum1, sum2) + sixteen;
-
     res.store(res1dPtr, i);
   }
-  
 
   for i in iters*chunk..<img.size {
     const pixel = img1D[i];

@@ -211,6 +211,7 @@
           "language": "chpl",
           "compopts": ["--fast", "--edition=preview", "--no-ieee-float", "CVL_OPTIONS"],
           "execopts": ["--benchmark=Benchmark.ScalarFloat", "--n=30_000"],
+          "execopts-small": ["--benchmark=Benchmark.ScalarFloat", "--n=500"],
           "measure": ["Time taken: ([0-9.]+)"]
         },
         {
@@ -219,6 +220,7 @@
           "language": "chpl",
           "compopts": ["--fast", "--edition=preview", "--no-ieee-float", "CVL_OPTIONS"],
           "execopts": ["--benchmark=Benchmark.VectorFloat", "--n=30_000"],
+          "execopts-small": ["--benchmark=Benchmark.VectorFloat", "--n=500"],
           "measure": ["Time taken: ([0-9.]+)"]
         },
         {
@@ -227,6 +229,7 @@
           "language": "chpl",
           "compopts": ["--fast", "--edition=preview", "--no-ieee-float", "CVL_OPTIONS"],
           "execopts": ["--benchmark=Benchmark.ScalarInt", "--n=30_000"],
+          "execopts-small": ["--benchmark=Benchmark.ScalarInt", "--n=500"],
           "measure": ["Time taken: ([0-9.]+)"]
         },
         {
@@ -235,6 +238,7 @@
           "language": "chpl",
           "compopts": ["--fast", "--edition=preview", "--no-ieee-float", "CVL_OPTIONS"],
           "execopts": ["--benchmark=Benchmark.VectorInt", "--n=30_000"],
+          "execopts-small": ["--benchmark=Benchmark.VectorInt", "--n=500"],
           "measure": ["Time taken: ([0-9.]+)"]
         }
       ]

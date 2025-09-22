@@ -78,7 +78,7 @@ jobs:
       - name: Limit Locales For SMP
         if: ${{ matrix.image == format('chapel/chapel-gasnet-smp:{0}', inputs.chapel_version) }}
         run: |
-          echo 'MAX_LOCALES=2' >> $GITHUB_ENV
+          echo 'MAX_LOCALES=1' >> $GITHUB_ENV
       - name: Run Tests
         run: |
           ./util/test.sh

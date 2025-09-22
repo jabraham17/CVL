@@ -16,6 +16,7 @@ tests = [
   "BitTest.chpl",
   "Bounds.chpl",
   "BytesTest.chpl",
+  "Casting.chpl",
   "CmpTest.chpl",
   "Distributed.chpl",
   "FmaTest.chpl",

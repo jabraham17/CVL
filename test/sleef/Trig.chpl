@@ -10,8 +10,8 @@ proc testEqual(vec1, vec2, epsilon=1e-6) throws {
   for param i in 0..#vec1.numElts {
     if abs(vec1(i) - vec2(i)) > epsilon {
       throw new TestError.AssertionError(
-        ("vec1 and vec2 differ at index %i: %r vs %r").format(
-        (i, vec1(i), vec2(i))));
+        "vec1 and vec2 differ at index %i: %r vs %r".format(
+        i, vec1(i), vec2(i)));
     }
   }
 }

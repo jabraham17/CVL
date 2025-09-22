@@ -887,7 +887,7 @@ module IntrinX86_128 {
 
     @chplcheck.ignore("NoGenericReturn")
     inline proc type typeCast(type toVecType, x: vecType) {
-      if canResolveTypeMethod(extensionType, "typeCast", x) then
+      if canResolveTypeMethod(extensionType, "typeCast") then
         return extensionType.typeCast(toVecType, x);
       else {
         param toSuffix = toVecType.typeSuffix;
@@ -969,14 +969,16 @@ module IntrinX86_128 {
     inline proc type deinterleaveUpper(x: vecType, y: vecType): vecType do
       return base.interleaveUpper(x, y);
 
+    inline proc type typeCast() {} // dummy for canResolveTypeMethod
     inline proc type typeCast(type toVecType, x: vecType): toVecType {
       import CVL;
       if CVL.implementationWarnings then
         compilerWarning("'typeCast' on real(64)" +
                         " is implemented as scalar operations");
       var res: toVecType;
+      type toImpl = toVecType.implType;
       for param i in 0..<base.numLanes {
-        res = base.insert(res, base.extract(x, i):toVecType, i);
+        res = toImpl.insert(res, base.extract(x, i):toImpl.laneType, i);
       }
       return res;
     }
@@ -1293,14 +1295,16 @@ module IntrinX86_128 {
     inline proc type deinterleaveUpper(x: vecType, y: vecType): vecType do
       return base.interleaveUpper(x, y);
 
+    inline proc type typeCast() {} // dummy for canResolveTypeMethod
     inline proc type typeCast(type toVecType, x: vecType): toVecType {
       import CVL;
       if CVL.implementationWarnings then
         compilerWarning("'typeCast' on int(64)" +
                         " is implemented as scalar operations");
       var res: toVecType;
+      type toImpl = toVecType.implType;
       for param i in 0..<base.numLanes {
-        res = base.insert(res, base.extract(x, i):toVecType, i);
+        res = toImpl.insert(res, base.extract(x, i):toImpl.laneType, i);
       }
       return res;
     }

@@ -209,7 +209,7 @@
           "name": "ScalarFloat",
           "files": ["grayscale/grayscale.chpl"],
           "language": "chpl",
-          "compopts": ["--fast", "--no-ieee-float"],
+          "compopts": ["--fast", "--edition=preview", "--no-ieee-float"],
           "execopts": ["--benchmark=Benchmark.ScalarFloat", "--n=30_000"],
           "measure": ["Time taken: ([0-9.]+)"]
         },
@@ -217,7 +217,7 @@
           "name": "VectorFloat",
           "files": ["grayscale/grayscale.chpl"],
           "language": "chpl",
-          "compopts": ["--fast", "--no-ieee-float", "CVL_OPTIONS"],
+          "compopts": ["--fast", "--edition=preview", "--no-ieee-float", "CVL_OPTIONS"],
           "execopts": ["--benchmark=Benchmark.VectorFloat", "--n=30_000"],
           "measure": ["Time taken: ([0-9.]+)"]
         },
@@ -225,7 +225,7 @@
           "name": "ScalarInt",
           "files": ["grayscale/grayscale.chpl"],
           "language": "chpl",
-          "compopts": ["--fast", "--no-ieee-float"],
+          "compopts": ["--fast", "--edition=preview", "--no-ieee-float"],
           "execopts": ["--benchmark=Benchmark.ScalarInt", "--n=30_000"],
           "measure": ["Time taken: ([0-9.]+)"]
         },
@@ -233,7 +233,7 @@
           "name": "VectorInt",
           "files": ["grayscale/grayscale.chpl"],
           "language": "chpl",
-          "compopts": ["--fast", "--no-ieee-float", "CVL_OPTIONS"],
+          "compopts": ["--fast", "--edition=preview", "--no-ieee-float", "CVL_OPTIONS"],
           "execopts": ["--benchmark=Benchmark.VectorInt", "--n=30_000"],
           "measure": ["Time taken: ([0-9.]+)"]
         }

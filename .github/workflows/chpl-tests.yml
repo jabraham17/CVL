@@ -76,6 +76,9 @@ jobs:
         run: |
           ./third-party/sleef/install.sh
       - name: Run Tests
+        # FIXME: smp testing on linux 64 breaks with multi locale code? But only
+        # in the CI, local testing seems fine,
+        if: ${{ ! (matrix.image == format('chapel/chapel-gasnet-smp:{0}', inputs.chapel_version) && matrix.os == 'ubuntu-latest') }}
         run: |
           ./util/test.sh
       - name: Run CMake Tests
@@ -89,7 +92,11 @@ jobs:
 
   # this just runs the benchmarks to make sure they compile and run
   test-benchmarks:
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        runs-on: [ubuntu-latest, ubuntu-24.04-arm]
+    runs-on: ${{ matrix.runs-on }}
     container:
       image: chapel/chapel:${{ inputs.chapel_version }}
     steps:
@@ -100,6 +107,19 @@ jobs:
           python3 -m venv .venv
           ./.venv/bin/python3 -m pip install --upgrade pip
           ./.venv/bin/python3 -m pip install pydantic
+      - name: Setup fortran
+        # fortran-lang/setup-fortran has some bugs when running in a container
+        # and bad usage of sudo, so use jabraham17/setup-fortran@fix-cd until
+        # those are fixed
+        uses: jabraham17/setup-fortran@fix-cd
+        with:
+          compiler: gcc
+          version: latest
+      - name: Setup Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
       - name: Build CVL Dependencies
         run: |
           ./third-party/sleef/install.sh

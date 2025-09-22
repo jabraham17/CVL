@@ -8,33 +8,42 @@ if [[ $? -ne 0 ]]; then
   exit 1
 fi
 
-# TODO: can't pass --arch-compopts to mason build --example, doesn't take args
-# (cd $PROJECT_DIR && set -x && \
-#   mason build --example \
-#     $@ \
-#     $CVL_OPTIONS
-# )
-# for now, list all *.chpl files in example/ and build them manually
+function build_and_run() {
+  local chpl_file=$1
+  local compopts=$2
+
+  local basename=$(basename "$chpl_file" .chpl)
+
+  echo "Compiling: $basename with options: $compopts"
+  chpl $chpl_file -o "$PROJECT_DIR/target/example/$basename" $CVL_OPTIONS
+  if [[ $? -ne 0 ]]; then
+    echo "Error: Compilation of $basename failed."
+    exit 1
+  fi
+
+  echo "Running: $basename"
+  "$PROJECT_DIR/target/example/$basename" -nl1
+  if [[ $? -ne 0 ]]; then
+    echo "Error: Example $basename failed with exit code $res"
+    exit $res
+  fi
+  echo ""
+}
+
+
 mkdir -p "$PROJECT_DIR/target/example"
 for example in "$PROJECT_DIR"/example/*.chpl; do
-  (cd $PROJECT_DIR && set -x && \
-    chpl $example -o "target/example/$(basename "${example%.*}")" $@ $CVL_OPTIONS \
-  )
-done
-
-# TODO: mason run --example is borked and doesn't work yet
-for example in "$PROJECT_DIR/target/example"/*; do
-  if [[ "$(basename "$example")" == *_real ]]; then
-    continue
-  fi
-  if [[ -x "$example" ]]; then
-    echo "Running: $(basename "$example")"
-    $example -nl1
-    res=$?
-    echo ""
-    if [[ $res -ne 0 ]]; then
-      echo "Error: Example $(basename "$example") failed with exit code $res"
-      exit $res
-    fi
+  # if a compopts file exists, compile for each one
+  compopts_file="${example%.chpl}.compopts"
+  if [[ -f "$compopts_file" ]]; then
+    while IFS= read -r compopts || [[ -n "$compopts" ]]; do
+      # skip empty lines and comments
+      if [[ -z "$compopts" || "$compopts" =~ ^# ]]; then
+        continue
+      fi
+      build_and_run "$example" "$compopts"
+    done < "$compopts_file"
+  else
+    build_and_run "$example" ""
   fi
 done

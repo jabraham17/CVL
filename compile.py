@@ -52,6 +52,8 @@ class Project:
                 arch_compopts += (
                     " --set useSLEEF --set SLEEF_INSTALL='{}'".format(sleef_dir)
                 )
+                # FIXME: sleef static libs are not PIE, so disable PIE for now
+                arch_compopts += " --ccflags -no-pie --ldflags -no-pie"
             else:
                 install_script = (
                     self.workspace / "third-party" / "sleef" / "install.sh"

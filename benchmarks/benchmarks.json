@@ -32,7 +32,7 @@
           "name": "nbody-gcc",
           "files": ["nbody/nbody.c"],
           "language": "c-gcc",
-          "compopts": ["-O3", "-march=native"],
+          "compopts": ["-O3", "-march=native", "-lm"],
           "execopts": ["50000000"],
           "measure": ["RUNTIME"],
           "arch": ["x86_64"]
@@ -41,7 +41,7 @@
           "name": "nbody-clang",
           "files": ["nbody/nbody.c"],
           "language": "c-clang",
-          "compopts": ["-O3", "-march=native"],
+          "compopts": ["-O3", "-march=native", "-lm"],
           "execopts": ["50000000"],
           "measure": ["RUNTIME"],
           "arch": ["x86_64"]
@@ -50,7 +50,7 @@
           "name": "nbody-baseline-gcc",
           "files": ["nbody/nbody-baseline.c"],
           "language": "c-gcc",
-          "compopts": ["-O3", "-march=native"],
+          "compopts": ["-O3", "-march=native", "-lm"],
           "execopts": ["50000000"],
           "measure": ["RUNTIME"]
         },
@@ -58,7 +58,7 @@
           "name": "nbody-baseline-clang",
           "files": ["nbody/nbody-baseline.c"],
           "language": "c-clang",
-          "compopts": ["-O3", "-march=native"],
+          "compopts": ["-O3", "-march=native", "-lm"],
           "execopts": ["50000000"],
           "measure": ["RUNTIME"]
         },

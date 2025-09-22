@@ -17,7 +17,6 @@ module Vector {
   where isArray(container) {
     return container.rank == 1 &&
            container.isRectangular() &&
-           container._value.isDefaultRectangular() &&
            container.eltType == eltType;
   }
   private proc isValidContainer(container: ?, type eltType) param: bool
@@ -184,8 +183,12 @@ module Vector {
                                      param checkBounds = true): c_ptr(eltType)
     where isValidContainer(arr, eltType) {
       if checkBounds && boundsChecking {
-        // reuse array slice bounds checking
-        arr[idx.. by arr.domain.stride # numElts];
+        // access each element to trigger normal array bounds checking
+        // this is slow, but only happens with bounds checking
+        const slice = idx.. by arr.domain.stride # numElts;
+        local {
+          [i in slice] arr[i];
+        }
       }
       const ptr = c_addrOf(arr[idx]);
       return ptr;
@@ -199,8 +202,13 @@ module Vector {
     ): c_ptrConst(eltType)
     where isValidContainer(arr, eltType) {
       if checkBounds && boundsChecking {
-        // reuse array slice bounds checking
-        arr[idx.. by arr.domain.stride # numElts];
+        // access each element to trigger normal array bounds checking
+        // this is slow, but only happens with bounds checking
+        const D = arr.domain;
+        const slice = idx.. by arr.domain.stride # numElts;
+        local {
+          [i in slice] arr[i];
+        }
       }
       const ptr = c_addrOfConst(arr[idx]);
       return ptr;
@@ -466,7 +474,9 @@ module Vector {
     inline iter type vectors(param tag: iterKind,
                              container: ?,
                              param aligned: bool = false): this
-    where tag == iterKind.standalone && isValidContainer(container, eltType) {
+    where tag == iterKind.standalone &&
+          __primitive("resolves", indices(container).these(tag=tag)) &&
+          isValidContainer(container, eltType) {
       for i in indices(container).these(tag=tag) {
         yield this.load(container, i, aligned=aligned);
       }
@@ -474,7 +484,7 @@ module Vector {
     @chplcheck.ignore("UnusedFormal")
     inline iter type vectors(param tag: iterKind,
                              container: ?,
-                             param aligned: bool = false): this
+                             param aligned: bool = false)
     where tag == iterKind.leader && isValidContainer(container, eltType) {
       for followThis in indices(container).these(tag=tag) {
         yield followThis;
@@ -491,7 +501,7 @@ module Vector {
     }
 
     inline iter type vectorsRef(ref container: ?,
-                                param aligned: bool = false) ref : this
+                                param aligned: bool = false) ref : vectorRef(?)
     where isValidContainer(container, eltType) {
       for i in indices(container) {
         const addr = this._computeAddress(container, i);
@@ -501,8 +511,10 @@ module Vector {
     }
     inline iter type vectorsRef(param tag: iterKind,
                                 ref container: ?,
-                                param aligned: bool = false) ref : this
-    where tag == iterKind.standalone && isValidContainer(container, eltType) {
+                                param aligned: bool = false) ref : vectorRef(?)
+    where tag == iterKind.standalone &&
+          __primitive("resolves", indices(container).these(tag=tag)) &&
+          isValidContainer(container, eltType) {
       for i in indices(container).these(tag=tag) {
         const addr = this._computeAddress(container, i);
         var vr = new vectorRef(this, addr, aligned=aligned);
@@ -512,7 +524,7 @@ module Vector {
     @chplcheck.ignore("UnusedFormal")
     inline iter type vectorsRef(param tag: iterKind,
                                 ref container: ?,
-                                param aligned: bool = false) ref : this
+                                param aligned: bool = false)
       where tag == iterKind.leader && isValidContainer(container, eltType) {
       for followThis in indices(container).these(tag=tag) {
         yield followThis;
@@ -521,7 +533,7 @@ module Vector {
     inline iter type vectorsRef(param tag: iterKind,
                                 followThis,
                                 ref container: ?,
-                                param aligned: bool = false) ref : this
+                                param aligned: bool = false) ref : vectorRef(?)
     where tag == iterKind.follower && isValidContainer(container, eltType) {
       for i in indices(container).these(tag=tag, followThis=followThis) {
         const addr = this._computeAddress(container, i);

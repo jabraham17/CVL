@@ -157,6 +157,7 @@
           "language": "chpl",
           "compopts": ["--fast", "--no-ieee-float"],
           "execopts": ["--n=100_000"],
+          "execopts-small": ["--n=1000"],
           "measure": ["KMeans took ([0-9.]+)"]
         },
         {
@@ -165,6 +166,7 @@
           "language": "chpl",
           "compopts": ["--fast", "--no-ieee-float", "CVL_OPTIONS"],
           "execopts": ["--n=100_000"],
+          "execopts-small": ["--n=1000"],
           "measure": ["KMeans took ([0-9.]+)"]
         }
       ]
@@ -184,6 +186,7 @@
             "CVL_OPTIONS"
           ],
           "execopts": ["--n=10_000_000", "--timing"],
+          "execopts-small": ["--n=10_000", "--timing"],
           "measure": ["Time taken: ([0-9.]+)"]
         },
         {
@@ -197,6 +200,7 @@
             "CVL_OPTIONS"
           ],
           "execopts": ["--n=10_000_000", "--timing"],
+          "execopts-small": ["--n=10_000", "--timing"],
           "measure": ["Time taken: ([0-9.]+)"]
         }
       ]

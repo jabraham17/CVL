@@ -19,7 +19,7 @@ proc maskLoadTest(of, type eltType, param numElts: int) {
   of.withSerializer(vecSerializer).writeln("  arr: ", arr);
 
   var a: vector(eltType, numElts);
-  var mask = new vector(int(numBits(eltType)), numElts, 0);
+  var mask = new vector(int(numBits(eltType)), numElts, 0:int(8));
   mask = ~mask;
   mask.set(mask.numElts-1, 0:mask.eltType); // last lane is zero
   of.withSerializer(vecSerializer).writeln("  mask: ", toHex(mask,filled=true));

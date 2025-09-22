@@ -885,6 +885,24 @@ module IntrinX86_128 {
     inline proc type reinterpretCast(type toVecType, x: vecType) do
       return reinterpret(mmPrefix, x, toVecType);
 
+    @chplcheck.ignore("NoGenericReturn")
+    inline proc type typeCast(type toVecType, x: vecType) {
+      if canResolveTypeMethod(extensionType, "typeCast", x) then
+        return extensionType.typeCast(toVecType, x);
+      else {
+        param toSuffix = toVecType.typeSuffix;
+        param fromSuffix = vecType.typeSuffix;
+
+        if toVecType == vecType then
+          return x;
+
+        param name = mmPrefix + "_cvt" + fromSuffix + "_" + toSuffix;
+        pragma "fn synchronization free"
+        extern name proc cast(x: vecType): toVecType;
+        return cast(x);
+      }
+    }
+
   }
 
 

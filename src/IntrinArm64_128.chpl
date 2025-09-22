@@ -185,6 +185,10 @@ module IntrinArm64_128 {
   inline proc reinterpret(vec: ?, type t): t {
     param fromType = typeToSuffix(vec.type);
     param toType = typeToSuffix(t);
+
+    if fromType == toType then
+      return vec;
+
     param externName = "vreinterpretq_" + toType + "_" + fromType;
 
     pragma "fn synchronization free"
@@ -624,6 +628,10 @@ module IntrinArm64_128 {
       else {
         param fromType = typeToSuffix(x.type);
         param toType = typeToSuffix(toVecType);
+
+        if fromType == toType then
+          return x;
+
         param prefix = if isIntegralType(laneType) then "vcvtq" else "vcvtaq";
         param externName = prefix + "_" + toType + "_" + fromType;
 

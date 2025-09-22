@@ -969,6 +969,18 @@ module IntrinX86_128 {
     inline proc type deinterleaveUpper(x: vecType, y: vecType): vecType do
       return base.interleaveUpper(x, y);
 
+    inline proc type typeCast(type toVecType, x: vecType): toVecType {
+      import CVL;
+      if CVL.implementationWarnings then
+        compilerWarning("'typeCast' on real(64)" +
+                        " is implemented as scalar operations");
+      var res: toVecType;
+      for param i in 0..<base.numLanes {
+        res = base.insert(res, base.extract(x, i):toVecType, i);
+      }
+      return res;
+    }
+
     inline proc type rsqrt(x: vecType): vecType {
       pragma "fn synchronization free"
       extern proc _mm_cvtpd_ps(x: vecType): x8664_32x4r.vecType;
@@ -1280,6 +1292,18 @@ module IntrinX86_128 {
       return base.interleaveLower(x, y);
     inline proc type deinterleaveUpper(x: vecType, y: vecType): vecType do
       return base.interleaveUpper(x, y);
+
+    inline proc type typeCast(type toVecType, x: vecType): toVecType {
+      import CVL;
+      if CVL.implementationWarnings then
+        compilerWarning("'typeCast' on int(64)" +
+                        " is implemented as scalar operations");
+      var res: toVecType;
+      for param i in 0..<base.numLanes {
+        res = base.insert(res, base.extract(x, i):toVecType, i);
+      }
+      return res;
+    }
 
     inline proc type div(x: vecType, y: vecType): vecType {
       import CVL;

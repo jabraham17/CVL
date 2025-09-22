@@ -157,6 +157,7 @@ module Vector {
       type tupType = numElts * eltType;
       return this:tupType;
     }
+    proc type toTuple() type do return numElts * eltType;
 
     // TODO: set and init from tuple technically support coercion
     // but it doesn't work
@@ -465,6 +466,31 @@ module Vector {
         compilerError("cannot convert vector of type " + eltType:string +
                       " to vector of type " + t.eltType:string);
       }
+      // cannot type cast when the eltType is 8 or 16 bits
+      if numBits(eltType) == 8 || numBits(eltType) == 16 {
+        compilerError("cannot convert vector of type " + eltType:string +
+                      " to vector of type " + t.eltType:string +
+                      " because typeCast is not supported for" +
+                      " 8 or 16 bit types");
+      }
+
+      // eltType and t.eltType must be different (real vs int types)
+      if eltType == t.eltType {
+        compilerError("cannot convert vector of type " + eltType:string +
+                      " to vector of type " + t.eltType:string +
+                      " because they are the same type");
+      }
+      if isRealType(eltType) && isIntegralType(t.eltType) {
+        // ok
+      } else if isIntegralType(eltType) && isRealType(t.eltType) {
+        // ok
+      } else {
+        compilerError("cannot convert vector of type " + eltType:string +
+                      " to vector of type " + t.eltType:string);
+      }
+
+
+
       var result: t;
       result.data = Intrin.typeCast(eltType, numElts,
                                     t.eltType, t.numElts, this.data);

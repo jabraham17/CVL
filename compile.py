@@ -60,8 +60,8 @@ class Project:
                 if get_os() == "linux":
                     # FIXME: sleef static libs are not PIE, so disable for now
                     arch_compopts += (
-                        " --ccflags -Wno-unused-command-line-argument"
-                        + " --ccflags -no-pie --ldflags -no-pie"
+                        " --ccflags=-Wno-unused-command-line-argument"
+                        + " --ccflags=-no-pie --ldflags=-no-pie"
                     )
             else:
                 install_script = (

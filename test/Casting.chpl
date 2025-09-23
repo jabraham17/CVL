@@ -2,7 +2,7 @@ use UnitTest;
 use TestHelpers;
 use CVL;
 
-proc testEqual(vec1, vec2, epsilon=1e-6) throws {
+proc Test.testEqual(vec1, vec2, epsilon=1e-6) throws {
   for param i in 0..#vec1.numElts {
     if abs(vec1(i) - vec2(i)) > epsilon {
       throw new TestError.AssertionError(
@@ -15,7 +15,8 @@ proc testEqual(vec1, vec2, epsilon=1e-6) throws {
 
 const testData = [i in 1..#64] i;
 
-proc testTypeCastInner(type fromType, type toType) throws {
+proc testTypeCastInner(test: borrowed,
+                       type fromType, type toType) throws {
   for j in fromType.indices(testData.domain) {
     var fromTup: fromType.toTuple();
     var toTup: toType.toTuple();
@@ -27,11 +28,11 @@ proc testTypeCastInner(type fromType, type toType) throws {
     var fromVec = new fromType(fromTup);
     var toVec = fromVec.convert(toType);
 
-    testEqual(toVec, toTup);
+    test.testEqual(toVec, toTup);
 
     var backVec = toVec.convert(fromType);
-    testEqual(backVec, fromTup);
-    testEqual(backVec, fromVec);
+    test.testEqual(backVec, fromTup);
+    test.testEqual(backVec, fromVec);
   }
 }
 
@@ -44,7 +45,8 @@ proc transmute(x, type to): to {
   return dst;
 }
 
-proc testReinterpretCastInner(type fromType, type toType) throws {
+proc testReinterpretCastInner(test: borrowed,
+                              type fromType, type toType) throws {
   for j in fromType.indices(testData.domain) {
 
     var fromTup: fromType.toTuple();
@@ -57,53 +59,53 @@ proc testReinterpretCastInner(type fromType, type toType) throws {
     var fromVec = new fromType(fromTup);
     var toVec = fromVec.transmute(toType);
 
-    testEqual(toVec, toTup);
+    test.testEqual(toVec, toTup);
 
 
     var backVec = toVec.transmute(fromType);
-    testEqual(backVec, fromTup);
-    testEqual(backVec, fromVec);
+    test.testEqual(backVec, fromTup);
+    test.testEqual(backVec, fromVec);
   }
 }
 
 proc testTypeCast(test: borrowed Test) throws {
-  testTypeCastInner(vector(int(32), 4), vector(real(32), 4));
-  testTypeCastInner(vector(real(32), 4), vector(int(32), 4));
-  testTypeCastInner(vector(int(32), 8), vector(real(32), 8));
-  testTypeCastInner(vector(real(32), 8), vector(int(32), 8));
+  testTypeCastInner(test, vector(int(32), 4), vector(real(32), 4));
+  testTypeCastInner(test, vector(real(32), 4), vector(int(32), 4));
+  testTypeCastInner(test, vector(int(32), 8), vector(real(32), 8));
+  testTypeCastInner(test, vector(real(32), 8), vector(int(32), 8));
 
 
-  testTypeCastInner(vector(int(64), 2), vector(real(64), 2));
-  testTypeCastInner(vector(real(64), 2), vector(int(64), 2));
-  testTypeCastInner(vector(int(64), 4), vector(real(64), 4));
-  testTypeCastInner(vector(real(64), 4), vector(int(64), 4));
+  testTypeCastInner(test, vector(int(64), 2), vector(real(64), 2));
+  testTypeCastInner(test, vector(real(64), 2), vector(int(64), 2));
+  testTypeCastInner(test, vector(int(64), 4), vector(real(64), 4));
+  testTypeCastInner(test, vector(real(64), 4), vector(int(64), 4));
 }
 
 
 proc testReinterpretCast(test: borrowed Test) throws {
-  testReinterpretCastInner(vector(int(8), 16), vector(int(8), 16));
-  testReinterpretCastInner(vector(int(8), 32), vector(int(8), 32));
+  testReinterpretCastInner(test, vector(int(8), 16), vector(int(8), 16));
+  testReinterpretCastInner(test, vector(int(8), 32), vector(int(8), 32));
 
-  testReinterpretCastInner(vector(int(16), 8), vector(int(16), 8));
-  testReinterpretCastInner(vector(int(16), 16), vector(int(16), 16));
+  testReinterpretCastInner(test, vector(int(16), 8), vector(int(16), 8));
+  testReinterpretCastInner(test, vector(int(16), 16), vector(int(16), 16));
 
-  testReinterpretCastInner(vector(int(32), 4), vector(int(32), 4));
-  testReinterpretCastInner(vector(int(32), 4), vector(real(32), 4));
-  testReinterpretCastInner(vector(real(32), 4), vector(int(32), 4));
-  testReinterpretCastInner(vector(real(32), 4), vector(real(32), 4));
-  testReinterpretCastInner(vector(int(32), 8), vector(int(32), 8));
-  testReinterpretCastInner(vector(int(32), 8), vector(real(32), 8));
-  testReinterpretCastInner(vector(real(32), 8), vector(int(32), 8));
-  testReinterpretCastInner(vector(real(32), 8), vector(real(32), 8));
+  testReinterpretCastInner(test, vector(int(32), 4), vector(int(32), 4));
+  testReinterpretCastInner(test, vector(int(32), 4), vector(real(32), 4));
+  testReinterpretCastInner(test, vector(real(32), 4), vector(int(32), 4));
+  testReinterpretCastInner(test, vector(real(32), 4), vector(real(32), 4));
+  testReinterpretCastInner(test, vector(int(32), 8), vector(int(32), 8));
+  testReinterpretCastInner(test, vector(int(32), 8), vector(real(32), 8));
+  testReinterpretCastInner(test, vector(real(32), 8), vector(int(32), 8));
+  testReinterpretCastInner(test, vector(real(32), 8), vector(real(32), 8));
 
-  testReinterpretCastInner(vector(int(64), 2), vector(int(64), 2));
-  testReinterpretCastInner(vector(int(64), 2), vector(real(64), 2));
-  testReinterpretCastInner(vector(real(64), 2), vector(int(64), 2));
-  testReinterpretCastInner(vector(real(64), 2), vector(real(64), 2));
-  testReinterpretCastInner(vector(int(64), 4), vector(int(64), 4));
-  testReinterpretCastInner(vector(int(64), 4), vector(real(64), 4));
-  testReinterpretCastInner(vector(real(64), 4), vector(int(64), 4));
-  testReinterpretCastInner(vector(real(64), 4), vector(real(64), 4));
+  testReinterpretCastInner(test, vector(int(64), 2), vector(int(64), 2));
+  testReinterpretCastInner(test, vector(int(64), 2), vector(real(64), 2));
+  testReinterpretCastInner(test, vector(real(64), 2), vector(int(64), 2));
+  testReinterpretCastInner(test, vector(real(64), 2), vector(real(64), 2));
+  testReinterpretCastInner(test, vector(int(64), 4), vector(int(64), 4));
+  testReinterpretCastInner(test, vector(int(64), 4), vector(real(64), 4));
+  testReinterpretCastInner(test, vector(real(64), 4), vector(int(64), 4));
+  testReinterpretCastInner(test, vector(real(64), 4), vector(real(64), 4));
 
 }
 

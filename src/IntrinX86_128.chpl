@@ -187,8 +187,8 @@ module IntrinX86_128 {
     return func((...xs));
   }
 
-  @chplcheck.ignore("NoGenericReturn")
-  inline proc reinterpret(param mmPrefix: string, x: ?fromType, type toType) {
+  inline proc reinterpret(param mmPrefix: string,
+                          x: ?fromType, type toType): toType {
     param toSuffix =
       if toType.isIntegralVector then "si" + toType.numBits:string
                                     else toType.typeSuffix;
@@ -196,14 +196,16 @@ module IntrinX86_128 {
       if fromType.isIntegralVector then "si" + fromType.numBits:string
                                   else fromType.typeSuffix;
 
-    if toSuffix == fromSuffix then
-      return x;
-    else {
-      param name = mmPrefix + "_cast" + fromSuffix + "_" + toSuffix;
-      pragma "fn synchronization free"
-      extern name proc cast(x: fromType): toType;
-      return cast(x);
-    }
+    // FIXME: needing the special stubs for casts in C is an annoying workaround
+    // for Chapel's type system
+    param prefix = if toSuffix == fromSuffix
+                      then "chpl" + mmPrefix
+                      else mmPrefix;
+
+    param name = prefix + "_cast" + fromSuffix + "_" + toSuffix;
+    pragma "fn synchronization free"
+    extern name proc cast(x: fromType): toType;
+    return cast(x);
   }
 
   @chplcheck.ignore("CamelCaseRecords")
@@ -881,9 +883,25 @@ module IntrinX86_128 {
         return doSimpleOp(mmPrefix+"_fmsub_", x, y, z);
     }
 
-    @chplcheck.ignore("NoGenericReturn")
-    inline proc type reinterpretCast(type toVecType, x: vecType) do
+    inline proc type reinterpretCast(type toVecType, x: vecType): toVecType do
       return reinterpret(mmPrefix, x, toVecType);
+
+    inline proc type typeCast(type toVecType, x: vecType): toVecType {
+      if canResolveTypeMethod(extensionType, "typeCast") then
+        return extensionType.typeCast(toVecType, x);
+      else {
+        param toSuffix = toVecType.typeSuffix;
+        param fromSuffix = vecType.typeSuffix;
+
+        if toVecType == vecType then
+          return x;
+
+        param name = mmPrefix + "_cvt" + fromSuffix + "_" + toSuffix;
+        pragma "fn synchronization free"
+        extern name proc cast(x: vecType): toVecType;
+        return cast(x);
+      }
+    }
 
   }
 
@@ -950,6 +968,20 @@ module IntrinX86_128 {
       return base.interleaveLower(x, y);
     inline proc type deinterleaveUpper(x: vecType, y: vecType): vecType do
       return base.interleaveUpper(x, y);
+
+    inline proc type typeCast() {} // dummy for canResolveTypeMethod
+    inline proc type typeCast(type toVecType, x: vecType): toVecType {
+      import CVL;
+      if CVL.implementationWarnings then
+        compilerWarning("'typeCast' on real(64)" +
+                        " is implemented as scalar operations");
+      var res: toVecType;
+      type toImpl = toVecType.implType;
+      for param i in 0..<base.numLanes {
+        res = toImpl.insert(res, base.extract(x, i):toImpl.laneType, i);
+      }
+      return res;
+    }
 
     inline proc type rsqrt(x: vecType): vecType {
       pragma "fn synchronization free"
@@ -1262,6 +1294,20 @@ module IntrinX86_128 {
       return base.interleaveLower(x, y);
     inline proc type deinterleaveUpper(x: vecType, y: vecType): vecType do
       return base.interleaveUpper(x, y);
+
+    inline proc type typeCast() {} // dummy for canResolveTypeMethod
+    inline proc type typeCast(type toVecType, x: vecType): toVecType {
+      import CVL;
+      if CVL.implementationWarnings then
+        compilerWarning("'typeCast' on int(64)" +
+                        " is implemented as scalar operations");
+      var res: toVecType;
+      type toImpl = toVecType.implType;
+      for param i in 0..<base.numLanes {
+        res = toImpl.insert(res, base.extract(x, i):toImpl.laneType, i);
+      }
+      return res;
+    }
 
     inline proc type div(x: vecType, y: vecType): vecType {
       import CVL;

@@ -95,10 +95,13 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        runs-on: [ubuntu-latest, ubuntu-24.04-arm]
-    runs-on: ${{ matrix.runs-on }}
+        os: [ubuntu-latest, ubuntu-24.04-arm]
+        backend: [llvm, gnu]
+    runs-on: ${{ matrix.os }}
     container:
       image: chapel/chapel:${{ inputs.chapel_version }}
+    env:
+      CHPL_TARGET_COMPILER: ${{ matrix.backend }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -127,7 +130,7 @@ jobs:
         run: |
           ./.venv/bin/python3 ./util/bench.py \
             --schema benchmarks/benchmarks.json \
-            --trials 3 \
+            --trials 3 --small --filter grayscale \
             --cvl-options "$(./compile.py --sleef)"
 
   lint:

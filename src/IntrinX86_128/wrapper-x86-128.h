@@ -8,6 +8,10 @@
 #include "wrapper-x86-128-real64.h"
 
 
+static inline __m128i chpl_mm_castsi128_si128(__m128i x) { return x; }
+static inline __m128  chpl_mm_castps_ps(__m128 x) { return x; }
+static inline __m128d chpl_mm_castpd_pd(__m128d x) { return x; }
+
 // workarounds for Chapel C codegen bugs, see IntrinX86_128.chpl
 typedef __m128  vec32x4r;
 typedef __m128d vec64x2r;

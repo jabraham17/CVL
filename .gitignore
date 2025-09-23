@@ -9,3 +9,4 @@ __pycache__/
 *.DS_Store
 test.log
 .tox
+.MAX_LOCALES

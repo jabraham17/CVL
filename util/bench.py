@@ -53,6 +53,9 @@ class BenchmarkVersion(BaseModel):
     language: Language
     compopts: List[str] = Field(default_factory=list)
     execopts: List[str] = Field(default_factory=list)
+    execopts_small: Optional[List[str]] = Field(
+        alias="execopts-small", default=None
+    )
     measure: List[str] = Field(default_factory=list)
     arch: List[str] = Field(default_factory=list)
 
@@ -98,7 +101,10 @@ class BenchmarkRun:
         self.measurements = {}
 
     def run(
-        self, scratch: Optional[Path] = None, trials: Optional[int] = None
+        self,
+        scratch: Optional[Path] = None,
+        trials: Optional[int] = None,
+        small: bool = False,
     ) -> bool:
         self.measurements = {}
         measure_regexes = {}
@@ -111,7 +117,11 @@ class BenchmarkRun:
 
         files = [str(self.benchmark_dir / f) for f in self.version.files]
         compopts = self.version.compopts
-        execopts = self.version.execopts
+        execopts = (
+            self.version.execopts
+            if not small or self.version.execopts_small is None
+            else self.version.execopts_small
+        )
 
         if scratch is None:
             executable_dir = Path(tempfile.mkdtemp())
@@ -226,6 +236,12 @@ def parse_args() -> argparse.Namespace:
         type=int,
         default=None,
         help="Override the default trials for each benchmarks",
+    )
+    parser.add_argument(
+        "--small",
+        action="store_true",
+        default=False,
+        help="Use small input sizes",
     )
     return parser.parse_args()
 
@@ -353,7 +369,9 @@ def main():
     results = {}
     for name, runner in runners.items():
         print(f"Running benchmark: {name}")
-        if not runner.run(scratch=args.scratch, trials=args.trials):
+        if not runner.run(
+            scratch=args.scratch, trials=args.trials, small=args.small
+        ):
             return 1  # error
         results[name] = list(
             [runner.stats(measurement) for measurement in runner.measurements]

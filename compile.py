@@ -23,6 +23,11 @@ def get_arch():
     return machine
 
 
+def get_os():
+    platform = os.uname()[0]
+    return platform.lower()
+
+
 class Project:
     def __init__(self, workspace):
         self.workspace = workspace
@@ -52,8 +57,12 @@ class Project:
                 arch_compopts += (
                     " --set useSLEEF --set SLEEF_INSTALL='{}'".format(sleef_dir)
                 )
-                # FIXME: sleef static libs are not PIE, so disable PIE for now
-                arch_compopts += " --ccflags -no-pie --ldflags -no-pie"
+                if get_os() == "linux":
+                    # FIXME: sleef static libs are not PIE, so disable for now
+                    arch_compopts += (
+                        " --ccflags=-Wno-unused-command-line-argument"
+                        + " --ccflags=-no-pie --ldflags=-no-pie"
+                    )
             else:
                 install_script = (
                     self.workspace / "third-party" / "sleef" / "install.sh"

@@ -279,6 +279,20 @@ module IntrinX86_256 {
     inline proc type interleaveUpper(x: vecType, y: vecType): vecType do
       return doSimpleOp("interleaveUpper_256", x, y);
 
+    inline proc type typeCast() {} // dummy for canResolveTypeMethod
+    inline proc type typeCast(type toVecType, x: vecType): toVecType {
+      import CVL;
+      if CVL.implementationWarnings then
+        compilerWarning("'typeCast' on real(64)" +
+                        " is implemented as scalar operations");
+      var res: toVecType;
+      type toImpl = toVecType.implType;
+      for param i in 0..<base.numLanes {
+        res = toImpl.insert(res, base.extract(x, i):toImpl.laneType, i);
+      }
+      return res;
+    }
+
     inline proc type rsqrt(x: vecType): vecType {
       pragma "fn synchronization free"
       extern proc _mm256_cvtpd_ps(x: vecType): x8664_32x4r.vecType;
@@ -591,6 +605,20 @@ module IntrinX86_256 {
       return doSimpleOp("interleaveLower_256", x, y);
     inline proc type interleaveUpper(x: vecType, y: vecType): vecType do
       return doSimpleOp("interleaveUpper_256", x, y);
+
+    inline proc type typeCast() {} // dummy for canResolveTypeMethod
+    inline proc type typeCast(type toVecType, x: vecType): toVecType {
+      import CVL;
+      if CVL.implementationWarnings then
+        compilerWarning("'typeCast' on int(64)" +
+                        " is implemented as scalar operations");
+      var res: toVecType;
+      type toImpl = toVecType.implType;
+      for param i in 0..<base.numLanes {
+        res = toImpl.insert(res, base.extract(x, i):toImpl.laneType, i);
+      }
+      return res;
+    }
 
     inline proc type splat(x: laneType): vecType {
       pragma "fn synchronization free"

@@ -63,14 +63,16 @@ proc convertToGrayscale(
   ref res: [] uint(8)
 ) where benchmark == Benchmark.VectorFloat {
 
-  const rMask = (new vector(int(32), 8, 0xFF:int(32))),
-        gMask = (new vector(int(32), 8, 0xFF00:int(32))),
-        bMask = (new vector(int(32), 8, 0xFF0000:int(32)));
+  const rMask = new vector(int(32), 8, 0xFF:int(32)),
+        gMask = new vector(int(32), 8, 0xFF00:int(32)),
+        bMask = new vector(int(32), 8, 0xFF0000:int(32));
   const floatVecConstants = (
     new vector(real(32), 8, floatConstants[0]),
     new vector(real(32), 8, floatConstants[1] / 256.0:real(32)),
     new vector(real(32), 8, floatConstants[2] / 65536.0:real(32)));
-  inline proc toGrayscale(v) {
+  // TODO: why can't I access the outer var  rMask, gMask, bMask without getting
+  // a seg fault? But only on x86?
+  inline proc toGrayscale(v, rMask, gMask, bMask, floatVecConstants) {
     const r = (v & rMask).convert(vector(real(32), 8)),
           g = (v & gMask).convert(vector(real(32), 8)),
           b = (v & bMask).convert(vector(real(32), 8));
@@ -110,16 +112,16 @@ proc convertToGrayscale(
     const v2 = vector(int(32), 8).load(img1dPtr, i+16);
     const v3 = vector(int(32), 8).load(img1dPtr, i+24);
 
-    const g0 = toGrayscale(v0);
-    const g1 = toGrayscale(v1);
-    const g2 = toGrayscale(v2);
-    const g3 = toGrayscale(v3);
+    const g0 = toGrayscale(v0, rMask, gMask, bMask, floatVecConstants);
+    const g1 = toGrayscale(v1, rMask, gMask, bMask, floatVecConstants);
+    const g2 = toGrayscale(v2, rMask, gMask, bMask, floatVecConstants);
+    const g3 = toGrayscale(v3, rMask, gMask, bMask, floatVecConstants);
 
     const t0 = packTo16(g0, g1);
     const t1 = packTo16(g2, g3);
 
-    const res = packTo8(t0, t1);
-    res.store(res1dPtr, i);
+    const r = packTo8(t0, t1);
+    r.store(res1dPtr, i);
   }
   for i in iters*chunk..<img.size {
     const pixel = img1D[i];
@@ -136,18 +138,20 @@ proc convertToGrayscale(
   ref res: [] uint(8)
 ) where benchmark == Benchmark.VectorInt {
 
-  const mask256 = (new vector(int(16), 16, 0xFF:int(16)));
-  const sixteen = (new vector(int(8), 32, 16:int(8)));
+  const mask256 = new vector(int(16), 16, 0xFF:int(16));
+  const sixteen = new vector(int(8), 32, 16:int(8));
 
-  inline proc getPackedRed(v1, v2) {
+  // TODO: why can't I access the outer vectors without getting a seg fault?
+  // But only on x86?
+  inline proc getPackedRed(v1, v2, mask256) {
     const t0 = v1.transmute(vector(int(16), 16)),
           t1 = v2.transmute(vector(int(16), 16));
     return deinterleaveLower(t0, t1) & mask256;
   }
-  inline proc getPackedGreen(v1, v2) {
-    return getPackedRed(v1 >> 8, v2 >> 8) & mask256;
+  inline proc getPackedGreen(v1, v2, mask256) {
+    return getPackedRed(v1 >> 8, v2 >> 8, mask256) & mask256;
   }
-  inline proc getPackedBlue(v1, v2) {
+  inline proc getPackedBlue(v1, v2, mask256) {
   const t0 = v1.transmute(vector(int(16), 16)),
         t1 = v2.transmute(vector(int(16), 16));
     return deinterleaveUpper(t0, t1) & mask256;
@@ -160,23 +164,23 @@ proc convertToGrayscale(
   }
 
   const intConstants1Vec = (
-    intConstants1[0]:int(16),
-    intConstants1[1]:int(16),
-    intConstants1[2]:int(16)
+    new vector(int(16), 16, intConstants1[0]:int(16)),
+    new vector(int(16), 16, intConstants1[1]:int(16)),
+    new vector(int(16), 16, intConstants1[2]:int(16))
   );
   const intConstants2Vec = (
-    intConstants2[0]:int(16),
-    intConstants2[1]:int(16),
-    intConstants2[2]:int(16)
+    new vector(int(16), 16, intConstants2[0]:int(16)),
+    new vector(int(16), 16, intConstants2[1]:int(16)),
+    new vector(int(16), 16, intConstants2[2]:int(16))
   );
 
-  inline proc inner(img1dPtr, i) {
+  inline proc inner(img1dPtr, i, mask256, intConstants1Vec, intConstants2Vec) {
     const v0 = vector(int(32), 8).load(img1dPtr, i);
     const v1 = vector(int(32), 8).load(img1dPtr, i+8);
 
-    const r = getPackedRed(v0, v1);
-    const g = getPackedGreen(v0, v1);
-    const b = getPackedBlue(v0, v1);
+    const r = getPackedRed(v0, v1, mask256);
+    const g = getPackedGreen(v0, v1, mask256);
+    const b = getPackedBlue(v0, v1, mask256);
 
     const rS = intConstants1Vec[0] * r + intConstants2Vec[0],
           gS = intConstants1Vec[1] * g + intConstants2Vec[1],
@@ -197,10 +201,12 @@ proc convertToGrayscale(
   var res1dPtr = c_ptrTo(res1D):c_ptr(int(8));
 
   forall i in 0.. by chunk # iters {
-    const sum1 = inner(img1dPtr, i);
-    const sum2 = inner(img1dPtr, i+16);
-    const res = packTo8(sum1, sum2) + sixteen;
-    res.store(res1dPtr, i);
+    const sum1 = inner(img1dPtr, i,
+                       mask256, intConstants1Vec, intConstants2Vec);
+    const sum2 = inner(img1dPtr, i+16,
+                       mask256, intConstants1Vec, intConstants2Vec);
+    const r = packTo8(sum1, sum2) + sixteen;
+    r.store(res1dPtr, i);
   }
 
   for i in iters*chunk..<img.size {

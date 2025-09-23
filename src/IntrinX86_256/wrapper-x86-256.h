@@ -21,9 +21,9 @@ static inline __m256i insert128x2i1(__m256i x, __m128i y) {
   return _mm256_insertf128_si256(x, y, 1);
 }
 
-static inline __m128i chpl_mm256_castsi256_si256(__m128i x) { return x; }
-static inline __m128  chpl_mm256_castps_ps(__m128 x) { return x; }
-static inline __m128d chpl_mm266_castpd_pd(__m128d x) { return x; }
+static inline __m256i chpl_mm256_castsi256_si256(__m256i x) { return x; }
+static inline __m256  chpl_mm256_castps_ps(__m256 x) { return x; }
+static inline __m256d chpl_mm266_castpd_pd(__m256d x) { return x; }
 
 
 // workarounds for Chapel C codegen bugs, see IntrinX86_256.chpl

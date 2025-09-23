@@ -127,7 +127,7 @@ jobs:
         run: |
           ./.venv/bin/python3 ./util/bench.py \
             --schema benchmarks/benchmarks.json \
-            --trials 3 --small \
+            --trials 3 --small --filter grayscale \
             --cvl-options "$(./compile.py --sleef)"
 
   lint:

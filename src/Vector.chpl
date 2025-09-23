@@ -442,19 +442,18 @@ module Vector {
 
 
 
-    @chplcheck.ignore("NoGenericReturn")
-    inline proc transmute(type t) where isSubtype(t, vector) &&
+    inline proc transmute(type t): t where isSubtype(t, vector) &&
                                            numBits(t) == numBits(this.type) {
       var result: t;
       result.data = Intrin.reinterpretCast(eltType, numElts,
-                                          t.eltType, t.numElts, this.data);
+                                           t.eltType, t.numElts, this.data);
       return result;
     }
-    inline proc transmute(type t) where !isSubtype(t, vector) {
+    inline proc transmute(type t): t where !isSubtype(t, vector) {
       compilerError("cannot transmute to non-vector type: " + t:string);
     }
-    inline proc transmute(type t) where isSubtype(t, vector) &&
-                                      numBits(t) != numBits(this.type) {
+    inline proc transmute(type t): t where isSubtype(t, vector) &&
+                                           numBits(t) != numBits(this.type) {
       compilerError("cannot transmute vector of length " +
                     numBits(this.type):string +
                     " to vector of length " + numBits(t):string);

@@ -10,7 +10,7 @@ import statistics
 import sys
 from pathlib import Path
 from typing import List, Dict, Optional, Self
-from pydantic import BaseModel, Field, ConfigDict
+from pydantic import BaseModel, Field
 import tempfile
 import re
 import os
@@ -53,10 +53,11 @@ class BenchmarkVersion(BaseModel):
     language: Language
     compopts: List[str] = Field(default_factory=list)
     execopts: List[str] = Field(default_factory=list)
-    execopts_small: Optional[List[str]] = Field(alias='execopts-small', default=None)
+    execopts_small: Optional[List[str]] = Field(
+        alias="execopts-small", default=None
+    )
     measure: List[str] = Field(default_factory=list)
     arch: List[str] = Field(default_factory=list)
-
 
     def resolve_compopts(self, cvl_options: Optional[str] = None):
         # if CVL_OPTIONS in the compopts, remove it and add the CVL_OPTIONS
@@ -368,7 +369,9 @@ def main():
     results = {}
     for name, runner in runners.items():
         print(f"Running benchmark: {name}")
-        if not runner.run(scratch=args.scratch, trials=args.trials, small=args.small):
+        if not runner.run(
+            scratch=args.scratch, trials=args.trials, small=args.small
+        ):
             return 1  # error
         results[name] = list(
             [runner.stats(measurement) for measurement in runner.measurements]

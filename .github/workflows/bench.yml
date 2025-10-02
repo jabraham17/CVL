@@ -50,4 +50,5 @@ jobs:
           ./.venv/bin/python3 ./util/bench.py \
             --schema benchmarks/benchmarks.json \
             --trials 3 --small \
-            --cvl-options "$(./compile.py --sleef)"
+            --cvl-options "$(./compile.py --sleef)" \
+            )

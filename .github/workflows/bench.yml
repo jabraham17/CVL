@@ -15,15 +15,17 @@ jobs:
       fail-fast: true
       matrix:
         os: [ubuntu-latest, ubuntu-24.04-arm]
-        backend: [llvm, gnu]
+        backend: [llvm, clang]
     runs-on: ${{ matrix.os }}
-    container:
-      image: chapel/chapel:${{ inputs.chapel_version }}
-    env:
-      CHPL_TARGET_COMPILER: ${{ matrix.backend }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Install Chapel
+        uses: jabraham17/setup-chpl@v1
+        with:
+          version: ${{ inputs.chapel_version }}
+          backend: ${{ matrix.backend }}
+          comm: none
       - name: Install Python Dependencies
         run: |
           python3 -m venv .venv

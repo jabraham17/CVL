@@ -90,48 +90,10 @@ jobs:
         run: |
           ./util/examples.sh
 
-  # this just runs the benchmarks to make sure they compile and run
   test-benchmarks:
-    strategy:
-      fail-fast: true
-      matrix:
-        os: [ubuntu-latest, ubuntu-24.04-arm]
-        backend: [llvm, gnu]
-    runs-on: ${{ matrix.os }}
-    container:
-      image: chapel/chapel:${{ inputs.chapel_version }}
-    env:
-      CHPL_TARGET_COMPILER: ${{ matrix.backend }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Install Python Dependencies
-        run: |
-          python3 -m venv .venv
-          ./.venv/bin/python3 -m pip install --upgrade pip
-          ./.venv/bin/python3 -m pip install pydantic
-      - name: Setup fortran
-        # fortran-lang/setup-fortran has some bugs when running in a container
-        # and bad usage of sudo, so use jabraham17/setup-fortran@fix-cd until
-        # those are fixed
-        uses: jabraham17/setup-fortran@fix-cd
-        with:
-          compiler: gcc
-          version: latest
-      - name: Setup Rust
-        uses: actions-rs/toolchain@v1
-        with:
-          profile: minimal
-          toolchain: stable
-      - name: Build CVL Dependencies
-        run: |
-          ./third-party/sleef/install.sh
-      - name: Run Benchmarks
-        run: |
-          ./.venv/bin/python3 ./util/bench.py \
-            --schema benchmarks/benchmarks.json \
-            --trials 3 --small \
-            --cvl-options "$(./compile.py --sleef)"
+    uses: ./.github/workflows/bench.yml
+    with:
+      chapel_version: ${{ inputs.chapel_version }}
 
   lint:
     runs-on: ubuntu-latest

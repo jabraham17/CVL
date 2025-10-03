@@ -25,7 +25,6 @@ jobs:
         with:
           version: ${{ inputs.chapel_version }}
           backend: ${{ matrix.backend }}
-          comm: none
       - name: Install Python Dependencies
         run: |
           python3 -m venv .venv

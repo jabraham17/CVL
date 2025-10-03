@@ -15,7 +15,7 @@ jobs:
       fail-fast: true
       matrix:
         os: [ubuntu-latest, ubuntu-24.04-arm]
-        backend: [llvm, clang]
+        backend: [llvm]
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout

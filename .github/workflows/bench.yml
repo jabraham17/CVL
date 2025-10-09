@@ -11,6 +11,8 @@ jobs:
 
   # this just runs the benchmarks to make sure they compile and run
   test-benchmarks:
+    # TODO: setup-chpl doesn't work with nightly yet
+    if: ${{ inputs.chapel_version != 'nightly' }}
     strategy:
       fail-fast: true
       matrix:

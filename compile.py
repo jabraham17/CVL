@@ -98,6 +98,10 @@ class Project:
     def get_tests(self):
         tests = self.data["brick"].get("tests", "")
         return tests
+    
+    def get_examples(self):
+        examples = self.data["examples"].get("examples", [])
+        return "\n".join(examples)
 
     def generate_ops(self):
         sys.path.insert(0, str(self.workspace / "util"))
@@ -168,6 +172,13 @@ def main():
         default=False,
         action="store_true",
         help="Use the Sleef library for vector math operations",
+    )
+    a.add_argument(
+        "--examples",
+        const=project.get_examples,
+        dest="action",
+        action="store_const",
+        default=project.get_compopts,
     )
     args = a.parse_args()
     project.sleef = args.sleef

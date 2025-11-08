@@ -98,7 +98,7 @@ class Project:
     def get_tests(self):
         tests = self.data["brick"].get("tests", "")
         return tests
-    
+
     def get_examples(self):
         examples = self.data["examples"].get("examples", [])
         return "\n".join(examples)

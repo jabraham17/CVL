@@ -22,8 +22,8 @@ record pointsList {
   }
 }
 
-inline proc distance(const ref p1, i1: int, const ref p2, i2: int): p1.T {
-  return sqrt((p1.x[i1] - p2.x[i2])**2 + (p1.y[i1] - p2.y[i2])**2);
+inline proc distance(const ref p1, i1: int, p2X, p2Y): p1.T {
+  return sqrt((p1.x[i1] - p2X)**2 + (p1.y[i1] - p2Y)**2);
 }
 
 proc readCSV(filename: string, type eltType) {
@@ -62,8 +62,10 @@ proc kmeans(ref points: pointsList(?)) {
   for 1..iterations {
 
     for cIdx in centroids.D {
+      const cX = centroids.x[cIdx],
+            cY = centroids.y[cIdx];
       forall pIdx in points.D  with (ref points) {
-        const dist = distance(points, pIdx, centroids, cIdx);
+        const dist = distance(points, pIdx, cX, cY);
         if dist < points.minDist[pIdx] {
           points.minDist[pIdx] = dist;
           points.clusterId[pIdx] = cIdx;

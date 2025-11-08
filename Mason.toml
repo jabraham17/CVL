@@ -37,7 +37,7 @@ tests = [
 
 # TODO: mason libraries don't let you `mason run` examples!
 [examples]
-examples = [ "SAXPY.chpl" ]
+examples = [ "stream.chpl", "streamExplicitVector.chpl", "streamVectorIterators.chpl" ]
 
 [dependencies]
 

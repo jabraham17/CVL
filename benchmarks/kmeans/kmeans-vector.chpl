@@ -74,9 +74,9 @@ proc kmeans(ref points: pointsList(?)) {
 
     for cIdx in centroids.D {
       const cIdxVec = new VT_IDX(cIdx);
-      const cVecX = new VT(centroids.x[cIdx]);
-      const cVecY = new VT(centroids.y[cIdx]);
-      forall pIdx in VT.indices(points.D)  with (ref points) {
+      const cVecX = new VT(centroids.x[cIdx]),
+            cVecY = new VT(centroids.y[cIdx]);
+      forall pIdx in VT.indices(points.D) with (ref points) {
         const dist = distance(VT, points, pIdx, cVecX, cVecY);
         const minDist = VT.load(points.minDist, pIdx);
         const oldClusterId = VT_IDX.load(points.clusterId, pIdx);

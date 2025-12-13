@@ -45,12 +45,12 @@ jobs:
         with:
           profile: minimal
           toolchain: stable
-      - name: Build CVL Dependencies
+      - name: Build CVL
         run: |
-          ./third-party/sleef/install.sh
+          mason build
       - name: Run Benchmarks
         run: |
           ./.venv/bin/python3 ./util/bench.py \
             --schema benchmarks/benchmarks.json \
             --trials 3 --small \
-            --cvl-options "$(./compile.py --sleef)"
+            --cvl-options "$(./compile.py)"

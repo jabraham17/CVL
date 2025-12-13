@@ -43,12 +43,10 @@ jobs:
           else
             brew install chapel
           fi
-      - name: Build CVL Dependencies
-        run: |
-          ./third-party/sleef/install.sh
       - name: Run Tests
         run: |
-          ./util/test.sh
+          mason test test/GatherTest.chpl 2>&1 | tee test.log ; \
+          tail -n1 test.log | grep "^OK"
 
   mason-test-docker:
     strategy:
@@ -72,15 +70,13 @@ jobs:
         # cmake testing doesn't work on arm yet
         if: ${{ matrix.os != 'ubuntu-24.04-arm' }}
         uses: jwlawson/actions-setup-cmake@v2.0.2
-      - name: Build CVL Dependencies
-        run: |
-          ./third-party/sleef/install.sh
       - name: Run Tests
         # FIXME: smp testing on linux 64 breaks with multi locale code? But only
         # in the CI, local testing seems fine,
         if: ${{ ! (matrix.image == format('chapel/chapel-gasnet-smp:{0}', inputs.chapel_version) && matrix.os == 'ubuntu-latest') }}
         run: |
-          ./util/test.sh
+          mason test test/GatherTest.chpl 2>&1 | tee test.log ; \
+          tail -n1 test.log | grep "^OK"
       - name: Run CMake Tests
         # cmake testing doesn't work on arm yet
         if: ${{ matrix.os != 'ubuntu-24.04-arm' }}

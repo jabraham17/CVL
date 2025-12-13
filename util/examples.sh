@@ -2,7 +2,7 @@
 
 PROJECT_DIR=$(cd $(dirname $0); cd ..; pwd)
 
-CVL_OPTIONS=$($PROJECT_DIR/compile.py --sleef)
+CVL_OPTIONS=$($PROJECT_DIR/compile.py)
 if [[ $? -ne 0 ]]; then
   echo "Error: Failed to determine CVL options."
   exit 1

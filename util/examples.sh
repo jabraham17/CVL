@@ -14,7 +14,7 @@ function build_and_run() {
 
   local basename=$(basename "$chpl_file" .chpl)
 
-  echo "Compiling: $basename with options: $compopts"
+  echo "Compiling: $basename with options: '$compopts'"
   chpl $chpl_file -o "$PROJECT_DIR/target/example/$basename" $CVL_OPTIONS
   if [[ $? -ne 0 ]]; then
     echo "Error: Compilation of $basename failed."
@@ -32,18 +32,21 @@ function build_and_run() {
 
 
 mkdir -p "$PROJECT_DIR/target/example"
-for example in "$PROJECT_DIR"/example/*.chpl; do
+EXAMPLES=$($PROJECT_DIR/compile.py --examples)
+
+for example in $EXAMPLES; do
+  file_path="$PROJECT_DIR/example/$example"
   # if a compopts file exists, compile for each one
-  compopts_file="${example%.chpl}.compopts"
+  compopts_file="${file_path%.chpl}.compopts"
   if [[ -f "$compopts_file" ]]; then
     while IFS= read -r compopts || [[ -n "$compopts" ]]; do
       # skip empty lines and comments
       if [[ -z "$compopts" || "$compopts" =~ ^# ]]; then
         continue
       fi
-      build_and_run "$example" "$compopts"
+      build_and_run "$file_path" "$compopts"
     done < "$compopts_file"
   else
-    build_and_run "$example" ""
+    build_and_run "$file_path" ""
   fi
 done

@@ -36,7 +36,8 @@ proc main(args: [] string) {
       //  https://github.com/chapel-lang/chapel/issues/15497
       const execname = args[0].stripSuffix("_real");
       var p = spawn([execname, "-nl1", "--testcase="+i:string],
-          stdout=pipeStyle.pipe, stderr=pipeStyle.pipe);
+          stdout=pipeStyle.pipe, stderr=pipeStyle.pipe,
+          env=["CHPL_RT_UNWIND=0"]);
         // stdout=pipeStyle.pipe, stderr=pipeStyle.stdout);
       p.wait();
       var stdout, stderr: string;

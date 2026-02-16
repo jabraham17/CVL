@@ -1,13 +1,15 @@
 [brick]
 name="CVL"
-version="0.1.0"
-author="Jade Abraham"
-chplVersion="2.7.0"
-license="Apache-2.0"
-copyright="2025, Jade Abraham"
 type="library"
+version="0.1.0"
+chplVersion="2.7.0"
+
+authors=["Jade Abraham"]
+copyrightYear="2025"
+license="Apache-2.0"
+
 compopts="--using-attribute-toolname=lint --no-overload-sets-checks --ccflags=-Wno-strict-prototypes"
-docopts="--using-attribute-toolname=lint"
+docopts="--using-attribute-toolname=lint --index=doc/index.rst -o build/doc"
 
 tests = [
   "ArrTest.chpl",
@@ -43,6 +45,5 @@ examples = [ "stream.chpl", "streamExplicitVector.chpl", "streamVectorIterators.
 module-dir = ["src"]
 
 [tool.chplcheck]
-file = ["src/**/*.chpl", "test/**/*.chpl"]
 add-rules = ["lint/rules.py"]
 disable-rule = ["IncorrectIndentation"]

@@ -177,13 +177,10 @@
       "versions": [
         {
           "name": "baseline",
-          "files": ["trig/trigBench.chpl"],
-          "language": "chpl",
+          "directory": "trig",
+          "language": "mason",
           "compopts": [
-            "--fast",
-            "--no-ieee-float",
-            "-svectorize=false",
-            "CVL_OPTIONS"
+            "-svectorize=false"
           ],
           "execopts": ["--n=10_000_000", "--timing"],
           "execopts-small": ["--n=10_000", "--timing"],
@@ -191,13 +188,10 @@
         },
         {
           "name": "vectorized",
-          "files": ["trig/trigBench.chpl"],
-          "language": "chpl",
+          "directory": "trig",
+          "language": "mason",
           "compopts": [
-            "--fast",
-            "--no-ieee-float",
-            "-svectorize=true",
-            "CVL_OPTIONS"
+            "-svectorize=true"
           ],
           "execopts": ["--n=10_000_000", "--timing"],
           "execopts-small": ["--n=10_000", "--timing"],

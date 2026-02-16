@@ -1,1 +1,3 @@
-output.png
+target/
+Mason.lock
+doc/

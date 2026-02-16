@@ -50,7 +50,7 @@ jobs:
           mason build
       - name: Run Benchmarks
         run: |
+          source util/localRegistry.sh
           ./.venv/bin/python3 ./util/bench.py \
             --schema benchmarks/benchmarks.json \
-            --trials 3 --small \
-            --cvl-options "$(./compile.py)"
+            --trials 3 --small

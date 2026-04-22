@@ -17,6 +17,7 @@ import os
 from contextlib import contextmanager
 import shutil
 
+
 @contextmanager
 def cd(path):
     """Context manager for changing the current working directory"""
@@ -130,7 +131,11 @@ class BenchmarkRun:
                 self.measurements[measure] = []
 
         files = [str(self.benchmark_dir / f) for f in self.version.files]
-        directory = self.benchmark_dir / self.version.directory if self.version.directory else self.benchmark_dir
+        directory = (
+            self.benchmark_dir / self.version.directory
+            if self.version.directory
+            else self.benchmark_dir
+        )
         compopts = self.version.compopts
         execopts = (
             self.version.execopts
@@ -161,22 +166,33 @@ class BenchmarkRun:
         try:
             with cd(directory):
                 subprocess.run(
-                    compile_cmd, check=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                    compile_cmd,
+                    check=True,
+                    text=True,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.STDOUT,
                 )
         except subprocess.CalledProcessError as e:
             print(f"Compilation failed: {e.stdout}", file=sys.stderr)
             return False
 
-        # move the build artifact to the executable path if it's not already there (e.g. for mason)
+        # move the build artifact to the executable path if it's not already
+        # there (e.g. for mason)
         if self.version.language == Language.MASON:
             mason_exec_name = directory.name
             mason_exec_path = directory / "target" / "release" / mason_exec_name
             shutil.move(mason_exec_path, executable_path)
             if mason_exec_path.with_name(mason_exec_name + "_real").exists():
-                shutil.move(mason_exec_path.with_name(mason_exec_name + "_real"), executable_path.with_name(executable_name + "_real"))
+                shutil.move(
+                    mason_exec_path.with_name(mason_exec_name + "_real"),
+                    executable_path.with_name(executable_name + "_real"),
+                )
 
         run_cmd = [str(executable_path)]
-        if self.version.language == Language.CHPL or self.version.language == Language.MASON:
+        if (
+            self.version.language == Language.CHPL
+            or self.version.language == Language.MASON
+        ):
             run_cmd += ["-nl1"]
         run_cmd += execopts
 

@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import os
 import sys
 from pathlib import Path
 
@@ -9,11 +8,16 @@ sys.path.insert(0, str(PROJECT_DIR))
 
 TEST_DIR = PROJECT_DIR / "test"
 
-# list all tests from mason
-import compile as ProjectScript
+try:
+    import tomllib
+except ModuleNotFoundError:
+    import pip._vendor.tomli as tomllib
 
-mason_tests = ProjectScript.Project(PROJECT_DIR).get_tests()
-mason_tests = [TEST_DIR / t for t in mason_tests]
+with open(PROJECT_DIR / "Mason.toml", "rb") as f:
+    toml_data = tomllib.load(f)
+
+# read the mason tests from the toml
+mason_tests = [TEST_DIR / t for t in toml_data["tests"]]
 
 # list all .chpl files in TEST_DIR
 files = TEST_DIR.glob("**/*.chpl")

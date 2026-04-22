@@ -7,4 +7,4 @@ type="application"
 compopts="--edition=preview --no-ieee-float"
 
 [dependencies]
-CVL = "0.1.0"
+CVL = "0.0.0"

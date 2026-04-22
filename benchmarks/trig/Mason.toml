@@ -8,6 +8,6 @@ version = "0.1.0"
 compopts = "--no-ieee-float"
 
 [dependencies]
-CVL = "0.1.0"
+CVL = "0.0.0"
 
 

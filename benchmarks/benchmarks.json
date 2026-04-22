@@ -14,17 +14,15 @@
         },
         {
           "name": "vectorized",
-          "files": ["nbody/nbody.chpl"],
-          "language": "chpl",
-          "compopts": ["--fast", "CVL_OPTIONS"],
+          "directory": "nbody/nbodyVec",
+          "language": "mason",
           "execopts": ["--n=50000000"],
           "measure": ["RUNTIME"]
         },
         {
           "name": "vectorized-fma",
-          "files": ["nbody/nbody-fma.chpl"],
-          "language": "chpl",
-          "compopts": ["--fast", "CVL_OPTIONS"],
+          "directory": "nbody/nbodyFma",
+          "language": "mason",
           "execopts": ["--n=50000000"],
           "measure": ["RUNTIME"]
         },
@@ -101,9 +99,8 @@
         },
         {
           "name": "vectorized",
-          "files": ["mandelbrot/mandelbrot-vec.chpl"],
-          "language": "chpl",
-          "compopts": ["--fast", "CVL_OPTIONS"],
+          "directory": "mandelbrot/mandelbrotVec",
+          "language": "mason",
           "execopts": ["--n=16000"],
           "measure": ["RUNTIME"]
         }
@@ -139,9 +136,8 @@
         },
         {
           "name": "AoA-vectorized",
-          "files": ["flux/flux3.chpl"],
-          "language": "chpl",
-          "compopts": ["--fast", "CVL_OPTIONS"],
+          "directory": "flux/fluxVec",
+          "language": "mason",
           "execopts": ["--n=1000", "--m=1000", "--iterations=50", "--timing"],
           "measure": ["Time taken: ([0-9.]+)"]
         }
@@ -162,9 +158,8 @@
         },
         {
           "name": "vectorized",
-          "files": ["kmeans/kmeans-vector.chpl"],
-          "language": "chpl",
-          "compopts": ["--fast", "--no-ieee-float", "CVL_OPTIONS"],
+          "directory": "kmeans/kmeansVec",
+          "language": "mason",
           "execopts": ["--n=100_000"],
           "execopts-small": ["--n=1000"],
           "measure": ["KMeans took ([0-9.]+)"]

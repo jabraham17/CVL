@@ -14,7 +14,7 @@ endif
 
 .PHONY: all
 all:
-	@if [[ "$(ARCH)" != "x86_64" && "$(ARCH)" != "aarch64" && "$(ARCH)" != "arm64" ]]; then \
+	@if [ "$(ARCH)" != "x86_64" ] && [ "$(ARCH)" != "aarch64" ] && [ "$(ARCH)" != "arm64" ]; then \
 		echo "Unsupported architecture for CVL: $(ARCH)"; \
 		exit 1; \
 	fi

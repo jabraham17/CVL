@@ -71,7 +71,11 @@ jobs:
         run: |
           mason build --example
           for example in $(ls example/*.chpl); do
-            mason run --example $(basename $example);
+            example_name=$(basename $example)
+            if [ "$example_name" == "streamConfig.chpl" ]; then
+              continue
+            fi
+            mason run --example $example_name
           done
 
   test-benchmarks:

@@ -25,9 +25,8 @@ config const testcase = 0;
 param numTests = /*procs*/14 * /*types*/8;
 
 proc main(args: [] string) {
-  if args.size > 1 then {
+  if args.size > 1 then
     return 1; // don't accept any args
-  }
   if testcase == 0 {
     var f = openMemFile();
     var w = f.writer();

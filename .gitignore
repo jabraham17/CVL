@@ -1,6 +1,7 @@
 target/
 Mason.lock
 build/
+doc/
 .vscode/*
 !.vscode/extensions.json
 a.out

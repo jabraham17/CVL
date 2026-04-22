@@ -9,3 +9,6 @@ set -e
 (set -x && $PROJECT_DIR/lint/EverythingTested.py)
 
 (set -x && $PROJECT_DIR/lint/OperatorsUpToDate.sh)
+
+chpl_home=$(chpl --print-chpl-home)
+(shopt -s globstar && set -x && CHPL_HOME=$chpl_home $chpl_home/tools/chpldoc/findUndocumentedSymbols --ci src/**/*.chpl)

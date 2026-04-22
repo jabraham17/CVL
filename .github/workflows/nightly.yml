@@ -19,8 +19,3 @@ jobs:
     with:
       chapel_version: nightly
       run_optional_tests: false
-  test-chpl-2_7_0:
-    uses: ./.github/workflows/chpl-tests.yml
-    with:
-      chapel_version: 2.7.0
-      run_optional_tests: false

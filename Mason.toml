@@ -2,14 +2,14 @@
 name="CVL"
 type="library"
 version="0.1.0"
-chplVersion="2.7.0"
+chplVersion="2.9.0"
 
 authors=["Jade Abraham"]
 copyrightYear="2025"
 license="Apache-2.0"
 
 compopts="--using-attribute-toolname=lint --no-overload-sets-checks --ccflags=-Wno-strict-prototypes"
-docopts="--using-attribute-toolname=lint --index=doc/index.rst -o build/doc"
+docopts="--using-attribute-toolname=lint --index=docs/index.rst"
 
 tests = [
   "ArrTest.chpl",

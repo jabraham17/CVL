@@ -36,10 +36,10 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./build/doc/html
+          path: ./doc/
 
   deploy:
-    if: github.event_name == 'push' && github.repository == 'jabraham17/CVL'
+    if: github.event_name == 'push' && !github.event.repository.fork
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

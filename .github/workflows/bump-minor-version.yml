@@ -1,0 +1,71 @@
+name: Bump minor version
+
+on:
+  workflow_dispatch:
+  workflow_run:
+    workflows: [Publish to mason registry]
+    types: [completed]
+
+jobs:
+  bump-minor:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
+    steps:
+    - uses: actions/checkout@v4
+    - name: Exit if branch exists
+      run: |
+        BRANCH_NAME="update-version"
+        if git ls-remote --heads origin $BRANCH_NAME | grep -q $BRANCH_NAME; then
+          echo "Branch $BRANCH_NAME already exists."
+          exit 1
+        fi
+    - name: Create a new branch
+      run: |
+        git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git config --global user.name "github-actions[bot]"
+        git checkout -b update-version
+        git push --set-upstream origin update-version
+    - name: Get version from Mason.toml
+      id: previous_version
+      uses: mikefarah/yq@v4
+      with:
+        cmd: yq .brick.version Mason.toml
+    - name: Bump Minor Version
+      id: bump_version
+      run: |
+        PREVIOUS_VERSION=${{ steps.previous_version.outputs.result }}
+        MAJOR=$(echo $PREVIOUS_VERSION | cut -d. -f1)
+        MINOR=$(echo $PREVIOUS_VERSION | cut -d. -f2)
+        NEW_MINOR=$((MINOR + 1))
+        NEW_VERSION="$MAJOR.$NEW_MINOR.0"
+        echo "New version: $NEW_VERSION"
+        echo "result=$NEW_VERSION" >> $GITHUB_OUTPUT
+    - name: Update version in Mason.toml
+      uses: mikefarah/yq@v4
+      with:
+        cmd: yq -i '.brick.version="${{ steps.bump_version.outputs.result }}"' Mason.toml
+    - name: Get name from Mason.toml
+      id: package_name
+      uses: mikefarah/yq@v4
+      with:
+        cmd: yq .brick.name Mason.toml
+    - name: Update version in README.md
+      run: |
+        NAME=${{ steps.package_name.outputs.result }}
+        NEW_VERSION=${{ steps.bump_version.outputs.result }}
+        sed "s/mason add $NAME@[0-9]*\.[0-9]*\.[0-9]*/mason add $NAME@$NEW_VERSION/g" README.md > README.tmp && mv README.tmp README.md
+    - name: Commit and push changes
+      run: |
+        git add Mason.toml
+        git add README.md
+        git commit -m "Bump version to ${{ steps.bump_version.outputs.result }}"
+        git push origin update-version
+    - name: create pull request
+      run: >
+        gh pr create
+        -B main
+        -H update-version
+        --title 'Bump version for next release'
+        --body 'Bump the version in prep for next release'
+      env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

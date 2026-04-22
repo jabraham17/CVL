@@ -35,7 +35,6 @@ tests = [
   "sleef/Trig.chpl",
 ]
 
-# TODO: mason libraries don't let you `mason run` examples!
 [examples]
 examples = [ "stream.chpl", "streamExplicitVector.chpl", "streamVectorIterators.chpl" ]
 
@@ -45,5 +44,6 @@ examples = [ "stream.chpl", "streamExplicitVector.chpl", "streamVectorIterators.
 module-dir = ["src"]
 
 [tool.chplcheck]
+file = ["src/**/*.chpl", "test/**/*.chpl"]
 add-rules = ["lint/rules.py"]
 disable-rule = ["IncorrectIndentation"]

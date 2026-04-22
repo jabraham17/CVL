@@ -13,10 +13,10 @@ on:
         default: true
 
 jobs:
-  # brew only supports nightly and latest
+  # brew only supports latest
   # brew doesn't support linux arm
   mason-test-brew:
-    if: ${{ inputs.chapel_version == 'nightly' || inputs.chapel_version == 'latest' }}
+    if: ${{ inputs.chapel_version == 'latest' }}
     strategy:
       fail-fast: false
       matrix:
@@ -38,15 +38,9 @@ jobs:
       - name: Set up Homebrew
         uses: Homebrew/actions/setup-homebrew@main
       - name: Install Chapel
-        run: |
-          if [ "${{ inputs.chapel_version }}" = "nightly" ]; then
-            brew install --HEAD chapel
-          else
-            brew install chapel
-          fi
+        run: brew install chapel
       - name: Run Tests
-        run: |
-          mason test --parallel --show
+        run: mason test --parallel --show
 
   mason-test-docker:
     strategy:
@@ -66,8 +60,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Run Tests
-        run: |
-          mason test --parallel --show
+        run: mason test --parallel --show
       - name: Check the examples build and run
         run: |
           mason build --example
@@ -88,8 +81,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Run lints
-        run: |
-          ./util/lint.sh
+        run: ./util/lint.sh
 
   python-tests:
     if: ${{ inputs.run_optional_tests }}
@@ -110,5 +102,4 @@ jobs:
           python3 -m pip install --upgrade pip
           python3 -m pip install tox
       - name: Run Python Tests
-        run: |
-          ./util/tox.sh
+        run: ./util/tox.sh

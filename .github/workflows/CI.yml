@@ -23,3 +23,13 @@ jobs:
     with:
       chapel_version: latest
       run_optional_tests: true
+  test-chpl-280:
+    uses: ./.github/workflows/chpl-tests.yml
+    with:
+      chapel_version: 2.8.0
+      run_optional_tests: false
+  test-chpl-nightly:
+    uses: ./.github/workflows/chpl-tests.yml
+    with:
+      chapel_version: nightly
+      run_optional_tests: false

@@ -8,6 +8,8 @@ import sys
 import os
 import argparse as ap
 from pathlib import Path
+import subprocess as sp
+from contextlib import contextmanager
 
 # use pip vendor TOML if no system TOML is available (Python 3.10 or less)
 try:
@@ -40,56 +42,21 @@ class Project:
         with open(self.Mason_toml, "rb") as f:
             self.data = tomllib.load(f)
 
-    def get_arch_compopts(self):
-        arch = get_arch()
-        arch_specific = self.data.get("architecture", {}).get(arch, None)
-        arch_compopts = ""
-        if arch_specific is None:
-            sys.stderr.write("Unsupported architecture: {}\n".format(arch))
-        else:
-            arch_compopts = arch_specific.get("compopts", "")
-
-        if self.sleef:
-            sleef_dir = (
-                self.workspace / "third-party" / "sleef" / "sleef-install"
-            )
-            if sleef_dir.exists():
-                arch_compopts += (
-                    " --set useSLEEF --set SLEEF_INSTALL='{}'".format(sleef_dir)
-                )
-                if get_os() == "linux":
-                    # FIXME: sleef static libs are not PIE, so disable for now
-                    arch_compopts += (
-                        " --ccflags=-Wno-unused-command-line-argument"
-                        + " --ccflags=-no-pie --ldflags=-no-pie"
-                    )
-            else:
-                install_script = (
-                    self.workspace / "third-party" / "sleef" / "install.sh"
-                )
-                sys.stderr.write(
-                    "Sleef directory not found: {}, try running {}`\n".format(
-                        sleef_dir, install_script
-                    )
-                )
-                exit(1)
-
-        return arch_compopts
-
-    def get_mason_compopts(self):
-        compopts = self.data["brick"].get("compopts", "")
-        return compopts
-
     def get_module_compopts(self):
         src = self.workspace / "src"
         module_compopts = "-M{}".format(src)
         return module_compopts
 
+    def get_prereqs_compopts(self):
+        prereqs = self.workspace / "prereqs"
+        for p in prereqs.iterdir():
+            flags = sp.check_output(["make", "-C", str(p), "printchplflags"]).decode().strip()
+            yield flags
+
     def get_compopts(self):
         module_compopts = self.get_module_compopts()
-        mason_compopts = self.get_mason_compopts()
-        arch_compopts = self.get_arch_compopts()
-        return "{} {} {}".format(module_compopts, mason_compopts, arch_compopts)
+        mason_compopts = " ".join(self.get_prereqs_compopts())
+        return "{} {}".format(module_compopts, mason_compopts)
 
     def get_docopts(self):
         docopts = self.data["brick"].get("docopts", "")
@@ -119,28 +86,7 @@ def main():
 
     a = ap.ArgumentParser()
     a.add_argument(
-        "--module-compopts",
-        const=project.get_module_compopts,
-        dest="action",
-        action="store_const",
-        default=project.get_compopts,
-    )
-    a.add_argument(
-        "--base-compopts",
-        const=project.get_mason_compopts,
-        dest="action",
-        action="store_const",
-        default=project.get_compopts,
-    )
-    a.add_argument(
-        "--arch-compopts",
-        const=project.get_arch_compopts,
-        dest="action",
-        action="store_const",
-        default=project.get_compopts,
-    )
-    a.add_argument(
-        "--all-compopts",
+        "--compopts",
         const=project.get_compopts,
         dest="action",
         action="store_const",

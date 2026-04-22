@@ -26,7 +26,7 @@ jobs:
           ./.venv/bin/python3 -m pip install --upgrade pip
           ./.venv/bin/python3 -m pip install pydantic
       - name: Setup chapel
-        uses: jabraham17/setup-chpl@main
+        uses: jabraham17/setup-chpl@v1
         with:
           version: ${{ inputs.chapel_version }}
           backend: ${{ matrix.backend }}

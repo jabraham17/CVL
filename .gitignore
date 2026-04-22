@@ -10,3 +10,4 @@ __pycache__/
 test.log
 .tox
 .MAX_LOCALES
+.registry

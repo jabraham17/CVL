@@ -18,12 +18,6 @@ mason_tests = [TEST_DIR / t for t in mason_tests]
 # list all .chpl files in TEST_DIR
 files = TEST_DIR.glob("**/*.chpl")
 
-# exclude cmake dir
-cmake_dir = TEST_DIR / "cmake"
-files = [
-    f for f in files if os.path.commonprefix((cmake_dir, f)) != str(cmake_dir)
-]
-
 # exclude TestHelpers.chpl
 TestHelpers = "TestHelpers.chpl"
 files = [f for f in files if f.name != TestHelpers]

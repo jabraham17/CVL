@@ -66,10 +66,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Set up CMake
-        # cmake testing doesn't work on arm yet
-        if: ${{ matrix.os != 'ubuntu-24.04-arm' }}
-        uses: jwlawson/actions-setup-cmake@v2.0.2
       - name: Run Tests
         # FIXME: smp testing on linux 64 breaks with multi locale code? But only
         # in the CI, local testing seems fine,
@@ -77,11 +73,6 @@ jobs:
         run: |
           mason test test/GatherTest.chpl 2>&1 | tee test.log ; \
           tail -n1 test.log | grep "^OK"
-      - name: Run CMake Tests
-        # cmake testing doesn't work on arm yet
-        if: ${{ matrix.os != 'ubuntu-24.04-arm' }}
-        run: |
-          ./util/testCMake.sh
       - name: Run examples
         run: |
           ./util/examples.sh

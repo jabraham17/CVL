@@ -130,7 +130,7 @@ class BenchmarkRun:
                 measure_regexes[measure] = re.compile(measure)
                 self.measurements[measure] = []
 
-        files = [str(self.benchmark_dir / f) for f in self.version.files]
+        files = self.version.files
         directory = (
             self.benchmark_dir / self.version.directory
             if self.version.directory

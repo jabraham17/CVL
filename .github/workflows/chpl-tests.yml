@@ -83,6 +83,7 @@ jobs:
           done
 
   test-benchmarks:
+    if: ${{ inputs.chapel_version == 'latest' }}
     uses: ./.github/workflows/bench.yml
     with:
       chapel_version: ${{ inputs.chapel_version }}

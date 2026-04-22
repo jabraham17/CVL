@@ -17,8 +17,6 @@ jobs:
         os: [ubuntu-latest, ubuntu-24.04-arm]
         backend: [llvm]
     runs-on: ${{ matrix.os }}
-    container:
-      image: chapel/chapel:${{ inputs.chapel_version }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -27,11 +25,16 @@ jobs:
           python3 -m venv .venv
           ./.venv/bin/python3 -m pip install --upgrade pip
           ./.venv/bin/python3 -m pip install pydantic
+      - name: Setup chapel
+        uses: jabraham17/setup-chpl@main
+        with:
+          version: ${{ inputs.chapel_version }}
+          backend: ${{ matrix.backend }}
       - name: Setup fortran
         uses: fortran-lang/setup-fortran@v1
         with:
           compiler: gcc
-          version: latest
+          version: 15
       - name: Setup Rust
         uses: actions-rs/toolchain@v1
         with:

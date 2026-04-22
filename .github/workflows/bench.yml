@@ -45,7 +45,10 @@ jobs:
           mason build
       - name: Run Benchmarks
         run: |
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
           source util/localRegistry.sh
+
           ./.venv/bin/python3 ./util/bench.py \
             --schema benchmarks/benchmarks.json \
             --trials 3 --small

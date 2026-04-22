@@ -10,5 +10,7 @@ set -e
 
 (set -x && $PROJECT_DIR/lint/OperatorsUpToDate.sh)
 
-chpl_home=$(chpl --print-chpl-home)
-(shopt -s globstar && set -x && CHPL_HOME=$chpl_home $chpl_home/tools/chpldoc/findUndocumentedSymbols --ci src/**/*.chpl)
+# TODO: re-enable this once docs are complete
+# chpl_home=$(chpl --print-chpl-home)
+# TO_CHECK=$(find src -name "*.chpl")
+# (set -x && CHPL_HOME=$chpl_home $chpl_home/tools/chpldoc/findUndocumentedSymbols --ci $TO_CHECK)

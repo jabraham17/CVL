@@ -28,16 +28,20 @@ jobs:
             backend: clang
           - os: macos-latest
             backend: gnu
+          - os: ubuntu-latest
+            comm: gasnet
+          - comm: gasnet
+            backend: clang
     runs-on: ${{ matrix.os }}
     env:
       CHPL_TARGET_COMPILER: ${{ matrix.backend }}
       CHPL_COMM: ${{ matrix.comm }}
-      GASNET_SPAWNFN: "L"
-      GASNET_ROUTE_OUTPUT: "0"
-      GASNET_QUIET: "Y"
-      GASNET_MASTERIP: "127.0.0.1"
-      GASNET_WORKERIP: "127.0.0.0"
-      CHPL_RT_OVERSUBSCRIBED: "yes"
+      GASNET_SPAWNFN: L
+      GASNET_ROUTE_OUTPUT: 0
+      GASNET_QUIET: Y
+      GASNET_MASTERIP: 127.0.0.1
+      GASNET_WORKERIP: 127.0.0.0
+      CHPL_RT_OVERSUBSCRIBED: yes
     steps:
       - name: Checkout
         uses: actions/checkout@v4

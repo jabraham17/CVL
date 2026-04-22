@@ -11,32 +11,24 @@ jobs:
 
   # this just runs the benchmarks to make sure they compile and run
   test-benchmarks:
-    # TODO: setup-chpl doesn't work with nightly yet
-    if: ${{ inputs.chapel_version != 'nightly' }}
     strategy:
       fail-fast: true
       matrix:
         os: [ubuntu-latest, ubuntu-24.04-arm]
         backend: [llvm]
     runs-on: ${{ matrix.os }}
+    container:
+      image: chapel/chapel:${{ inputs.chapel_version }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Install Chapel
-        uses: jabraham17/setup-chpl@v1
-        with:
-          version: ${{ inputs.chapel_version }}
-          backend: ${{ matrix.backend }}
       - name: Install Python Dependencies
         run: |
           python3 -m venv .venv
           ./.venv/bin/python3 -m pip install --upgrade pip
           ./.venv/bin/python3 -m pip install pydantic
       - name: Setup fortran
-        # fortran-lang/setup-fortran has some bugs when running in a container
-        # and bad usage of sudo, so use jabraham17/setup-fortran@fix-cd until
-        # those are fixed
-        uses: jabraham17/setup-fortran@fix-cd
+        uses: fortran-lang/setup-fortran@v1
         with:
           compiler: gcc
           version: latest

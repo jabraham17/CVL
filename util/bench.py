@@ -80,13 +80,6 @@ class BenchmarkVersion(BaseModel):
     measure: List[str] = Field(default_factory=list)
     arch: List[str] = Field(default_factory=list)
 
-    def resolve_compopts(self, cvl_options: Optional[str] = None):
-        # if CVL_OPTIONS in the compopts, remove it and add the CVL_OPTIONS
-        if cvl_options and "CVL_OPTIONS" in self.compopts:
-            self.compopts.remove("CVL_OPTIONS")
-            self.compopts.extend(cvl_options.split())
-        return self.compopts
-
 
 class BenchmarkConfig(BaseModel):
     name: str
@@ -264,7 +257,6 @@ def parse_args() -> argparse.Namespace:
         + "Format: benchmark::version or benchmark. "
         + "Can be specified multiple times.",
     )
-    parser.add_argument("--cvl-options", type=str, default="")
     parser.add_argument("--scratch", type=Path, default=None)
     parser.add_argument(
         "--trials",
@@ -390,13 +382,10 @@ def main():
     benchmark_dir = Path(args.schema).parent
     runners = {}
 
-    cvl_options = args.cvl_options
-
     for benchmark in schema.benchmarks:
         for version in benchmark.versions:
             full_name = f"{benchmark.name}::{version.name}"
             if should_run_benchmark(benchmark, version, args.filter):
-                version.resolve_compopts(cvl_options)
                 runners[full_name] = BenchmarkRun(
                     benchmark_dir, benchmark, version
                 )

@@ -17,7 +17,7 @@ with open(PROJECT_DIR / "Mason.toml", "rb") as f:
     toml_data = tomllib.load(f)
 
 # read the mason tests from the toml
-mason_tests = [TEST_DIR / t for t in toml_data["tests"]]
+mason_tests = [TEST_DIR / t for t in toml_data["brick"]["tests"]]
 
 # list all .chpl files in TEST_DIR
 files = TEST_DIR.glob("**/*.chpl")

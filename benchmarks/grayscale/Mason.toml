@@ -1,0 +1,10 @@
+[brick]
+name="grayscale"
+version="0.1.0"
+chplVersion="2.7.0"
+license="None"
+type="application"
+compopts="--edition=preview --no-ieee-float"
+
+[dependencies]
+CVL = "0.0.0"

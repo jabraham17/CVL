@@ -1,0 +1,13 @@
+
+[brick]
+chplVersion = "2.7.0"
+license = "None"
+name = "trig"
+type = "application"
+version = "0.1.0"
+compopts = "--no-ieee-float"
+
+[dependencies]
+CVL = "0.0.0"
+
+

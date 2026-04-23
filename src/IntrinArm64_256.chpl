@@ -60,6 +60,7 @@ module IntrinArm64_256 {
 
     inline proc type splat(x: laneType): vecType do
       return new vecType(implVecType.splat(x), implVecType.splat(x));
+    @chplcheck.ignore("UnusedFormal")
     inline proc type set(xs...): vecType do
       compilerError("Not implemented");
     inline proc type loada(x: c_ptrConst(laneType)): vecType do

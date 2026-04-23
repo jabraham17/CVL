@@ -1,0 +1,76 @@
+name: Publish to mason registry
+
+on:
+  workflow_dispatch:
+
+jobs:
+  create-tag:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Get version from Mason.toml
+      id: version
+      uses: mikefarah/yq@v4
+      with:
+        cmd: yq .brick.version Mason.toml
+    - name: Bump version and push tag
+      id: create_tag
+      uses: mathieudutour/github-tag-action@v6.2
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        custom_tag: ${{ steps.version.outputs.result }}
+        tag_prefix: "v"
+        create_annotated_tag: true
+  push-to-mason-registry:
+    needs: create-tag
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        path: source-repo
+    - name: Get version from Mason.toml
+      id: version
+      uses: mikefarah/yq@v4
+      with:
+        cmd: yq .brick.version source-repo/Mason.toml
+    - name: Get package name
+      id: package_name
+      uses: mikefarah/yq@v4
+      with:
+        cmd: yq .brick.name source-repo/Mason.toml
+    - name: Checkout mason-registry fork
+      uses: actions/checkout@v4
+      with:
+        repository: jabraham17/mason-registry
+        token: ${{ secrets.MASON_REGISTRY_PAT }}
+        path: mason-registry
+    - name: Create branch and add package
+      run: |
+        VERSION="${{ steps.version.outputs.result }}"
+        PACKAGE_NAME="${{ steps.package_name.outputs.result }}"
+        cd mason-registry
+        git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git config user.name "github-actions[bot]"
+        git checkout -b "${PACKAGE_NAME}-${VERSION}"
+        mkdir -p "Bricks/${PACKAGE_NAME}"
+        cp ../source-repo/Mason.toml "Bricks/${PACKAGE_NAME}/${VERSION}.toml"
+        git add .
+        git commit -m "Add ${PACKAGE_NAME} ${VERSION}"
+    - name: Push changes
+      uses: ad-m/github-push-action@v1
+      with:
+        github_token: ${{ secrets.MASON_REGISTRY_PAT }}
+        repository: jabraham17/mason-registry
+        branch: "${{ steps.package_name.outputs.result }}-${{ steps.version.outputs.result }}"
+        directory: mason-registry
+    - name: Create pull request
+      run: >
+        gh pr create
+        --repo chapel-lang/mason-registry
+        --head "jabraham17:${{ steps.package_name.outputs.result }}-${{ steps.version.outputs.result }}"
+        --base master
+        --title "Add ${{ steps.package_name.outputs.result }} ${{ steps.version.outputs.result }}"
+        --body "Add ${{ steps.package_name.outputs.result }} version ${{ steps.version.outputs.result }} to the mason registry"
+      env:
+        GH_TOKEN: ${{ secrets.MASON_REGISTRY_PRS }}
+

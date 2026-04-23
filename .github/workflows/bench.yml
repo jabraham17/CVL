@@ -11,8 +11,6 @@ jobs:
 
   # this just runs the benchmarks to make sure they compile and run
   test-benchmarks:
-    # TODO: setup-chpl doesn't work with nightly yet
-    if: ${{ inputs.chapel_version != 'nightly' }}
     strategy:
       fail-fast: true
       matrix:
@@ -22,35 +20,32 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Install Chapel
-        uses: jabraham17/setup-chpl@v1
-        with:
-          version: ${{ inputs.chapel_version }}
-          backend: ${{ matrix.backend }}
       - name: Install Python Dependencies
         run: |
           python3 -m venv .venv
           ./.venv/bin/python3 -m pip install --upgrade pip
           ./.venv/bin/python3 -m pip install pydantic
+      - name: Setup chapel
+        uses: jabraham17/setup-chpl@v1
+        with:
+          version: ${{ inputs.chapel_version }}
+          backend: ${{ matrix.backend }}
       - name: Setup fortran
-        # fortran-lang/setup-fortran has some bugs when running in a container
-        # and bad usage of sudo, so use jabraham17/setup-fortran@fix-cd until
-        # those are fixed
-        uses: jabraham17/setup-fortran@fix-cd
+        uses: fortran-lang/setup-fortran@v1
         with:
           compiler: gcc
-          version: latest
+          version: 15
       - name: Setup Rust
         uses: actions-rs/toolchain@v1
         with:
           profile: minimal
           toolchain: stable
-      - name: Build CVL Dependencies
-        run: |
-          ./third-party/sleef/install.sh
       - name: Run Benchmarks
         run: |
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+          source util/localRegistry.sh
+
           ./.venv/bin/python3 ./util/bench.py \
             --schema benchmarks/benchmarks.json \
-            --trials 3 --small \
-            --cvl-options "$(./compile.py --sleef)"
+            --trials 3 --small

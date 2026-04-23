@@ -14,10 +14,24 @@ from pydantic import BaseModel, Field
 import tempfile
 import re
 import os
+from contextlib import contextmanager
+import shutil
+
+
+@contextmanager
+def cd(path):
+    """Context manager for changing the current working directory"""
+    old_dir = os.getcwd()
+    os.chdir(path)
+    try:
+        yield
+    finally:
+        os.chdir(old_dir)
 
 
 class Language(str, Enum):
     CHPL = "chpl"
+    MASON = "mason"
     C_GCC = "c-gcc"
     CPP_GCC = "cpp-gcc"
     C_CLANG = "c-clang"
@@ -25,17 +39,24 @@ class Language(str, Enum):
     RUST = "rust"
     FORTRAN = "fortran"
 
-    def get_compiler(self) -> str:
+    def get_compiler(self) -> List[str]:
         m = {
-            Language.CHPL: "chpl",
-            Language.C_GCC: "gcc",
-            Language.CPP_GCC: "g++",
-            Language.C_CLANG: "clang",
-            Language.CPP_CLANG: "clang++",
-            Language.RUST: "rustc",
-            Language.FORTRAN: "gfortran",
+            Language.CHPL: ["chpl"],
+            Language.MASON: ["mason", "build", "--show", "--release", "--"],
+            Language.C_GCC: ["gcc"],
+            Language.CPP_GCC: ["g++"],
+            Language.C_CLANG: ["clang"],
+            Language.CPP_CLANG: ["clang++"],
+            Language.RUST: ["rustc"],
+            Language.FORTRAN: ["gfortran"],
         }
         return m[self]
+
+    def get_run_command(self, executable) -> List[str]:
+        if self == Language.MASON:
+            return ["mason", "run", "--"]
+        else:
+            return [executable]
 
 
 class Stats(BaseModel):
@@ -49,8 +70,9 @@ class Stats(BaseModel):
 
 class BenchmarkVersion(BaseModel):
     name: str
-    files: List[str]
     language: Language
+    files: List[str] = Field(default_factory=list)
+    directory: Optional[str] = None
     compopts: List[str] = Field(default_factory=list)
     execopts: List[str] = Field(default_factory=list)
     execopts_small: Optional[List[str]] = Field(
@@ -58,13 +80,6 @@ class BenchmarkVersion(BaseModel):
     )
     measure: List[str] = Field(default_factory=list)
     arch: List[str] = Field(default_factory=list)
-
-    def resolve_compopts(self, cvl_options: Optional[str] = None):
-        # if CVL_OPTIONS in the compopts, remove it and add the CVL_OPTIONS
-        if cvl_options and "CVL_OPTIONS" in self.compopts:
-            self.compopts.remove("CVL_OPTIONS")
-            self.compopts.extend(cvl_options.split())
-        return self.compopts
 
 
 class BenchmarkConfig(BaseModel):
@@ -115,7 +130,12 @@ class BenchmarkRun:
                 measure_regexes[measure] = re.compile(measure)
                 self.measurements[measure] = []
 
-        files = [str(self.benchmark_dir / f) for f in self.version.files]
+        files = self.version.files
+        directory = (
+            self.benchmark_dir / self.version.directory
+            if self.version.directory
+            else self.benchmark_dir
+        )
         compopts = self.version.compopts
         execopts = (
             self.version.execopts
@@ -133,23 +153,46 @@ class BenchmarkRun:
 
         compiler = self.version.language.get_compiler()
 
-        compile_cmd = (
-            [compiler] + compopts + files + ["-o", str(executable_path)]
-        )
+        if self.version.language == Language.MASON:
+            compile_cmd = compiler + compopts + files
+        else:
+            compile_cmd = (
+                compiler + compopts + files + ["-o", str(executable_path)]
+            )
 
         cc_str = " ".join(compile_cmd)
         print(f"Compiling {self.config.name}::{self.version.name} ({cc_str})")
 
         try:
-            subprocess.run(
-                compile_cmd, check=True, capture_output=True, text=True
-            )
+            with cd(directory):
+                subprocess.run(
+                    compile_cmd,
+                    check=True,
+                    text=True,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.STDOUT,
+                )
         except subprocess.CalledProcessError as e:
-            print(f"Compilation failed: {e.stderr}", file=sys.stderr)
+            print(f"Compilation failed: {e.stdout}", file=sys.stderr)
             return False
 
+        # move the build artifact to the executable path if it's not already
+        # there (e.g. for mason)
+        if self.version.language == Language.MASON:
+            mason_exec_name = directory.name
+            mason_exec_path = directory / "target" / "release" / mason_exec_name
+            shutil.move(mason_exec_path, executable_path)
+            if mason_exec_path.with_name(mason_exec_name + "_real").exists():
+                shutil.move(
+                    mason_exec_path.with_name(mason_exec_name + "_real"),
+                    executable_path.with_name(executable_name + "_real"),
+                )
+
         run_cmd = [str(executable_path)]
-        if self.version.language == Language.CHPL:
+        if (
+            self.version.language == Language.CHPL
+            or self.version.language == Language.MASON
+        ):
             run_cmd += ["-nl1"]
         run_cmd += execopts
 
@@ -161,9 +204,10 @@ class BenchmarkRun:
             for trial in range(trials):
                 print(f"Trial {trial + 1}/{trials}")
                 start_time = time.time()
-                cp = subprocess.run(
-                    run_cmd, check=True, capture_output=True, text=True
-                )
+                with cd(directory):
+                    cp = subprocess.run(
+                        run_cmd, check=True, capture_output=True, text=True
+                    )
                 end_time = time.time()
                 elapsed_time = end_time - start_time
                 if "RUNTIME" in self.measurements:
@@ -229,7 +273,6 @@ def parse_args() -> argparse.Namespace:
         + "Format: benchmark::version or benchmark. "
         + "Can be specified multiple times.",
     )
-    parser.add_argument("--cvl-options", type=str, default="")
     parser.add_argument("--scratch", type=Path, default=None)
     parser.add_argument(
         "--trials",
@@ -355,13 +398,10 @@ def main():
     benchmark_dir = Path(args.schema).parent
     runners = {}
 
-    cvl_options = args.cvl_options
-
     for benchmark in schema.benchmarks:
         for version in benchmark.versions:
             full_name = f"{benchmark.name}::{version.name}"
             if should_run_benchmark(benchmark, version, args.filter):
-                version.resolve_compopts(cvl_options)
                 runners[full_name] = BenchmarkRun(
                     benchmark_dir, benchmark, version
                 )

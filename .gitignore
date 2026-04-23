@@ -1,6 +1,7 @@
 target/
 Mason.lock
 build/
+doc/
 .vscode/*
 !.vscode/extensions.json
 a.out
@@ -10,3 +11,4 @@ __pycache__/
 test.log
 .tox
 .MAX_LOCALES
+.registry

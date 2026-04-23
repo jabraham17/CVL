@@ -24,10 +24,21 @@ config const testcase = 0;
 
 param numTests = /*procs*/14 * /*types*/8;
 
-proc main(args: [] string) {
-  if args.size > 1 then {
-    return 1; // don't accept any args
+proc getEnvs(envs: [] string, toForward: [] string) {
+  use List, OS.POSIX;
+  var result = new list(envs);
+  for e in toForward {
+    var v = getenv(e.c_str());
+    if v != nil {
+      result.pushBack(e + "=" + string.createCopyingBuffer(v));
+    }
   }
+  return result.toArray();
+}
+
+proc main(args: [] string) {
+  if args.size > 1 then
+    return 1; // don't accept any args
   if testcase == 0 {
     var f = openMemFile();
     var w = f.writer();
@@ -36,8 +47,12 @@ proc main(args: [] string) {
       //  https://github.com/chapel-lang/chapel/issues/15497
       const execname = args[0].stripSuffix("_real");
       var p = spawn([execname, "-nl1", "--testcase="+i:string],
-          stdout=pipeStyle.pipe, stderr=pipeStyle.pipe);
-        // stdout=pipeStyle.pipe, stderr=pipeStyle.stdout);
+          stdout=pipeStyle.pipe, stderr=pipeStyle.pipe,
+          // stdout=pipeStyle.pipe, stderr=pipeStyle.stdout);
+          env=getEnvs(["CHPL_RT_UNWIND=0"],
+                      ["GASNET_SPAWNFN", "GASNET_ROUTE_OUTPUT",
+                       "GASNET_QUIET", "GASNET_MASTERIP",
+                       "GASNET_WORKERIP", "CHPL_RT_OVERSUBSCRIBED"]));
       p.wait();
       var stdout, stderr: string;
       p.stdout.readAll(stdout);

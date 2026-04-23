@@ -1,15 +1,15 @@
 [brick]
 name="CVL"
 version="0.1.0"
-author="Jade Abraham"
-chplVersion="2.4.0"
-license="Apache-2.0"
-# TODO: commas inside of strings are broken in Mason
-#copyright="2025, Jade Abraham"
-copyright="2025; Jade Abraham"
+chplVersion="2.8.0"
 type="library"
+source="git@github.com:jabraham17/CVL.git"
+authors=["Jade Abraham"]
+copyrightYear="2025"
+license="Apache-2.0"
+
 compopts="--using-attribute-toolname=lint --no-overload-sets-checks --ccflags=-Wno-strict-prototypes"
-docopts="--using-attribute-toolname=lint"
+docopts="--using-attribute-toolname=lint --index=docs/index.rst"
 
 tests = [
   "ArrTest.chpl",
@@ -35,17 +35,10 @@ tests = [
   "sleef/Trig.chpl",
 ]
 
-# TODO: mason libraries don't let you `mason run` examples!
 [examples]
 examples = [ "stream.chpl", "streamExplicitVector.chpl", "streamVectorIterators.chpl" ]
 
 [dependencies]
-
-[architecture]
-[architecture.x86_64]
-compopts = "--ccflags=-msse4.1 --ccflags=-mavx2 --ccflags=-mfma"
-[architecture.arm64]
-compopts = "--ccflags=-march=armv8.2-a+fp16"
 
 [tool.chpl-language-server]
 module-dir = ["src"]

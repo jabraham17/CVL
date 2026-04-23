@@ -13,42 +13,44 @@ on:
         default: true
 
 jobs:
-  # brew only supports nightly and latest
+  # brew only supports latest
   # brew doesn't support linux arm
-  # TODO: brew will soon support ML chapel, so we can add comm!=none jobs for brew then
   mason-test-brew:
-    if: ${{ inputs.chapel_version == 'nightly' || inputs.chapel_version == 'latest' }}
+    if: ${{ inputs.chapel_version == 'latest' }}
     strategy:
       fail-fast: false
       matrix:
         backend: [llvm, gnu, clang]
         os: [ubuntu-latest, macos-latest]
+        comm: [none, gasnet]
         exclude:
           - os: ubuntu-latest
             backend: clang
           - os: macos-latest
             backend: gnu
+          - os: ubuntu-latest
+            comm: gasnet
+          - comm: gasnet
+            backend: clang
     runs-on: ${{ matrix.os }}
     env:
       CHPL_TARGET_COMPILER: ${{ matrix.backend }}
+      CHPL_COMM: ${{ matrix.comm }}
+      GASNET_SPAWNFN: L
+      GASNET_ROUTE_OUTPUT: 0
+      GASNET_QUIET: Y
+      GASNET_MASTERIP: 127.0.0.1
+      GASNET_WORKERIP: 127.0.0.0
+      CHPL_RT_OVERSUBSCRIBED: yes
     steps:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Set up Homebrew
         uses: Homebrew/actions/setup-homebrew@main
       - name: Install Chapel
-        run: |
-          if [ "${{ inputs.chapel_version }}" = "nightly" ]; then
-            brew install --HEAD chapel
-          else
-            brew install chapel
-          fi
-      - name: Build CVL Dependencies
-        run: |
-          ./third-party/sleef/install.sh
+        run: brew install chapel
       - name: Run Tests
-        run: |
-          ./util/test.sh
+        run: mason test --parallel --show
 
   mason-test-docker:
     strategy:
@@ -57,7 +59,6 @@ jobs:
         image:
           - chapel/chapel:${{ inputs.chapel_version }}
           - chapel/chapel-gasnet:${{ inputs.chapel_version }}
-          - chapel/chapel-gasnet-smp:${{ inputs.chapel_version }}
         backend: [llvm, gnu]
         os: [ubuntu-latest, ubuntu-24.04-arm]
     runs-on: ${{ matrix.os }}
@@ -68,29 +69,21 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Set up CMake
-        # cmake testing doesn't work on arm yet
-        if: ${{ matrix.os != 'ubuntu-24.04-arm' }}
-        uses: jwlawson/actions-setup-cmake@v2.0.2
-      - name: Build CVL Dependencies
-        run: |
-          ./third-party/sleef/install.sh
       - name: Run Tests
-        # FIXME: smp testing on linux 64 breaks with multi locale code? But only
-        # in the CI, local testing seems fine,
-        if: ${{ ! (matrix.image == format('chapel/chapel-gasnet-smp:{0}', inputs.chapel_version) && matrix.os == 'ubuntu-latest') }}
+        run: mason test --parallel --show
+      - name: Check the examples build and run
         run: |
-          ./util/test.sh
-      - name: Run CMake Tests
-        # cmake testing doesn't work on arm yet
-        if: ${{ matrix.os != 'ubuntu-24.04-arm' }}
-        run: |
-          ./util/testCMake.sh
-      - name: Run examples
-        run: |
-          ./util/examples.sh
+          mason build --example
+          for example in $(ls example/*.chpl); do
+            example_name=$(basename $example)
+            if [ "$example_name" = "StreamConfig.chpl" ]; then
+              continue
+            fi
+            mason run --example $example_name
+          done
 
   test-benchmarks:
+    if: ${{ inputs.chapel_version == 'latest' }}
     uses: ./.github/workflows/bench.yml
     with:
       chapel_version: ${{ inputs.chapel_version }}
@@ -103,8 +96,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Run lints
-        run: |
-          ./util/lint.sh
+        run: ./util/lint.sh
 
   python-tests:
     if: ${{ inputs.run_optional_tests }}
@@ -112,7 +104,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
+        python-version: ["3.10", "3.11", "3.12", "3.13", "3.14"]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -125,5 +117,4 @@ jobs:
           python3 -m pip install --upgrade pip
           python3 -m pip install tox
       - name: Run Python Tests
-        run: |
-          ./util/tox.sh
+        run: ./util/tox.sh

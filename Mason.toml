@@ -1,9 +1,9 @@
 [brick]
 name="CVL"
-type="library"
 version="0.1.0"
 chplVersion="2.8.0"
-
+type="library"
+source="git@github.com:jabraham17/CVL.git"
 authors=["Jade Abraham"]
 copyrightYear="2025"
 license="Apache-2.0"

@@ -40,14 +40,12 @@ jobs:
         with:
           profile: minimal
           toolchain: stable
-      - name: Build CVL
-        run: |
-          mason build
       - name: Run Benchmarks
         run: |
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git config --global user.name "github-actions[bot]"
           source util/localRegistry.sh
+          cat .registry/Bricks/CVL/0.0.0.toml
 
           ./.venv/bin/python3 ./util/bench.py \
             --schema benchmarks/benchmarks.json \

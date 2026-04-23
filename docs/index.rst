@@ -8,8 +8,8 @@ Core Library
    :maxdepth: 1
 
    modules/src/CVL
-   modules/src/Vector
-   modules/src/VectorRef
+   modules/src/CVL/Vector
+   modules/src/CVL/VectorRef
 
 Intrinsics
 **********
@@ -19,7 +19,7 @@ CVL implements all of the higher level vector operations using a lower level lib
 .. toctree::
    :maxdepth: 1
 
-   modules/src/Intrin
+   modules/src/CVL/Intrin
 
 Internal Intrinsics
 ~~~~~~~~~~~~~~~~~~~
@@ -29,10 +29,10 @@ These modules are the internal implementation types used by the intrinsics. They
 .. toctree::
    :maxdepth: 1
 
-   modules/src/IntrinX86_128
-   modules/src/IntrinX86_256
-   modules/src/IntrinArm64_128
-   modules/src/IntrinArm64_256
+   modules/src/CVL/IntrinX86_128
+   modules/src/CVL/IntrinX86_256
+   modules/src/CVL/IntrinArm64_128
+   modules/src/CVL/IntrinArm64_256
 
 SLEEF
 ~~~~~
@@ -43,7 +43,7 @@ See https://sleef.org/ for more information.
 .. toctree::
    :maxdepth: 1
 
-   modules/src/SLEEF
+   modules/src/CVL/SLEEF
 
 
 Utilities
@@ -52,7 +52,7 @@ Utilities
 .. toctree::
    :maxdepth: 1
 
-   modules/src/Arch
+   modules/src/CVL/Arch
 
 
 Indices and tables

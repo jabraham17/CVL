@@ -1,6 +1,6 @@
 [brick]
 name = "CVL"
-version = "0.2.0"
+version = "0.3.0"
 chplVersion = "2.8.0"
 type = "library"
 source = "git@github.com:jabraham17/CVL.git"

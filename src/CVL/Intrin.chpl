@@ -1,12 +1,12 @@
 module Intrin {
   use CTypes only c_ptr, c_ptrConst, c_int;
-  use Arch only isX8664, isArm64;
+  use super.Arch only isX8664, isArm64;
 
   proc vectorType(type eltType, param numElts: int) type do
     return implType(eltType, numElts).vecType;
   proc implType(type eltType, param numElts: int) type {
     if isX8664() && numBits(eltType) * numElts == 128 {
-      use IntrinX86_128;
+      use super.IntrinX86_128;
       if eltType == real(32)      then return x8664_32x4r;
       else if eltType == real(64) then return x8664_64x2r;
       else if eltType == int(8)   then return x8664_8x16i;
@@ -16,7 +16,7 @@ module Intrin {
       else compilerError("Unsupported vector type");
 
     } else if isX8664() && numBits(eltType) * numElts == 256 {
-      use IntrinX86_256;
+      use super.IntrinX86_256;
       if eltType == real(32)      then return x8664_32x8r;
       else if eltType == real(64) then return x8664_64x4r;
       else if eltType == int(8)   then return x8664_8x32i;
@@ -26,7 +26,7 @@ module Intrin {
       else compilerError("Unsupported vector type");
 
     } else if isArm64() && numBits(eltType) * numElts == 128 {
-      use IntrinArm64_128;
+      use super.IntrinArm64_128;
       if eltType == real(32)      then return arm64_32x4r;
       else if eltType == real(64) then return arm64_64x2r;
       else if eltType == int(8)   then return arm64_8x16i;
@@ -36,7 +36,7 @@ module Intrin {
       else compilerError("Unsupported vector type");
 
     } else if isArm64() && numBits(eltType) * numElts == 256 {
-      use IntrinArm64_256;
+      use super.IntrinArm64_256;
       if eltType == real(32)      then return arm64_32x8r;
       else if eltType == real(64) then return arm64_64x4r;
       else if eltType == int(8)   then return arm64_8x32i;

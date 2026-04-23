@@ -2,8 +2,8 @@ module Vector {
   use CTypes only c_ptr, c_ptrConst,
                   c_ptrTo, c_ptrToConst,
                   c_addrOf, c_addrOfConst, c_int;
-  import Intrin;
-  use VectorRef only vectorRef;
+  import super.Intrin;
+  use super.VectorRef only vectorRef;
 
   proc numBits(type t) param: int where isSubtype(t, vector) do
     return numBits(t.eltType) * t.numElts;
@@ -872,7 +872,7 @@ module Vector {
       compilerError(
         "sin is only defined for real types, not " + eltType:string);
 
-    import SLEEF.sleef;
+    import super.SLEEF.sleef;
     var result: x.type;
     result.data = sleef.sin(eltType, numElts, x.data);
     return result;
@@ -883,7 +883,7 @@ module Vector {
       compilerError(
         "cos is only defined for real types, not " + eltType:string);
 
-    import SLEEF.sleef;
+    import super.SLEEF.sleef;
     var result: x.type;
     result.data = sleef.cos(eltType, numElts, x.data);
     return result;
@@ -894,7 +894,7 @@ module Vector {
       compilerError(
         "tan is only defined for real types, not " + eltType:string);
 
-    import SLEEF.sleef;
+    import super.SLEEF.sleef;
     var result: x.type;
     result.data = sleef.tan(eltType, numElts, x.data);
     return result;
@@ -905,7 +905,7 @@ module Vector {
       compilerError(
         "asin is only defined for real types, not " + eltType:string);
 
-    import SLEEF.sleef;
+    import super.SLEEF.sleef;
     var result: x.type;
     result.data = sleef.asin(eltType, numElts, x.data);
     return result;
@@ -916,7 +916,7 @@ module Vector {
       compilerError(
         "acos is only defined for real types, not " + eltType:string);
 
-    import SLEEF.sleef;
+    import super.SLEEF.sleef;
     var result: x.type;
     result.data = sleef.acos(eltType, numElts, x.data);
     return result;
@@ -927,7 +927,7 @@ module Vector {
       compilerError(
         "atan is only defined for real types, not " + eltType:string);
 
-    import SLEEF.sleef;
+    import super.SLEEF.sleef;
     var result: x.type;
     result.data = sleef.atan(eltType, numElts, x.data);
     return result;

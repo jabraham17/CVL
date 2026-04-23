@@ -2,7 +2,7 @@
 module IntrinX86_128 {
   use CTypes only c_ptr, c_ptrConst, c_int;
   use Reflection only canResolveTypeMethod, getRoutineName;
-  use Arch only isX8664;
+  use super.Arch only isX8664;
   if isX8664() {
     require "x86intrin.h";
     require "IntrinX86_128/wrapper-x86-128.h";

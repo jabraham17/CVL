@@ -9,7 +9,7 @@ if [[ -d $REG ]]; then
   echo "Using existing local registry at $REG"
 else
   rm -rf $MASON_HOME/$REG_NAME
-  (cd $PROJECT_DIR && mason publish --create-registry $REG)
+  (cd $PROJECT_DIR && mkdir -p $REG && git init $REG)
 fi
 
 dummyVersion=0.0.0

@@ -7,7 +7,7 @@ Portable SIMD intrinsics for the Chapel language.
 Add CVL as a Mason dependency:
 
 ```bash
-mason add CVL@0.2.0
+mason add CVL@0.3.0
 ```
 
 ## Usage

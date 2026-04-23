@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-PROJECT_DIR=$(cd $(dirname $0); cd ..; pwd)
+PROJECT_DIR=$(cd $(dirname ${BASH_SOURCE[0]}) ; cd ..; pwd)
 REG=$PROJECT_DIR/.registry
 REG_NAME="local-registry"
 MASON_HOME=$(mason env | grep MASON_HOME | cut -d: -f2 | tr -d ' ')

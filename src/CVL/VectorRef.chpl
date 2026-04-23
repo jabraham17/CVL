@@ -1,6 +1,6 @@
 module VectorRef {
 
-  use Vector only vector;
+  use super.Vector only vector;
   use CTypes only c_ptr, c_ptrConst, c_ptrTo, c_ptrToConst;
 
   /* a transparent record that iterators can yield,

@@ -103,7 +103,7 @@ proc toHex(tup, param filled = false) where isTuple(tup) {
   }
   return res;
 }
-import Vector.vector;
+import CVL.vector;
 proc toHex(x: vector(?), param filled = false) {
   return toHex(x.toTuple(), filled=filled);
 }

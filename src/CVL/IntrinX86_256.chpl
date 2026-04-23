@@ -1,6 +1,6 @@
 @chplcheck.ignore("PascalCaseModules")
 module IntrinX86_256 {
-  use IntrinX86_128 only doSimpleOp, numBits, x8664_NxM,
+  use super.IntrinX86_128 only doSimpleOp, numBits, x8664_NxM,
                          vec32x4r, vec64x2r,
                          vec8x16i, vec16x8i, vec32x4i, vec64x2i,
                          vec8x16u, vec16x8u, vec32x4u, vec64x2u,
@@ -10,7 +10,7 @@ module IntrinX86_256 {
 
   use CTypes only c_ptr, c_ptrConst;
   use Reflection only canResolveTypeMethod;
-  use Arch only isX8664;
+  use super.Arch only isX8664;
   if isX8664() {
     require "x86intrin.h";
     require "IntrinX86_256/wrapper-x86-256.h";

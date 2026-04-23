@@ -6,8 +6,8 @@ module SLEEF {
     require SLEEF_INSTALL + "/lib/libsleef.a";
   }
 
-  use Intrin only implType, vectorType;
-  use Arch only isX8664, isArm64;
+  use super.Intrin only implType, vectorType;
+  use super.Arch only isX8664, isArm64;
 
 
   inline proc doSimpleOp(
@@ -21,7 +21,7 @@ module SLEEF {
     proc getNumLanes() param : int {
       param numLanes = impl.vecType.numBits / numBits(impl.laneType);
       if isArm64() {
-        import IntrinArm64_256.vecPair;
+        import super.IntrinArm64_256.vecPair;
         if isSubtype(impl.vecType, vecPair) then return numLanes / 2;
       }
       return numLanes;
@@ -29,7 +29,7 @@ module SLEEF {
     param funcName = "Sleef_" + name + suffix + getNumLanes():string + "_u10";
 
     if isArm64() {
-      import IntrinArm64_256.vecPair;
+      import super.IntrinArm64_256.vecPair;
       if isSubtype(impl.vecType, vecPair) {
         pragma "fn synchronization free"
         extern funcName proc func(x: impl.vecType.vt): impl.vecType.vt;

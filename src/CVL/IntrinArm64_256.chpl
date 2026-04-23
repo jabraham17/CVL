@@ -2,7 +2,7 @@
 /* There is no 256 for neon, this emulates it */
 @chplcheck.ignore("PascalCaseModules")
 module IntrinArm64_256 {
-  use IntrinArm64_128 only numBits, vecTypeStr;
+  use super.IntrinArm64_128 only numBits, vecTypeStr;
   use CTypes only c_ptr, c_ptrConst, c_int;
   use Reflection only getRoutineName;
 

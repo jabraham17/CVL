@@ -21,6 +21,15 @@ module IntrinArm64_256 {
       this.lo = lo;
       this.hi = hi;
     }
+    inline proc init=(other: vecPair) {
+      this.vt = other.vt;
+      this.lo = other.lo;
+      this.hi = other.hi;
+    }
+    inline operator=(ref lhs: vecPair(?vt), rhs: vecPair(vt)) {
+      lhs.lo = rhs.lo;
+      lhs.hi = rhs.hi;
+    }
 
     proc type numBits param : int do return this.vt.numBits * 2;
   }

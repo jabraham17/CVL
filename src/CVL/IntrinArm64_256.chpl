@@ -21,7 +21,7 @@ module IntrinArm64_256 {
       this.lo = lo;
       this.hi = hi;
     }
-    inline proc init=(other: vecPair) {
+    inline proc init=(other: vecPair(?)) {
       this.vt = other.vt;
       this.lo = other.lo;
       this.hi = other.hi;

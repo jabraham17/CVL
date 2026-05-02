@@ -29,7 +29,7 @@ proc main() {
   t.stop();
 
   if StreamConfig.timing {
-    writeln("Variant '", variant, "'' took ", t.elapsed(), " seconds");
+    writeln("Variant '", variant, "' took ", t.elapsed(), " seconds");
   }
 
   if StreamConfig.check {

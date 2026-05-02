@@ -199,7 +199,7 @@ module Vector {
           [i in slice] arr[i];
         }
       }
-      const ptr = c_addrOf(arr[idx]);
+      const ptr = c_addrOf(arr.localAccess[idx]);
       return ptr;
     }
     @chplcheck.ignore("CamelCaseFunctions")
@@ -219,7 +219,7 @@ module Vector {
           [i in slice] arr[i];
         }
       }
-      const ptr = c_addrOfConst(arr[idx]);
+      const ptr = c_addrOfConst(arr.localAccess[idx]);
       return ptr;
     }
     @chplcheck.ignore("CamelCaseFunctions")
